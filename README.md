@@ -1,7 +1,7 @@
 MediaBundle
 ==========
 [![Build Status](https://travis-ci.org/netbull/MediaBundle.svg?branch=master)](https://travis-ci.org/netbull/MediaBundle)<br>
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/f91df530-6930-44c3-b300-0ac712498063/big.png)](https://insight.sensiolabs.com/projects/f91df530-6930-44c3-b300-0ac712498063)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/17cd0303-c0de-4941-9533-c8bc7a0e2f62/big.png)](https://insight.sensiolabs.com/projects/17cd0303-c0de-4941-9533-c8bc7a0e2f62)
 
 Mod of [SonataMediaBundle](https://github.com/sonata-project/SonataMediaBundle)
 
