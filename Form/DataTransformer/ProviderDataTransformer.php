@@ -78,7 +78,7 @@ class ProviderDataTransformer implements DataTransformerInterface
         if (empty($binaryContent)) {
             // and no media id
             if (null === $media->getId() && $this->options['empty_on_new']) {
-                return;
+                return null;
             } elseif ($media->getId()) {
                 return $media;
             }
