@@ -1,0 +1,38 @@
+{% if options.html5 %}
+    <div class="embed-responsive embed-responsive-16by9">
+        <iframe class="embed-responsive-item"
+                src="//www.youtube.com/embed/{{ media.providerReference }}?{{ options.player_url_parameters }}"
+                frameborder="{{ options.player_parameters.border }}"
+                {% if options.player_parameters.allowFullScreen %} allowfullscreen{% endif %}
+                width="{{ options.width }}"
+                height="{{ options.height }}"
+        ></iframe>
+    </div>
+{% else %}
+    {% if options.player_parameters.allowFullScreen %}
+        {% set allowFullScreen = "true" %}
+    {% else %}
+        {% set allowFullScreen = "false" %}
+    {% endif %}
+
+    <div class="embed-responsive embed-responsive-16by9">
+        <object class="embed-responsive-item">
+            <param name="movie" value="//www.youtube.com/v/{{ media.providerReference }}?{{ options.player_url_parameters }}"></param>
+            {% if options.player_parameters.allowFullScreen %}
+                <param name="allowFullScreen" value="allowfullscreen"></param>
+            {% endif %}
+            <param name="allowscriptaccess" value="{{ options.player_parameters.allowScriptAccess }}"></param>
+            <param name="wmode" value="{{ options.player_parameters.wmode}}">
+
+            <embed
+                    src="//www.youtube.com/v/{{ media.providerReference }}?{{ options.player_url_parameters }}"
+                    type="application/x-shockwave-flash"
+                    allowscriptaccess="{{ options.player_parameters.allowScriptAccess }}"
+                    {% if options.player_parameters.allowFullScreen %}
+                        allowfullscreen="{{ allowFullScreen }}"
+                    {% endif %}
+                    wmode="{{options.player_parameters.wmode}}">
+            </embed>
+        </object>
+    </div>
+{% endif %}

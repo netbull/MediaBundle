@@ -1,0 +1,166 @@
+{% block netbull_media_type_widget %}
+    {% if form.vars.provider == 'netbull_media.provider.image' %}
+        {% set type = 'image' %}
+    {% elseif form.vars.provider == 'netbull_media.provider.youtube' or form.vars.provider == 'netbull_media.provider.vimeo' %}
+        {% set type = 'video' %}
+    {% endif %}
+
+    {% if form.main_image is defined %}
+        <div class="row">
+            <div class="col-12 {{ type }}-head margin-bottom-10">
+                <span class="image-name float-left" style="font-size: 19px;font-weight: bold;">{% if form.vars.data.id %}{{ form.vars.name + 1 }}{% else %}{{ form.vars.name ~ 'index__' }}{% endif %}</span>
+                <button type="button" class="btn btn-sm btn-danger float-right {{ type }}-delete">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="{{ type }}-body">
+            <div class="row">
+                <div class="col-4">
+                    {% if form.vars.data.id %}
+                        {% set attributes = { 'class': 'img-fluid ' ~ type ~ '-holder', 'width': '100%', 'height': '' } %}
+                        {% if type == 'video' %}
+                            {% set attributes = attributes|merge({ 'data-providerReference': form.vars.data.providerReference, 'data-provider': form.vars.data.providerName|replace({'netbull_media.provider.': ''}) }) %}
+                        {% endif %}
+
+                        {{ value|thumbnail('normal', attributes) }}
+                    {% else %}
+                        <img width="100%" class="img-fluid image-holder" {% if type == 'image' %}src="__imageSrc__"{% endif %}>
+                    {% endif %}
+                </div>
+
+                <div class="col-8">
+                    {% for field in form.children %}
+                        {% if field.vars.name == 'newBinaryContent' and type == 'image' %}
+                            <div class="input-group margin-bottom-10">
+                            <span class="input-group-btn">
+                                <span class="btn btn-primary btn-file">
+                                    Browse&hellip; {{ form_widget(field, { 'attr': { 'class': type ~ '-upload' } }) }}
+                                </span>
+                            </span>
+                                <input type="text" class="form-control filename-holder" readonly="readonly"{% if field.vars.data %} value="__filename__"{% endif %}>
+                            </div>
+                        {% else %}
+                            {{ form_row(field) }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="{{ type }}-deleted-backdrop hidden-xs-up"></div>
+        </div>
+        {% set filename = form.vars.data.name %}
+        {% if filename and type == 'image' %}
+            <div class="col-xs-12 {{ type }}-head margin-top-10">
+                <strong>Filename:</strong> {{ form.vars.data.name }}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="col-xs-4">
+            {% if form.vars.data.id %}
+                {{ value|thumbnail('normal', {'class': 'img-fluid ' ~ type ~ '-holder', 'width': '100%', 'height': '' }) }}
+            {% else %}
+                <img width="100%" class="img-fluid image-holder">
+            {% endif %}
+        </div>
+
+        <div class="col-xs-8">
+            {% for field in form.children %}
+                {{ form_row(field) }}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock netbull_media_type_widget %}
+
+{% block netbull_media_short_type_row %}
+    {% if form.vars.provider == 'netbull_media.provider.image' %}
+        {% set type = 'image' %}
+    {% elseif form.vars.provider == 'netbull_media.provider.youtube' or form.vars.provider == 'netbull_media.provider.vimeo' %}
+        {% set type = 'video' %}
+    {% endif %}
+
+    {% if type == 'image' %}
+        <div class="col-md-6 col-xs-12 photo-wrapper">
+            {% if form.vars.provider == 'netbull_media.provider.image' %}
+                {% set type = 'image' %}
+            {% elseif form.vars.provider == 'netbull_media.provider.file' %}
+                {% set type = 'file' %}
+            {% elseif form.vars.provider == 'netbull_media.provider.youtube' %}
+                {% set type = 'video' %}
+            {% endif %}
+
+            {% for field in form.children %}
+                {% if field.vars.name == 'newBinaryContent' and (type == 'image' or type == 'file') %}
+                    {{ form_row(field, { 'attr': { 'class': type ~ '-upload hidden' } }) }}
+                {% else %}
+                    {{ form_row(field) }}
+                {% endif %}
+            {% endfor %}
+
+            <div class="mt-element-overlay">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mt-overlay-4 mt-overlay-4-icons">
+                            {% if form.vars.data.id %}
+                                {{ value|thumbnail('thumb', {'class': 'img-fluid ' ~ type ~ '-holder', 'width': '100%', 'height': '' }) }}
+                            {% else %}
+                                <img width="100%" class="img-fluid image-holder">
+                            {% endif %}
+
+                            <div class="mt-overlay">
+                                <ul class="mt-info">
+                                    <li>
+                                        <a class="btn default btn-outline photo-preview" href="javascript:">
+                                            <i class="icon-eye"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="btn default btn-outline photo-delete" href="javascript:">
+                                            <i class="icon-trash"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% for field in form.children %}
+            {{ form_row(field) }}
+        {% endfor %}
+        {% if form.vars.data.id %}
+            {% set attributes = { 'class': 'img-fluid ' ~ type ~ '-holder', 'width': '100%', 'height': '' } %}
+            {% if type == 'video' %}
+                {% set attributes = attributes|merge({ 'data-providerReference': form.vars.data.providerReference, 'data-provider': form.vars.data.providerName|replace({'netbull_media.provider.': ''}) }) %}
+            {% endif %}
+
+            {{ value|view('normal') }}
+        {% else %}
+            <img width="100%" class="img-fluid image-holder" src="{{ asset('no-image.png', 'static') }}">
+        {% endif %}
+    {% endif %}
+{% endblock netbull_media_short_type_row %}
+
+{% block netbull_photo_type_widget %}
+    <div class="avatar-upload">
+        <div>
+            <label for="{{ form.children.newBinaryContent.vars.id }}">Select new Photo</label>
+            <a class="btn btn-default hidden cancel-upload" href="javascript:">Cancel</a>
+        </div>
+        <div class="upload">
+            {% if form.vars.context == 'avatar' %}
+                {% set noPhoto = asset('no-avatar.jpg', 'static') %}
+            {% else %}
+                {% set noPhoto = asset('no-image.png', 'static') %}
+            {% endif %}
+            <img src="{% if form.vars.data.id %}{{ form.vars.data|path('normal') }}{% else %}{{ noPhoto }}{% endif %}" alt="{{ form.vars.data.name }}" class="img-fluid">
+        </div>
+        <div id="avatar-editor"></div>
+        {% for field in form.children %}
+            {{ form_widget(field) }}
+        {% endfor %}
+    </div>
+{% endblock netbull_photo_type_widget %}

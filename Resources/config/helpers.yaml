@@ -1,0 +1,5 @@
+services:
+    netbull_media.helper.path:
+        class: NetBull\MediaBundle\Helpers\PathGenerator
+        arguments: ['@netbull_media.pool', '@?twig']
+        public: true

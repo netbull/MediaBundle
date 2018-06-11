@@ -1,0 +1,13 @@
+services:
+    netbull_media.security.public_strategy:
+        class: NetBull\MediaBundle\Security\PublicDownloadStrategy
+        arguments: ['@translator']
+    netbull_media.security.forbidden_strategy:
+        class: NetBull\MediaBundle\Security\ForbiddenDownloadStrategy
+        arguments: ['@translator']
+    netbull_media.security.superadmin_strategy:
+        class: NetBull\MediaBundle\Security\RolesDownloadStrategy
+        arguments: ['@translator', '@security.authorization_checker', [ROLE_SUPER_ADMIN, ROLE_ADMIN]]
+    netbull_media.security.connected_strategy:
+        class: NetBull\MediaBundle\Security\RolesDownloadStrategy
+        arguments: ['@translator', '@security.authorization_checker', [IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED]]

@@ -1,0 +1,5 @@
+netbull_media_download:
+    path    : /media/download/{id}/{format}
+    defaults: { _controller: NetBull\MediaBundle\Controller\MediaController::downloadAction, format: reference }
+    requirements:
+        id: \d+

@@ -1,0 +1,29 @@
+parameters:
+    netbull_media.metadata.amazon.class: NetBull\MediaBundle\Metadata\AmazonMetadataBuilder
+
+services:
+    netbull_media.wrapper.s3:
+        class: Aws\S3\S3Client
+        arguments: [{  }]
+
+    netbull_media.adapter.filesystem.local:
+        class: NetBull\MediaBundle\Filesystem\Local
+
+    netbull_media.filesystem.local:
+        class: Gaufrette\Filesystem
+        arguments: ['@netbull_media.adapter.filesystem.local']
+
+    netbull_media.adapter.filesystem.s3:
+        class: Gaufrette\Adapter\AwsS3
+        arguments: ['@netbull_media.wrapper.s3', '', '']
+
+    netbull_media.filesystem.s3:
+        class: Gaufrette\Filesystem
+        arguments: ['@netbull_media.adapter.filesystem.s3']
+
+    netbull_media.filesystem.local.server:
+        class: NetBull\MediaBundle\Filesystem\LocalServer
+        arguments: ['@netbull_media.adapter.filesystem.local', '@netbull_media.adapter.filesystem.s3']
+
+    netbull_media.metadata.amazon:
+        class: '%netbull_media.metadata.amazon.class%'
