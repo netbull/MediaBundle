@@ -220,10 +220,9 @@ class FileProvider extends BaseProvider
      */
     public function generatePublicUrl($media, $format)
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
         } else {
-            // ToDo: fix the asset path
             $path = sprintf('../files/%s/file.png', $format);
         }
 
@@ -257,7 +256,7 @@ class FileProvider extends BaseProvider
      */
     public function generatePrivateUrl(MediaInterface $media, $format)
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             return $this->getReferenceImage($media);
         }
 
@@ -317,7 +316,7 @@ class FileProvider extends BaseProvider
             throw new \RuntimeException('Invalid mode provided');
         }
 
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             $file = $this->getReferenceFile($media);
         } else {
             $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));

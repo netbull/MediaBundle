@@ -48,7 +48,7 @@ class FormatThumbnail implements ThumbnailInterface
      */
     public function generatePublicUrl(MediaProviderInterface $provider, $media, $format)
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             $path = $provider->getReferenceImage($media);
         } else {
             $id = ($media instanceof MediaInterface)?$media->getId():$media['id'];
@@ -82,7 +82,7 @@ class FormatThumbnail implements ThumbnailInterface
         }
 
         foreach ($provider->getFormats() as $format => $settings) {
-            if (substr($format, 0, strlen($media->getContext())) == $media->getContext()) {
+            if (substr($format, 0, strlen($media->getContext())) === $media->getContext()) {
                 $shortFormat = str_replace($media->getContext() . '_', '', $format);
                 $isProd = 'prod' === $this->kernel->getEnvironment();
 
@@ -142,7 +142,7 @@ class FormatThumbnail implements ThumbnailInterface
         }
 
         foreach ($provider->getFormats() as $format => $settings) {
-            if (substr($format, 0, strlen($media->getContext())) == $media->getContext() &&
+            if (substr($format, 0, strlen($media->getContext())) === $media->getContext() &&
                 $format2 === str_replace($media->getContext() . '_', '', $format)) {
                 $provider->getResizer()->resize(
                     $media,

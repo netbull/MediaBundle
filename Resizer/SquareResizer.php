@@ -63,7 +63,7 @@ class SquareResizer implements ResizerInterface
         $image->layers()->coalesce();
         $size  = $media->getBox();
 
-        if ($media->getExtension() == 'gif' && count($image->layers()) > 1) {
+        if ('gif' === $media->getExtension() && 1 < count($image->layers())) {
             $settings['height'] = (int)($settings['width'] * $size->getHeight() / $size->getWidth());
 
             if ($settings['height'] < $size->getHeight() && $settings['width'] < $size->getWidth()) {
@@ -90,7 +90,7 @@ class SquareResizer implements ResizerInterface
             $crop = $higher - $lower;
 
             if ($crop > 0) {
-                $point = $higher == $size->getHeight() ? new Point(0, 0) : new Point($crop / 2, 0);
+                $point = $higher === $size->getHeight() ? new Point(0, 0) : new Point($crop / 2, 0);
                 $image->crop($point, new Box($lower, $lower));
                 $size = $image->getSize();
             }

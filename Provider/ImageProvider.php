@@ -233,7 +233,7 @@ class ImageProvider extends FileProvider
      */
     public function generatePublicUrl($media, $format)
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
         } else {
             $path = $this->thumbnail->generatePublicUrl($this, $media, $format);

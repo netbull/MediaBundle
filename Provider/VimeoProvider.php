@@ -42,7 +42,7 @@ class VimeoProvider extends BaseVideoProvider
     public function getHelperProperties($media, $format, array $options = [])
     {
         if($media instanceof MediaInterface){
-            if ($format == 'reference') {
+            if ('reference' === $format) {
                 $box = $media->getBox();
             } else {
                 $resizerFormat = $this->getFormat($format);

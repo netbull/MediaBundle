@@ -142,13 +142,13 @@ abstract class BaseProvider implements MediaProviderInterface
      */
     public function getFormatName($media, $format)
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             return 'reference';
         }
 
-        $context = ($media instanceof MediaInterface)?$media->getContext():$media['context'];
+        $context = ($media instanceof MediaInterface) ? $media->getContext() : $media['context'];
         $baseName = $context . '_';
-        if (substr($format, 0, strlen($baseName)) == $baseName) {
+        if (substr($format, 0, strlen($baseName)) === $baseName) {
             return $format;
         }
 

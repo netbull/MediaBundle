@@ -42,11 +42,11 @@ class YoukuProvider extends BaseVideoProvider
     public function getHelperProperties($media, $format, array $options = [])
     {
         if($media instanceof MediaInterface){
-            if ($format == 'reference') {
+            if ('reference' === $format) {
                 $box = $media->getBox();
             } else {
                 $resizerFormat = $this->getFormat($format);
-                if ($resizerFormat === false) {
+                if (false === $resizerFormat) {
                     throw new \RuntimeException(sprintf('The image format "%s" is not defined.
                         Is the format registered in your ``media`` configuration?', $format));
                 }

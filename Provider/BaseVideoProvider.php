@@ -81,7 +81,7 @@ abstract class BaseVideoProvider extends BaseProvider
      */
     public function generatePublicUrl($media, $format)
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
         } else {
             $path = $this->thumbnail->generatePublicUrl($this, $media, $format);
@@ -256,7 +256,7 @@ abstract class BaseVideoProvider extends BaseProvider
      */
     protected function getBoxHelperProperties(MediaInterface $media, $format, $options = [])
     {
-        if ($format == 'reference') {
+        if ('reference' === $format) {
             return $media->getBox();
         }
 

@@ -37,7 +37,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $settings = false;
         $methods  = $pool->getMethodCalls();
         foreach ($methods as $pos => $calls) {
-            if ($calls[0] == '__hack__') {
+            if ($calls[0] === '__hack__') {
                 $settings = $calls[1];
                 break;
             }
@@ -71,7 +71,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     {
         foreach ($container->findTaggedServiceIds('netbull_media.provider') as $id => $attributes) {
             foreach ($settings['providers'] as $name => $config) {
-                if ($config['service'] == $id) {
+                if ($config['service'] === $id) {
                     $definition = $container->getDefinition($id);
 
                     $definition
