@@ -189,4 +189,12 @@ class NetBullMediaExtension extends Extension
 
         $container->getDefinition('netbull_media.provider.youtube')->replaceArgument(6, $config['providers']['youtube']['html5']);
     }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return 'netbull_media';
+    }
 }
