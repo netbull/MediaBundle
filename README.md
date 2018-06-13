@@ -83,7 +83,7 @@ parameters:
             - media.provider.image
         formats: '%formats%'
 
-net_bull_media:
+netbull_media:
     default_context: 'default'
 
     providers:
