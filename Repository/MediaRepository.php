@@ -12,6 +12,8 @@ use NetBull\MediaBundle\Entity\Media;
  */
 class MediaRepository extends EntityRepository
 {
+    const MEDIA_FIELDS = 'id,context,providerReference,providerName,name,width,height,main';
+
     /**
      * @param array $criteria
      * @return array|int
