@@ -20,6 +20,7 @@ services:
     netbull_media.filesystem.s3:
         class: Gaufrette\Filesystem
         arguments: ['@netbull_media.adapter.filesystem.s3']
+        public: true
 
     netbull_media.filesystem.local.server:
         class: NetBull\MediaBundle\Filesystem\LocalServer
