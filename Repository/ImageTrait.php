@@ -39,7 +39,7 @@ trait ImageTrait
     public function getImages($object)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('partial o.{id}', 'partial m.{' . self::photoFields . '}')
+        $qb->select('partial o.{id}', 'partial m.{' . MediaRepository::MEDIA_FIELDS . '}')
             ->from($this->getEntityName(), 'o')
             ->leftJoin('o.photos', 'm')
             ->where($qb->expr()->eq('o.id', ':object'))
@@ -57,7 +57,7 @@ trait ImageTrait
     public function getImagesByIds($images)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('partial m.{' . self::photoFields . '}')
+        $qb->select('partial m.{' . MediaRepository::MEDIA_FIELDS . '}')
             ->from(Media::class, 'm')
             ->where($qb->expr()->in('m.id', ':images'))
             ->orderBy('m.position')
