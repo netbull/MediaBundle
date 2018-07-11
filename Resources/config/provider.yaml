@@ -33,7 +33,7 @@ services:
         class: '%netbull_media.provider.image.class%'
         tags:
             - { name: netbull_media.provider }
-        arguments: ['%netbull_media.provider.image%', '', '', '@netbull_media.thumbnail.format', '', '', '', '@netbull_media.metadata.amazon']
+        arguments: ['netbull_media.provider.image', '', '', '@netbull_media.thumbnail.format', '', '', '', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMediaBundle:Provider:thumbnail.html.twig', helper_view: 'NetBullMediaBundle:Provider:view_image.html.twig' }]]
 
@@ -41,7 +41,7 @@ services:
         class: '%netbull_media.provider.file.class%'
         tags:
             - { name: netbull_media.provider }
-        arguments: ['%netbull_media.provider.file%', '', '', '@netbull_media.thumbnail.format', '', '', '@netbull_media.metadata.amazon']
+        arguments: ['netbull_media.provider.file', '', '', '@netbull_media.thumbnail.format', '', '', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMediaBundle:Provider:thumbnail.html.twig', helper_view: 'NetBullMediaBundle:Provider:view_file.html.twig' }]]
 
@@ -49,7 +49,7 @@ services:
         class: '%netbull_media.provider.youtube.class%'
         tags:
             - { name: netbull_media.provider }
-        arguments: ['%netbull_media.provider.youtube%', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon', '']
+        arguments: ['netbull_media.provider.youtube', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon', '']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMediaBundle:Provider:thumbnail.html.twig', helper_view: 'NetBullMediaBundle:Provider:view_youtube.html.twig' }]]
 
@@ -57,7 +57,7 @@ services:
         class: '%netbull_media.provider.vimeo.class%'
         tags:
             - { name: netbull_media.provider }
-        arguments: ['%netbull_media.provider.vimeo%', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
+        arguments: ['netbull_media.provider.vimeo', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMediaBundle:Provider:thumbnail.html.twig', helper_view: 'NetBullMediaBundle:Provider:view_vimeo.html.twig' }]]
 
@@ -65,7 +65,7 @@ services:
         class: '%netbull_media.provider.youku.class%'
         tags:
             - { name: netbull_media.provider }
-        arguments: ['%netbull_media.provider.youku%', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
+        arguments: ['netbull_media.provider.youku', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMediaBundle:Provider:thumbnail.html.twig', helper_view: 'NetBullMediaBundle:Provider:view_youku.html.twig' }]]
 
