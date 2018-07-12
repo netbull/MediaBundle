@@ -71,3 +71,4 @@ services:
 
     netbull_media.metadata.amazon:
         class: '%netbull_media.metadata.amazon.class%'
+        public: true

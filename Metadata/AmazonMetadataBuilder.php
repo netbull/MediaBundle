@@ -2,8 +2,6 @@
 
 namespace NetBull\MediaBundle\Metadata;
 
-use NetBull\MediaBundle\Model\MediaInterface;
-
 /**
  * Class AmazonMetadataBuilder
  * @package NetBull\MediaBundle\Metadata
@@ -236,9 +234,9 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
 
         //merge storage
         if (isset($this->settings['storage'])) {
-            if ('standard' === $this->settings['storage']) {
+            if ($this->settings['storage'] == 'standard') {
                 $output['StorageClass'] = 'STANDARD';
-            } elseif ('reduced' === $this->settings['storage']) {
+            } elseif ($this->settings['storage'] == 'reduced') {
                 $output['StorageClass'] = 'REDUCED_REDUNDANCY';
             }
         }
@@ -274,7 +272,7 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function get(MediaInterface $media, $filename)
+    public function get($filename)
     {
         return array_replace_recursive(
             $this->getDefaultMetadata(),
