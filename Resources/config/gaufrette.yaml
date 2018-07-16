@@ -9,14 +9,14 @@ services:
     netbull_media.adapter.filesystem.local:
         class: NetBull\MediaBundle\Filesystem\Local
 
+    netbull_media.adapter.filesystem.s3:
+        class: Gaufrette\Adapter\AwsS3
+        arguments: ['@netbull_media.wrapper.s3', '', '']
+
     netbull_media.filesystem.local:
         class: Gaufrette\Filesystem
         arguments: ['@netbull_media.adapter.filesystem.local']
         public: true
-
-    netbull_media.adapter.filesystem.s3:
-        class: Gaufrette\Adapter\AwsS3
-        arguments: ['@netbull_media.wrapper.s3', '', '']
 
     netbull_media.filesystem.s3:
         class: Gaufrette\Filesystem
@@ -30,3 +30,4 @@ services:
 
     netbull_media.metadata.amazon:
         class: '%netbull_media.metadata.amazon.class%'
+        public: true

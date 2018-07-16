@@ -7,7 +7,6 @@ parameters:
     netbull_media.thumbnail.format: NetBull\MediaBundle\Thumbnail\FormatThumbnail
     netbull_media.thumbnail.format.default: jpg
     netbull_media.pool.class: NetBull\MediaBundle\Provider\Pool
-    netbull_media.metadata.amazon.class: NetBull\MediaBundle\Metadata\AmazonMetadataBuilder
 
 services:
     netbull_media.buzz.connector.file_get_contents:
@@ -68,7 +67,3 @@ services:
         arguments: ['netbull_media.provider.youku', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMediaBundle:Provider:thumbnail.html.twig', helper_view: 'NetBullMediaBundle:Provider:view_youku.html.twig' }]]
-
-    netbull_media.metadata.amazon:
-        class: '%netbull_media.metadata.amazon.class%'
-        public: true
