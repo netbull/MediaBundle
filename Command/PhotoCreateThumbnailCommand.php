@@ -23,7 +23,7 @@ class PhotoCreateThumbnailCommand extends BaseCommand
     public function configure()
     {
         $this
-            ->setName('media:create-thumbnail')
+            ->setName('netbull:media:create-thumbnail')
             ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
             ->addArgument('format', InputArgument::OPTIONAL, 'The thumbnail format', 'normal')
             ->setDescription('Create Image thumbnail with new media formats')

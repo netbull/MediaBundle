@@ -103,7 +103,7 @@ class FormatThumbnail implements ThumbnailInterface
                         $shortFormat
                     ];
 
-                    $cmd = sprintf('%s/console %s', $root_dir . '/../bin', 'media:create-thumbnail');
+                    $cmd = sprintf('%s/console %s', $root_dir . '/../bin', 'netbull:media:create-thumbnail');
                     if (count($arguments) > 0) {
                         $cmd = sprintf($cmd . ' %s', implode(' ', $arguments));
                     }
