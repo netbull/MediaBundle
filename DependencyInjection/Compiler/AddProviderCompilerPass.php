@@ -103,7 +103,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 foreach ($context['formats'] as $format => $config) {
                     $config['quality']      = isset($config['quality']) ? $config['quality'] : 80;
                     $config['format']       = isset($config['format'])  ? $config['format'] : 'jpg';
-                    $config['height']       = isset($config['height'])  ? $config['height'] : false;
+                    $config['height']       = isset($config['height'])  ? $config['height'] : null;
                     $config['constraint']   = isset($config['constraint'])  ? $config['constraint'] : true;
 
                     $formatName = sprintf('%s_%s', $name, $format);
