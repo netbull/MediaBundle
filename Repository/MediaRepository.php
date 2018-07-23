@@ -12,7 +12,7 @@ use NetBull\MediaBundle\Entity\Media;
  */
 class MediaRepository extends EntityRepository
 {
-    const MEDIA_FIELDS = 'id,context,providerReference,providerName,name,width,height,main';
+    const MEDIA_FIELDS = 'id,context,providerReference,providerName,name,width,height,main,position';
 
     /**
      * @param array $criteria
