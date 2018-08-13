@@ -167,7 +167,7 @@ abstract class BaseVideoProvider extends BaseProvider
 
         if($mainField){
             $formBuilder
-                ->add('main_image', RadioType::class, [
+                ->add('main', RadioType::class, [
                     'label' => 'Main',
                     'attr'  => [
                         'class' => 'video-main'

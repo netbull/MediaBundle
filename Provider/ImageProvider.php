@@ -129,7 +129,7 @@ class ImageProvider extends FileProvider
         ;
 
         if ($mainField) {
-            $formBuilder->add('main_image', RadioType::class, [
+            $formBuilder->add('main', RadioType::class, [
                 'label' => 'Main',
                 'attr'  => [
                     'class' => 'image-main'
