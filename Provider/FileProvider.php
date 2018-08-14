@@ -81,7 +81,7 @@ class FileProvider extends BaseProvider
         if (isset($options['main_field'])) {
             unset($options['main_field']);
         }
-        $formBuilder->add('newBinaryContent', FileType::class, $options);
+        $formBuilder->add('binaryContent', FileType::class, $options);
     }
 
     /**
@@ -146,19 +146,19 @@ class FileProvider extends BaseProvider
      */
     protected function fixBinaryContent(MediaInterface $media)
     {
-        if ($media->getNewBinaryContent() === null) {
+        if ($media->getBinaryContent() === null) {
             return;
         }
 
         // if the binary content is a filename => convert to a valid File
-        if (!$media->getNewBinaryContent() instanceof File) {
+        if (!$media->getBinaryContent() instanceof File) {
             if (!is_file($media->getBinaryContent())) {
-                throw new \RuntimeException('The file does not exist : '.$media->getNewBinaryContent());
+                throw new \RuntimeException('The file does not exist : '.$media->getBinaryContent());
             }
 
-            $binaryContent = new File($media->getNewBinaryContent());
+            $binaryContent = new File($media->getBinaryContent());
 
-            $media->setNewBinaryContent($binaryContent);
+            $media->setBinaryContent($binaryContent);
         }
     }
 
@@ -169,12 +169,12 @@ class FileProvider extends BaseProvider
      */
     protected function fixFilename(MediaInterface $media)
     {
-        if ($media->getNewBinaryContent() instanceof UploadedFile) {
-            $media->setName($media->getName() ?: $media->getNewBinaryContent()->getClientOriginalName());
-            $media->setMetadataValue('filename', $media->getNewBinaryContent()->getClientOriginalName());
-        } elseif ($media->getNewBinaryContent() instanceof File) {
-            $media->setName($media->getName() ?: $media->getNewBinaryContent()->getBasename());
-            $media->setMetadataValue('filename', $media->getNewBinaryContent()->getBasename());
+        if ($media->getBinaryContent() instanceof UploadedFile) {
+            $media->setName($media->getName() ?: $media->getBinaryContent()->getClientOriginalName());
+            $media->setMetadataValue('filename', $media->getBinaryContent()->getClientOriginalName());
+        } elseif ($media->getBinaryContent() instanceof File) {
+            $media->setName($media->getName() ?: $media->getBinaryContent()->getBasename());
+            $media->setMetadataValue('filename', $media->getBinaryContent()->getBasename());
         }
 
         // this is the original name
