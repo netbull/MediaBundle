@@ -156,7 +156,7 @@ class FileProvider extends BaseProvider
                 throw new \RuntimeException('The file does not exist : '.$media->getNewBinaryContent());
             }
 
-            $binaryContent = new File($media->getBinaryContent());
+            $binaryContent = new File($media->getNewBinaryContent());
 
             $media->setNewBinaryContent($binaryContent);
         }
@@ -170,11 +170,11 @@ class FileProvider extends BaseProvider
     protected function fixFilename(MediaInterface $media)
     {
         if ($media->getNewBinaryContent() instanceof UploadedFile) {
-            $media->setName($media->getName() ?: $media->getBinaryContent()->getClientOriginalName());
-            $media->setMetadataValue('filename', $media->getBinaryContent()->getClientOriginalName());
+            $media->setName($media->getName() ?: $media->getNewBinaryContent()->getClientOriginalName());
+            $media->setMetadataValue('filename', $media->getNewBinaryContent()->getClientOriginalName());
         } elseif ($media->getNewBinaryContent() instanceof File) {
-            $media->setName($media->getName() ?: $media->getBinaryContent()->getBasename());
-            $media->setMetadataValue('filename', $media->getBinaryContent()->getBasename());
+            $media->setName($media->getName() ?: $media->getNewBinaryContent()->getBasename());
+            $media->setMetadataValue('filename', $media->getNewBinaryContent()->getBasename());
         }
 
         // this is the original name
