@@ -124,7 +124,7 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('local')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->scalarNode('directory')->defaultValue('%kernel.root_dir%/../web/uploads/media')->end()
+                                ->scalarNode('directory')->defaultValue('%kernel.root_dir%/../public/uploads/media')->end()
                                 ->scalarNode('create')->defaultValue(false)->end()
                             ->end()
                         ->end()
