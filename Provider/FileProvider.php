@@ -81,7 +81,7 @@ class FileProvider extends BaseProvider
         if (isset($options['main_field'])) {
             unset($options['main_field']);
         }
-        $formBuilder->add('binaryContent', FileType::class, $options);
+        $formBuilder->add('newBinaryContent', FileType::class, $options);
     }
 
     /**
@@ -146,19 +146,19 @@ class FileProvider extends BaseProvider
      */
     protected function fixBinaryContent(MediaInterface $media)
     {
-        if ($media->getBinaryContent() === null) {
+        if ($media->getNewBinaryContent() === null) {
             return;
         }
 
         // if the binary content is a filename => convert to a valid File
-        if (!$media->getBinaryContent() instanceof File) {
+        if (!$media->getNewBinaryContent() instanceof File) {
             if (!is_file($media->getBinaryContent())) {
-                throw new \RuntimeException('The file does not exist : '.$media->getBinaryContent());
+                throw new \RuntimeException('The file does not exist : '.$media->getNewBinaryContent());
             }
 
             $binaryContent = new File($media->getBinaryContent());
 
-            $media->setBinaryContent($binaryContent);
+            $media->setNewBinaryContent($binaryContent);
         }
     }
 

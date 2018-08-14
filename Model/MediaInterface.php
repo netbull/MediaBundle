@@ -201,6 +201,16 @@ interface MediaInterface
     public function getBinaryContent();
 
     /**
+     * @param mixed $binaryContent
+     */
+    public function setNewBinaryContent($binaryContent);
+
+    /**
+     * @return mixed
+     */
+    public function getNewBinaryContent();
+
+    /**
      * @param string $name
      * @param null   $default
      */
