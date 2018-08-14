@@ -169,10 +169,10 @@ class FileProvider extends BaseProvider
      */
     protected function fixFilename(MediaInterface $media)
     {
-        if ($media->getBinaryContent() instanceof UploadedFile) {
+        if ($media->getNewBinaryContent() instanceof UploadedFile) {
             $media->setName($media->getName() ?: $media->getBinaryContent()->getClientOriginalName());
             $media->setMetadataValue('filename', $media->getBinaryContent()->getClientOriginalName());
-        } elseif ($media->getBinaryContent() instanceof File) {
+        } elseif ($media->getNewBinaryContent() instanceof File) {
             $media->setName($media->getName() ?: $media->getBinaryContent()->getBasename());
             $media->setMetadataValue('filename', $media->getBinaryContent()->getBasename());
         }
