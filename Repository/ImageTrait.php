@@ -36,16 +36,20 @@ trait ImageTrait
     /**
      * @inheritdoc
      */
-    public function getImages($object)
+    public function getImages($object, $orderById = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('partial o.{id}', 'partial m.{' . MediaRepository::MEDIA_FIELDS . '}')
             ->from($this->getEntityName(), 'o')
             ->leftJoin('o.photos', 'm')
             ->where($qb->expr()->eq('o.id', ':object'))
-            ->orderBy('m.position')
+            ->orderBy('m.position', 'ASC')
             ->setParameter('object', $object)
         ;
+
+        if ($orderById) {
+            $qb->addOrderBy('m.id', 'ASC');
+        }
 
         $result = $qb->getQuery()->getSingleResult(Query::HYDRATE_ARRAY);
         return ($result) ? $result['photos'] : null;

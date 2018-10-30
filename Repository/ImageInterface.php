@@ -17,9 +17,10 @@ interface ImageInterface
 
     /**
      * @param $object
+     * @param bool $orderById
      * @return mixed
      */
-    public function getImages($object);
+    public function getImages($object, $orderById = false);
 
     /**
      * @param $images
