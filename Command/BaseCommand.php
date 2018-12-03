@@ -2,13 +2,15 @@
 
 namespace NetBull\MediaBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class BaseCommand
  * @package NetBull\MediaBundle\Command
  */
-abstract class BaseCommand extends ContainerAwareCommand
+abstract class BaseCommand extends Command
 {
     /**
      * Debug switch
@@ -17,18 +19,37 @@ abstract class BaseCommand extends ContainerAwareCommand
     protected $debug = false;
 
     /**
-     * @var
+     * @var OutputInterface
      */
     protected $output;
+
+    /**
+     * @var EntityManagerInterface $em
+     */
+    protected $em;
+
+    /**
+     * BaseCommand constructor.
+     * @param EntityManagerInterface $em
+     * @param null|string $name
+     */
+    public function __construct(EntityManagerInterface $em, ?string $name = null)
+    {
+        parent::__construct($name);
+
+        $this->em = $em;
+    }
 
     /**
      * @return \Doctrine\Common\Persistence\ObjectManager|object
      */
     public function getManager()
     {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $em->getConnection()->getConfiguration()->setSQLLogger(null);
-        return $em;
+        if (!$this->em) {
+            throw new \LogicException('The DoctrineBundle is not registered in your application. Try running "composer require symfony/orm-pack".');
+        }
+
+        return $this->em;
     }
 
     /**
@@ -36,8 +57,8 @@ abstract class BaseCommand extends ContainerAwareCommand
      */
     protected function optimize()
     {
-        if ($this->getContainer()->has('doctrine')) {
-            $this->getManager()->clear();
+        if ($this->em) {
+            $this->em->clear();
         }
     }
 
