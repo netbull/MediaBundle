@@ -16,7 +16,7 @@
     "kriswallsmith/buzz": "^0.17.2",
     "knplabs/gaufrette": "^0.4.0",
     "symfony/asset": "^4.0",
-    "symfony/process": "^4.0"
+    "symfony/process": "^4.2"
   },
   "autoload" : {
     "psr-4" : {

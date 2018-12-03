@@ -111,9 +111,9 @@ class FormatThumbnail implements ThumbnailInterface
                     // Needed because the stupid difference between local and production env... :_(
                     $phpPath = $isProd ? '/usr/bin/php' : '/usr/local/bin/php';
 
-                    $cmd = sprintf("%s %s", $phpPath, $cmd);
+                    $cmd = sprintf("%s %s >> %s 2>&1 & echo $!", $phpPath, $cmd, sprintf('%s/var/log/%s.log', $root_dir . '/..', 'image_process'));
 
-                    $process = new Process([$cmd, '>>', sprintf('%s/var/log/%s.log', $root_dir . '/..', 'image_process'), '2>&1 & echo $!']);
+                    $process = Process::fromShellCommandline($cmd);
                     $process->run();
 
                     if (!$process->isSuccessful()) {
