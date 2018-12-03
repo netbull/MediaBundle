@@ -9,15 +9,20 @@ parameters:
     netbull_media.pool.class: NetBull\MediaBundle\Provider\Pool
 
 services:
+    netbull_media.buzz.response_factory:
+        class: Nyholm\Psr7\Factory\Psr17Factory
+
     netbull_media.buzz.connector.file_get_contents:
         class: Buzz\Client\FileGetContents
-        
+        arguments: ['netbull_media.buzz.response_factory']
+
     netbull_media.buzz.connector.curl:
         class: Buzz\Client\Curl
+        arguments: ['netbull_media.buzz.response_factory']
 
     netbull_media.buzz.browser:
         class: Buzz\Browser
-        arguments: ['']
+        arguments: ['', 'netbull_media.buzz.response_factory']
 
     netbull_media.pool:
         class: '%netbull_media.pool.class%'
