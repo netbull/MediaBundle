@@ -15,7 +15,7 @@ services:
 
     netbull_media.filesystem.local:
         class: Gaufrette\Filesystem
-        arguments: ['@netbull_media.ad apter.filesystem.local']
+        arguments: ['@netbull_media.adapter.filesystem.local']
         public: true
 
     netbull_media.filesystem.s3:
