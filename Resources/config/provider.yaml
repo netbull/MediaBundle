@@ -9,6 +9,9 @@ parameters:
     netbull_media.pool.class: NetBull\MediaBundle\Provider\Pool
 
 services:
+    netbull_media.buzz.response_factory:
+        class: Nyholm\Psr7\Factory\Psr17Factory
+
     netbull_media.buzz.connector.file_get_contents:
         class: Buzz\Client\FileGetContents
 

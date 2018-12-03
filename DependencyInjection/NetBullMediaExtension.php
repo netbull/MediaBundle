@@ -126,7 +126,7 @@ class NetBullMediaExtension extends Extension
      */
     public function configureBuzz(ContainerBuilder $container, array $config)
     {
-        $responseFactory = new Psr17Factory();
+        $responseFactory = $container->getDefinition('netbull_media.buzz.response_factory');
         $container->getDefinition('netbull_media.buzz.browser')
             ->addArgument(new Reference($config['buzz']['connector']))
             ->addArgument($responseFactory);
