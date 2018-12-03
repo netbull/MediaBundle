@@ -2,6 +2,7 @@
 
 namespace NetBull\MediaBundle\DependencyInjection;
 
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -125,8 +126,10 @@ class NetBullMediaExtension extends Extension
      */
     public function configureBuzz(ContainerBuilder $container, array $config)
     {
+        $responseFactory = new Psr17Factory();
         $container->getDefinition('netbull_media.buzz.browser')
-            ->replaceArgument(0, new Reference($config['buzz']['connector']));
+            ->addArgument(new Reference($config['buzz']['connector']))
+            ->addArgument($responseFactory);
 
         foreach (['netbull_media.buzz.connector.curl', 'netbull_media.buzz.connector.file_get_contents'] as $connector) {
             $container->getDefinition($connector)
@@ -136,7 +139,8 @@ class NetBullMediaExtension extends Extension
                     'timeout' => $config['buzz']['client']['timeout'],
                     'verify' => $config['buzz']['client']['verify'],
                     'proxy' => $config['buzz']['client']['proxy'],
-                ]);
+                ])
+                ->addArgument($responseFactory);
         }
     }
 
