@@ -3,7 +3,6 @@
 namespace NetBull\MediaBundle\Provider;
 
 use Gaufrette\Filesystem;
-
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;

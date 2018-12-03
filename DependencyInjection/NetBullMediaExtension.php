@@ -127,16 +127,16 @@ class NetBullMediaExtension extends Extension
     {
         $container->getDefinition('netbull_media.buzz.browser')
             ->replaceArgument(0, new Reference($config['buzz']['connector']));
-        foreach ([
-                     'netbull_media.buzz.connector.curl',
-                     'netbull_media.buzz.connector.file_get_contents',
-                 ] as $connector) {
+
+        foreach (['netbull_media.buzz.connector.curl', 'netbull_media.buzz.connector.file_get_contents'] as $connector) {
             $container->getDefinition($connector)
-                ->addMethodCall('setIgnoreErrors', [$config['buzz']['client']['ignore_errors']])
-                ->addMethodCall('setMaxRedirects', [$config['buzz']['client']['max_redirects']])
-                ->addMethodCall('setTimeout',      [$config['buzz']['client']['timeout']])
-                ->addMethodCall('setVerifyPeer',   [$config['buzz']['client']['verify_peer']])
-                ->addMethodCall('setProxy',        [$config['buzz']['client']['proxy']]);
+                ->addArgument([
+                    'allow_redirects' => $config['buzz']['client']['allow_redirects'],
+                    'max_redirects' => $config['buzz']['client']['max_redirects'],
+                    'timeout' => $config['buzz']['client']['timeout'],
+                    'verify' => $config['buzz']['client']['verify'],
+                    'proxy' => $config['buzz']['client']['proxy'],
+                ]);
         }
     }
 
