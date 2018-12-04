@@ -6,7 +6,6 @@ parameters:
     netbull_media.provider.youku.class: NetBull\MediaBundle\Provider\YoukuProvider
     netbull_media.thumbnail.format: NetBull\MediaBundle\Thumbnail\FormatThumbnail
     netbull_media.thumbnail.format.default: jpg
-    netbull_media.pool.class: NetBull\MediaBundle\Provider\Pool
 
 services:
     netbull_media.buzz.response_factory:
@@ -22,9 +21,12 @@ services:
         class: Buzz\Browser
 
     netbull_media.pool:
-        class: '%netbull_media.pool.class%'
+        class: NetBull\MediaBundle\Provider\Pool
         arguments: ['']
         public: true
+
+    NetBull\MediaBundle\Provider\Pool:
+        alias: netbull_media.pool
 
     netbull_media.thumbnail.format:
         class: '%netbull_media.thumbnail.format%'
