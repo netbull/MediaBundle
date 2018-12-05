@@ -2,7 +2,6 @@
 
 namespace NetBull\MediaBundle;
 
-use Symfony\Component\Console\Application;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -31,13 +30,5 @@ class NetBullMediaBundle extends Bundle
     public function getContainerExtension()
     {
         return new NetBullMediaExtension();
-    }
-
-    /**
-     * @param Application $application
-     */
-    public function registerCommands(Application $application)
-    {
-        // noop
     }
 }

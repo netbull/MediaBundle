@@ -35,7 +35,6 @@ class NetBullMediaExtension extends Extension
         $loader->load('form.yaml');
         $loader->load('twig.yaml');
         $loader->load('helpers.yaml');
-        $loader->load('console.yaml');
 
         $this->configureFilesystemAdapter($container, $config);
         $this->configureCdnAdapter($container, $config);
