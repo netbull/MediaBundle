@@ -2,7 +2,6 @@
 
 namespace NetBull\MediaBundle\DependencyInjection;
 
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
