@@ -25,8 +25,8 @@ class MediaCollection extends ArrayCollection
     {
         parent::__construct($elements);
 
-        if ($this->count()) {
-            if ($this->first() instanceof MediaInterface) {
+        if ($first = $this->first()) {
+            if ($first instanceof MediaInterface) {
                 $this->isArrayCollection = false;
             }
         }
