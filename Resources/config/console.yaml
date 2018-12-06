@@ -1,24 +1,24 @@
 services:
     netbull_media.command.create_thumbnail:
         class: NetBull\MediaBundle\Command\PhotoCreateThumbnailCommand
-        arguments: ['@doctrine.orm.entity_manager.abstract']
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: console.command, command: 'netbull:media:create-thumbnail' }
 
     netbull_media.command.photo_resize:
         class: NetBull\MediaBundle\Command\PhotoResizeCommand
-        arguments: ['@doctrine.orm.entity_manager.abstract']
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: console.command, command: 'netbull:media:sync-thumbnails' }
 
     netbull_media.command.photo_resize_missing:
         class: NetBull\MediaBundle\Command\PhotoResizeMissingCommand
-        arguments: ['@doctrine.orm.entity_manager.abstract']
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: console.command, command: 'netbull:media:resize' }
 
     netbull_media.command.media_clone:
         class: NetBull\MediaBundle\Command\MediaCloneCommand
-        arguments: ['@doctrine.orm.entity_manager.abstract']
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: console.command, command: 'netbull:media:clone' }
