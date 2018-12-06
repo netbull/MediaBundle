@@ -2,9 +2,8 @@
 
 namespace NetBull\MediaBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 use Imagine\Image\Box;
+use Doctrine\ORM\Mapping as ORM;
 
 use NetBull\MediaBundle\Model\MediaInterface;
 
@@ -120,9 +119,7 @@ class Media implements MediaInterface
     private $main = false;
 
     #################################################
-    #                                               #
     #               Helper Properties               #
-    #                                               #
     #################################################
 
     private $binaryContent;
@@ -378,15 +375,13 @@ class Media implements MediaInterface
     /**
      * @param bool $main
      */
-    public function setMain($main)
+    public function setMain(bool $main)
     {
         $this->main = $main;
     }
 
     #################################################
-    #                                               #
     #               Helper Methods                  #
-    #                                               #
     #################################################
 
     /**

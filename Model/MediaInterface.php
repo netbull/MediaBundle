@@ -184,10 +184,18 @@ interface MediaInterface
      */
     public function setCaption($caption);
 
+    /**
+     * @return boolean
+     */
+    public function isMain();
+
+    /**
+     * @param bool $main
+     */
+    public function setMain(bool $main);
+
     #################################################
-    #                                               #
     #               Helper Methods                  #
-    #                                               #
     #################################################
 
     /**
@@ -233,7 +241,7 @@ interface MediaInterface
      * @return string
      */
     public function getExtension();
-    
+
     /**
      * @return Box
      */
