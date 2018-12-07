@@ -15,9 +15,6 @@ use NetBull\MediaBundle\Entity\Media;
  */
 class PhotoResizeCommand extends BaseCommand
 {
-    protected $quiet = false;
-    protected $output;
-
     /**
      * {@inheritdoc}
      */
@@ -39,13 +36,13 @@ class PhotoResizeCommand extends BaseCommand
 
         $context  = $input->getArgument('context');
         if (null === $context) {
-            $contexts = array_keys($this->getMediaPool()->getContexts());
+            $contexts = array_keys($this->pool->getContexts());
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion('Please select the context', $contexts);
             $context = $helper->ask($input, $output, $question);
         }
 
-        $this->quiet = $input->getOption('quiet');
+        $this->debug = $input->getOption('quiet');
         $this->output = $output;
 
         $qb = $em->createQueryBuilder();
@@ -87,11 +84,11 @@ class PhotoResizeCommand extends BaseCommand
             ->getOneOrNullResult()
         ;
 
-        if( !$media ){
+        if (!$media) {
             return;
         }
 
-        $provider = $this->getMediaPool()->getProvider($media->getProviderName());
+        $provider = $this->pool->getProvider($media->getProviderName());
 
         $this->log('Generating thumbs for '.$media->getName().' - '.$media->getId());
 
@@ -107,26 +104,6 @@ class PhotoResizeCommand extends BaseCommand
         } catch (\Exception $e) {
             $this->log(sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
             return;
-        }
-    }
-
-    /**
-     * @return \MediaBundle\Provider\Pool|object
-     */
-    public function getMediaPool()
-    {
-        return $this->getContainer()->get('netbull_media.pool');
-    }
-
-    /**
-     * Write a message to the output.
-     *
-     * @param string $message
-     */
-    protected function log($message)
-    {
-        if (false === $this->quiet) {
-            $this->output->writeln($message);
         }
     }
 }

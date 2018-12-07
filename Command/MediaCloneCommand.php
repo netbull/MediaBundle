@@ -2,10 +2,13 @@
 
 namespace NetBull\MediaBundle\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
+use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 use NetBull\MediaBundle\Entity\Media;
 
@@ -16,14 +19,24 @@ use NetBull\MediaBundle\Entity\Media;
 class MediaCloneCommand extends BaseCommand
 {
     /**
-     * @var bool
+     * @var ParameterBag
      */
-    protected $quiet = false;
+    protected $parameterBag;
 
     /**
-     * @var OutputInterface
+     * MediaCloneCommand constructor.
+     * @param ParameterBag $parameterBag
+     * @param EntityManagerInterface $em
+     * @param Pool $pool
+     * @param null|string $name
      */
-    protected $output;
+    public function __construct(ParameterBag $parameterBag, EntityManagerInterface $em, Pool $pool, ?string $name = null)
+    {
+        parent::__construct($em, $pool, $name);
+
+        $this->parameterBag = $parameterBag;
+    }
+
 
     /**
      * {@inheritdoc}
@@ -50,12 +63,12 @@ class MediaCloneCommand extends BaseCommand
         if (!$media) {
             $this->log('null');
         } else {
-            $provider = $this->getMediaPool()->getProvider($media->getProviderName());
+            $provider = $this->pool->getProvider($media->getProviderName());
 
             $clone = clone $media;
 
             $remote = $provider->getCdnPath($provider->getReferenceImage($media));
-            $tmp = $this->getContainer()->getParameter('kernel.root_dir') . '/../tmp/' . $media->getProviderReference();
+            $tmp = $this->parameterBag->get('kernel.root_dir') . '/../tmp/' . $media->getProviderReference();
             $content = file_get_contents($remote);
 
             if (!$content) {
@@ -100,7 +113,7 @@ class MediaCloneCommand extends BaseCommand
             return;
         }
 
-        $provider = $this->getMediaPool()->getProvider($media->getProviderName());
+        $provider = $this->pool->getProvider($media->getProviderName());
         $format = $provider->getFormatName($media, 'tiny');
 
         if ($this->hasThumbnails($provider->generatePublicUrl($media, $format))) {
@@ -128,6 +141,10 @@ class MediaCloneCommand extends BaseCommand
         $this->optimize();
     }
 
+    /**
+     * @param $url
+     * @return bool
+     */
     private function hasThumbnails($url)
     {
         $ch = curl_init();
@@ -145,25 +162,5 @@ class MediaCloneCommand extends BaseCommand
         }
 
         return false;
-    }
-
-    /**
-     * @return object|\NetBull\MediaBundle\Provider\Pool
-     */
-    public function getMediaPool()
-    {
-        return $this->getContainer()->get('netbull_media.pool');
-    }
-
-    /**
-     * Write a message to the output.
-     *
-     * @param string $message
-     */
-    protected function log($message)
-    {
-        if (false === $this->quiet) {
-            $this->output->writeln($message);
-        }
     }
 }

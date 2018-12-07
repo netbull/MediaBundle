@@ -3,6 +3,7 @@
 namespace NetBull\MediaBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -29,15 +30,22 @@ abstract class BaseCommand extends Command
     protected $em;
 
     /**
+     * @var Pool
+     */
+    protected $pool;
+
+    /**
      * BaseCommand constructor.
      * @param EntityManagerInterface $em
+     * @param Pool $pool
      * @param null|string $name
      */
-    public function __construct(EntityManagerInterface $em, ?string $name = null)
+    public function __construct(EntityManagerInterface $em, Pool $pool, ?string $name = null)
     {
         parent::__construct($name);
 
         $this->em = $em;
+        $this->pool = $pool;
     }
 
     /**
@@ -66,7 +74,7 @@ abstract class BaseCommand extends Command
      * Output used for nice debug
      * @param $text
      */
-    protected function output($text)
+    protected function log($text)
     {
         if (!$this->debug) {
             return;

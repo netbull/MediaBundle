@@ -14,16 +14,6 @@ use NetBull\MediaBundle\Entity\Media;
 class PhotoResizeMissingCommand extends BaseCommand
 {
     /**
-     * @var bool
-     */
-    protected $quiet = false;
-
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
-
-    /**
      * {@inheritdoc}
      */
     public function configure()
@@ -82,7 +72,7 @@ class PhotoResizeMissingCommand extends BaseCommand
             return;
         }
 
-        $provider = $this->getMediaPool()->getProvider($media->getProviderName());
+        $provider = $this->pool->getProvider($media->getProviderName());
         $format = $provider->getFormatName($media, 'tiny');
 
         if ($this->hasThumbnails($provider->generatePublicUrl($media, $format))) {
@@ -110,6 +100,10 @@ class PhotoResizeMissingCommand extends BaseCommand
         $this->optimize();
     }
 
+    /**
+     * @param $url
+     * @return bool
+     */
     private function hasThumbnails($url)
     {
         $ch = curl_init();
@@ -127,25 +121,5 @@ class PhotoResizeMissingCommand extends BaseCommand
         }
 
         return false;
-    }
-
-    /**
-     * @return object|\NetBull\MediaBundle\Provider\Pool
-     */
-    public function getMediaPool()
-    {
-        return $this->getContainer()->get('netbull_media.pool');
-    }
-
-    /**
-     * Write a message to the output.
-     *
-     * @param string $message
-     */
-    protected function log($message)
-    {
-        if (false === $this->quiet) {
-            $this->output->writeln($message);
-        }
     }
 }

@@ -14,9 +14,6 @@ use NetBull\MediaBundle\Entity\Media;
  */
 class PhotoCreateThumbnailCommand extends BaseCommand
 {
-    protected $quiet = false;
-    protected $output;
-
     /**
      * {@inheritdoc}
      */
@@ -56,7 +53,7 @@ class PhotoCreateThumbnailCommand extends BaseCommand
             return;
         }
 
-        $provider = $this->getMediaPool()->getProvider($media->getProviderName());
+        $provider = $this->pool->getProvider($media->getProviderName());
 
         $this->log(sprintf('Generating %s size for %s - %d', $format, $media->getName(), $media->getId()));
 
@@ -68,25 +65,5 @@ class PhotoCreateThumbnailCommand extends BaseCommand
         }
 
         $this->log(sprintf('Done with %d - %s', $media->getId(), $format));
-    }
-
-    /**
-     * @return \MediaBundle\Provider\Pool|object
-     */
-    public function getMediaPool()
-    {
-        return $this->getContainer()->get('netbull_media.pool');
-    }
-
-    /**
-     * Write a message to the output.
-     *
-     * @param string $message
-     */
-    protected function log($message)
-    {
-        if (false === $this->quiet) {
-            $this->output->writeln($message);
-        }
     }
 }
