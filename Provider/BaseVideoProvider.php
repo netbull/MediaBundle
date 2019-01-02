@@ -70,7 +70,7 @@ abstract class BaseVideoProvider extends BaseProvider
         } else {
             $referenceFile = $this->getFilesystem()->get($key, true);
             $metadata = $this->metadata ? $this->metadata->get($media, $referenceFile->getName()) : [];
-            $referenceFile->setContent($this->browser->get($this->getReferenceImage($media))->getContent(), $metadata);
+            $referenceFile->setContent($this->browser->get($this->getReferenceImage($media))->getBody()->getContent(), $metadata);
         }
 
         return $referenceFile;
@@ -238,7 +238,7 @@ abstract class BaseVideoProvider extends BaseProvider
             throw new \RuntimeException('Unable to retrieve the video information for :'.$url, null, $e);
         }
 
-        $metadata = json_decode($response->getContent(), true);
+        $metadata = json_decode($response->getBody()->getContent(), true);
 
         if (!$metadata) {
             throw new \RuntimeException('Unable to decode the video information for :'.$url);

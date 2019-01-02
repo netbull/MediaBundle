@@ -2,8 +2,8 @@
 
 namespace NetBull\MediaBundle\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
 use NetBull\MediaBundle\Provider\Pool;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
