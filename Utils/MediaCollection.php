@@ -17,6 +17,9 @@ class MediaCollection extends ArrayCollection
      */
     private $isArrayCollection = true;
 
+    private $main;
+    private $rest;
+
     /**
      * MediaCollection constructor.
      * @param array $elements
@@ -30,12 +33,40 @@ class MediaCollection extends ArrayCollection
                 $this->isArrayCollection = false;
             }
         }
+
+        $this->findMain();
     }
 
     /**
      * @return mixed
      */
     public function main()
+    {
+        if ($this->main) {
+            return $this->main;
+        }
+
+        return $this->findMain();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function rest()
+    {
+        if ($this->rest) {
+            return $this->rest;
+        }
+
+        $this->findMain();
+
+        return $this->rest;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function findMain()
     {
         $isArrayCollection = $this->isArrayCollection;
         $filtered = $this->filter(function ($media) use ($isArrayCollection) {
@@ -46,6 +77,18 @@ class MediaCollection extends ArrayCollection
             return $filtered->first();
         }
 
-        return $this->first();
+        $main = $this->first();
+
+        $rest = $this->filter(function ($media) use ($isArrayCollection, $main) {
+            $id = $isArrayCollection ? $media['id'] : $media->getId();
+            $mainId = $isArrayCollection ? $main['id'] : $main->getId();
+
+            return $id !== $mainId;
+        });
+
+        $this->main = $main;
+        $this->rest = new ArrayCollection($rest);
+
+        return $this->main;
     }
 }
