@@ -87,7 +87,7 @@ class MediaCollection extends ArrayCollection
         });
 
         $this->main = $main;
-        $this->rest = new ArrayCollection($rest);
+        $this->rest = $rest;
 
         return $this->main;
     }
