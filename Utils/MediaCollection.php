@@ -2,6 +2,7 @@
 
 namespace NetBull\MediaBundle\Utils;
 
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use NetBull\MediaBundle\Model\MediaInterface;
@@ -34,7 +35,9 @@ class MediaCollection extends ArrayCollection
             }
         }
 
-        $this->findMain();
+        if (!empty($elements)) {
+            $this->findMain();
+        }
     }
 
     /**
@@ -64,12 +67,21 @@ class MediaCollection extends ArrayCollection
     }
 
     /**
+     * @param Closure $p
+     * @return ArrayCollection
+     */
+    public function filterCustom(Closure $p)
+    {
+        return new ArrayCollection(array_filter($this->toArray(), $p));
+    }
+
+    /**
      * @return mixed
      */
     private function findMain()
     {
         $isArrayCollection = $this->isArrayCollection;
-        $filtered = $this->filter(function ($media) use ($isArrayCollection) {
+        $filtered = $this->filterCustom(function ($media) use ($isArrayCollection) {
             return $isArrayCollection ? $media['main'] : $media->isMain();
         });
 
@@ -79,7 +91,7 @@ class MediaCollection extends ArrayCollection
 
         $main = $this->first();
 
-        $rest = $this->filter(function ($media) use ($isArrayCollection, $main) {
+        $rest = $this->filterCustom(function ($media) use ($isArrayCollection, $main) {
             $id = $isArrayCollection ? $media['id'] : $media->getId();
             $mainId = $isArrayCollection ? $main['id'] : $main->getId();
 
