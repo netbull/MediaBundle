@@ -5,6 +5,7 @@ namespace NetBull\MediaBundle\Thumbnail;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Process\PhpExecutableFinder;
 
 use NetBull\MediaBundle\Model\MediaInterface;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
@@ -108,9 +109,10 @@ class FormatThumbnail implements ThumbnailInterface
                         $cmd = sprintf($cmd . ' %s', implode(' ', $arguments));
                     }
 
-                    // Needed because the stupid difference between local and production env... :_(
-                    $phpPath = $isProd ? '/usr/bin/php' : '/usr/local/bin/php';
-
+                    $phpPath = (new PhpExecutableFinder)->find();
+                    if (!$phpPath) {
+                        continue;
+                    }
                     $cmd = sprintf("%s %s >> %s 2>&1 & echo $!", $phpPath, $cmd, sprintf('%s/var/log/%s.log', $root_dir . '/..', 'image_process'));
 
                     $process = Process::fromShellCommandline($cmd);
