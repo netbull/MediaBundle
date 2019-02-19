@@ -154,7 +154,7 @@ abstract class BaseProvider implements MediaProviderInterface
 
         return $baseName.$format;
     }
-    
+
     /**
      * @param MediaInterface $media
      */
@@ -175,6 +175,11 @@ abstract class BaseProvider implements MediaProviderInterface
      * @param MediaInterface $media
      */
     public function postRemove(MediaInterface $media){ }
+
+    /**
+     * @inheritdoc
+     */
+    public function postFlush(MediaInterface $media){ }
 
     /**
      * @param array|MediaInterface $media

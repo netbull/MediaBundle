@@ -32,25 +32,18 @@ class PhotoCreateThumbnailCommand extends BaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        sleep(5);
         $em = $this->getManager();
         $this->output = $output;
 
         $mediaId = $input->getArgument('mediaId');
         $format = $input->getArgument('format');
 
-        $qb = $em->createQueryBuilder();
-        $media = $qb->select('m')
-            ->from(Media::class, 'm')
-            ->where($qb->expr()->eq('m.id', ':id'))
-            ->setParameter('id', $mediaId)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $media = $em->getRepository(Media::class)->find($mediaId);
 
         if (!$media){
             $this->log(sprintf('NOT FOUND: %s - %s', $mediaId, $format));
-            return;
+            echo "Media not found with id: " . $mediaId;
+            exit(1);
         }
 
         $provider = $this->pool->getProvider($media->getProviderName());
@@ -61,7 +54,8 @@ class PhotoCreateThumbnailCommand extends BaseCommand
             $provider->generateThumbnail($media, $format);
         } catch (\Exception $e) {
             $this->log(sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
-            return;
+            echo "Generating thumbnails error: " . $e->getMessage();
+            exit(1);
         }
 
         $this->log(sprintf('Done with %d - %s', $media->getId(), $format));

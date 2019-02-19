@@ -106,6 +106,11 @@ interface MediaProviderInterface
     /**
      * @param MediaInterface $media
      */
+    public function postFlush(MediaInterface $media);
+
+    /**
+     * @param MediaInterface $media
+     */
     public function prePersist(MediaInterface $media);
 
     /**
@@ -194,7 +199,7 @@ interface MediaProviderInterface
 
     /**
      * @param MediaInterface $media
-     */ 
+     */
     public function transform(MediaInterface $media);
 
     /**

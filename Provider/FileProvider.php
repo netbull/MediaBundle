@@ -107,7 +107,6 @@ class FileProvider extends BaseProvider
         }
 
         $this->setFileContents($media);
-        $this->generateThumbnails($media);
     }
 
     /**
@@ -134,8 +133,15 @@ class FileProvider extends BaseProvider
 
         $this->fixBinaryContent($media);
         $this->setFileContents($media);
-        $this->generateThumbnails($media);
         $media->resetBinaryContent();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postFlush(MediaInterface $media)
+    {
+        $this->generateThumbnails($media);
     }
 
     /**

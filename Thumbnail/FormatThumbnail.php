@@ -85,46 +85,43 @@ class FormatThumbnail implements ThumbnailInterface
         foreach ($provider->getFormats() as $format => $settings) {
             if (substr($format, 0, strlen($media->getContext())) === $media->getContext()) {
                 $shortFormat = str_replace($media->getContext() . '_', '', $format);
-                $isProd = 'prod' === $this->kernel->getEnvironment();
+                $shouldWait = 'normal' === $shortFormat || 'prod' !== $this->kernel->getEnvironment();
 
-                // If the format is normal process it right away
-                // If not make a background process
-                if ('normal' === $shortFormat || !$isProd) {
-                    $provider->getResizer()->resize(
-                        $media,
-                        $referenceFile,
-                        $provider->getFilesystem()->get($provider->generatePrivateUrl($media, $format), true),
-                        $this->getExtension($media),
-                        $settings
-                    );
-                } else {
-                    $root_dir = $this->kernel->getRootDir();
-                    $arguments = [
-                        $media->getId(),
-                        $shortFormat
-                    ];
-
-                    $cmd = sprintf('%s/console %s', $root_dir . '/../bin', 'netbull:media:create-thumbnail');
-                    if (count($arguments) > 0) {
-                        $cmd = sprintf($cmd . ' %s', implode(' ', $arguments));
-                    }
-
-                    $phpPath = (new PhpExecutableFinder)->find();
-                    if (!$phpPath) {
-                        continue;
-                    }
-                    $cmd = sprintf("%s %s >> %s 2>&1 & echo $!", $phpPath, $cmd, sprintf('%s/var/log/%s.log', $root_dir . '/..', 'image_process'));
-
-                    $process = Process::fromShellCommandline($cmd);
-                    $process->run();
-
-                    if (!$process->isSuccessful()) {
-                        $this->logger->error(sprintf('Creating size [%s] for [%d] failed!', $shortFormat, $media->getId()));
-                    } else {
-                        $this->logger->info(sprintf('Created size [%s] for [%d].', $shortFormat, $media->getId()));
-                    }
-                }
+                $this->forkProcess($media, $shortFormat, $shouldWait);
             }
+        }
+    }
+
+    /**
+     * @param MediaInterface $media
+     * @param string $shortFormat
+     * @param bool $wait
+     */
+    private function forkProcess(MediaInterface $media, string $shortFormat, bool $wait = false)
+    {
+        $root_dir = $this->kernel->getProjectDir();
+
+        $phpPath = (new PhpExecutableFinder)->find();
+        if (!$phpPath) {
+            return;
+        }
+
+        $process = new Process([
+            $phpPath,
+            "$root_dir/bin/console",
+            'netbull:media:create-thumbnail',
+            $media->getId(),
+            $shortFormat
+        ]);
+        $process->run();
+        if ($wait) {
+            $process->wait();
+        }
+
+        if (!$process->isSuccessful()) {
+            $this->logger->error(sprintf('Creating size [%s] for [%d] failed! ["%s"]', $shortFormat, $media->getId(), $process->getOutput()));
+        } else {
+            $this->logger->info(sprintf('Created size [%s] for [%d].', $shortFormat, $media->getId()));
         }
     }
 

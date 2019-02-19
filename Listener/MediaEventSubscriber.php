@@ -5,6 +5,8 @@ namespace NetBull\MediaBundle\Listener;
 use Doctrine\ORM\Events;
 use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\Common\Collections\ArrayCollection;
 
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Model\MediaInterface;
@@ -22,12 +24,18 @@ class MediaEventSubscriber implements EventSubscriber
     private $pool;
 
     /**
+     * @var ArrayCollection
+     */
+    private $medias;
+
+    /**
      * MediaEventSubscriber constructor.
      * @param Pool $pool
      */
     public function __construct(Pool $pool)
     {
         $this->pool = $pool;
+        $this->medias = new ArrayCollection();
     }
 
     /**
@@ -50,6 +58,7 @@ class MediaEventSubscriber implements EventSubscriber
             Events::postUpdate,
             Events::postRemove,
             Events::postPersist,
+            Events::postFlush,
         ];
     }
 
@@ -72,7 +81,12 @@ class MediaEventSubscriber implements EventSubscriber
      */
     protected function getMedia(EventArgs $args)
     {
-        return $args->getEntity();
+        $entity = $args->getEntity();
+        if (!$this->medias->contains($entity)) {
+            $this->medias->add($entity);
+        }
+
+        return $entity;
     }
 
     /**
@@ -83,6 +97,15 @@ class MediaEventSubscriber implements EventSubscriber
     {
         $media = $this->getMedia($args);
 
+        return $this->getProviderByMedia($media);
+    }
+
+    /**
+     * @param $media
+     * @return MediaProviderInterface|null
+     */
+    protected function getProviderByMedia($media)
+    {
         if (!$media instanceof MediaInterface) {
             return null;
         }
@@ -124,6 +147,20 @@ class MediaEventSubscriber implements EventSubscriber
         }
 
         $provider->postPersist($this->getMedia($args));
+    }
+
+    /**
+     * @param PostFlushEventArgs $args
+     */
+    public function postFlush(PostFlushEventArgs $args)
+    {
+        foreach ($this->medias as $media) {
+            if (!($provider = $this->getProviderByMedia($media))) {
+                continue;
+            }
+            $provider->postFlush($media);
+        }
+        $this->medias->clear();
     }
 
     /**
