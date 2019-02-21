@@ -60,31 +60,35 @@ class SquareResizer implements ResizerInterface
         }
 
         $image = $this->adapter->load($in->getContent());
-        $image->layers()->coalesce();
         $size  = $media->getBox();
 
-        if ('gif' === $media->getExtension() && 1 < count($image->layers())) {
-            $settings['height'] = (int)($settings['width'] * $size->getHeight() / $size->getWidth());
-
-            if ($settings['height'] < $size->getHeight() && $settings['width'] < $size->getWidth()) {
-                foreach ($image->layers() as $frame) {
-                    $frame->resize(new Box($settings['width'], $settings['height']));
-                }
-            }
-
-            $content = $image->get($format, ['animated' => true]);
-
-            $out->setContent($content, $this->metadata->get($media, $out->getName()));
-            return;
+        switch ($media->getExtension()) {
+            case 'gif':
+            case 'png':
+                $image->layers()->coalesce();
+                $formatSettings = [
+                    'flatten' => false,
+                    'animated' => true,
+                ];
+                break;
+            case 'jpeg':
+            case 'jpg':
+                $formatSettings = [
+                    'jpeg_quality' => $settings['quality'],
+                ];
+                break;
+            default:
+                $formatSettings = [];
+                break;
         }
 
         if (null != $settings['height']) {
             if ($size->getHeight() > $size->getWidth()) {
                 $higher = $size->getHeight();
-                $lower  = $size->getWidth();
+                $lower = $size->getWidth();
             } else {
                 $higher = $size->getWidth();
-                $lower  = $size->getHeight();
+                $lower = $size->getHeight();
             }
 
             $crop = $higher - $lower;
@@ -96,14 +100,14 @@ class SquareResizer implements ResizerInterface
             }
         }
 
-        $settings['height'] = (int) ($settings['width'] * $size->getHeight() / $size->getWidth());
+        $settings['height'] = (int)($settings['width'] * $size->getHeight() / $size->getWidth());
 
         if ($settings['height'] < $size->getHeight() && $settings['width'] < $size->getWidth()) {
             $content = $image
                 ->thumbnail(new Box($settings['width'], $settings['height']), $this->mode)
-                ->get($format, ['quality' => $settings['quality']]);
+                ->get($format, $formatSettings);
         } else {
-            $content = $image->get($format, ['quality' => $settings['quality']]);
+            $content = $image->get($format, $formatSettings);
         }
 
         $out->setContent($content, $this->metadata->get($media, $out->getName()));

@@ -6,15 +6,9 @@ services:
     netbull_media.adapter.image.gd:
         class: Imagine\Gd\Imagine
 
-    netbull_media.adapter.image.imagick:
-        class: Imagine\Imagick\Imagine
-
-    netbull_media.adapter.image.gmagick:
-        class: Imagine\Gmagick\Imagine
-
     netbull_media.resizer.simple:
         class: '%netbull_media.resizer.simple.class%'
-        arguments: ['@netbull_media.adapter.image.imagick', '%netbull_media.resizer.simple.adapter.mode%', '@netbull_media.metadata.amazon']
+        arguments: ['@netbull_media.adapter.image.gd', '%netbull_media.resizer.simple.adapter.mode%', '@netbull_media.metadata.amazon']
 
     netbull_media.resizer.square:
         class: '%netbull_media.resizer.square.class%'
