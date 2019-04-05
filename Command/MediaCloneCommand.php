@@ -44,7 +44,7 @@ class MediaCloneCommand extends BaseCommand
     public function configure()
     {
         $this
-            ->setName('media:clone')
+            ->setName('netbull:media:clone')
             ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
             ->setDescription('Clone Media')
         ;
