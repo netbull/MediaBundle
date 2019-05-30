@@ -18,8 +18,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('netbull_media');
+        $treeBuilder = new TreeBuilder('netbull_media');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
