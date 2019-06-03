@@ -2,10 +2,14 @@
 
 namespace NetBull\MediaBundle\Provider;
 
+use Exception;
 use Gaufrette\Filesystem;
 
 use Imagine\Image\ImagineInterface;
 
+use LogicException;
+use RuntimeException;
+use SplFileObject;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -53,7 +57,7 @@ class ImageProvider extends FileProvider
             if ($format !== 'reference') {
                 $resizerFormat = $this->getFormat($format);
                 if (false === $resizerFormat) {
-                    throw new \RuntimeException(sprintf('The image format "%s" is not defined.
+                    throw new RuntimeException(sprintf('The image format "%s" is not defined.
                         Is the format registered in your ``media`` configuration?', $format));
                 }
             }
@@ -151,7 +155,11 @@ class ImageProvider extends FileProvider
 
         if (function_exists('exif_read_data') && 'image/jpeg' === $binaryContent->getMimeType()) {
             $filename = $binaryContent->getRealPath();
-            $exif = exif_read_data($filename);
+            try {
+                $exif = exif_read_data($filename);
+            } catch (Exception $e) {
+                return;
+            }
 
             if ($exif && isset($exif['Orientation'])) {
                 $orientation = $exif['Orientation'];
@@ -194,7 +202,7 @@ class ImageProvider extends FileProvider
 
         try {
             $image = $this->imagineAdapter->open($media->getBinaryContent()->getPathname());
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             return;
         }
 
@@ -212,7 +220,7 @@ class ImageProvider extends FileProvider
         try {
             // this is now optimized at all!!!
             $path       = tempnam(sys_get_temp_dir(), 'update_metadata');
-            $fileObject = new \SplFileObject($path, 'w');
+            $fileObject = new SplFileObject($path, 'w');
             $fileObject->fwrite($this->getReferenceFile($media)->getContent());
 
             $image = $this->imagineAdapter->open($fileObject->getPathname());
@@ -221,7 +229,7 @@ class ImageProvider extends FileProvider
             $media->setSize($fileObject->getSize());
             $media->setWidth($size->getWidth());
             $media->setHeight($size->getHeight());
-        } catch (\LogicException $e) {
+        } catch (LogicException $e) {
             $media->setSize(0);
             $media->setWidth(0);
             $media->setHeight(0);
