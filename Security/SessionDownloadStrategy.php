@@ -3,10 +3,9 @@
 namespace NetBull\MediaBundle\Security;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use NetBull\MediaBundle\Model\MediaInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class SessionDownloadStrategy
@@ -14,29 +13,36 @@ use NetBull\MediaBundle\Model\MediaInterface;
  */
 class SessionDownloadStrategy implements DownloadStrategyInterface
 {
+    /**
+     * @var ContainerInterface
+     */
     protected $container;
 
-    protected $translator;
-
+    /**
+     * @var int
+     */
     protected $times;
 
+    /**
+     * @var string
+     */
     protected $sessionKey = 'SomethingReallyCool';
 
     /**
      * SessionDownloadStrategy constructor.
-     * @param \Symfony\Component\Translation\TranslatorInterface        $translator
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-     * @param int                                                       $times
+     * @param ContainerInterface $container
+     * @param int $times
      */
-    public function __construct(TranslatorInterface $translator, ContainerInterface $container, $times)
+    public function __construct(ContainerInterface $container, int $times)
     {
-        $this->times      = $times;
-        $this->container  = $container;
-        $this->translator = $translator;
+        $this->times = $times;
+        $this->container = $container;
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param Request $request
+     * @return bool
      */
     public function isGranted(MediaInterface $media, Request $request)
     {
@@ -58,15 +64,16 @@ class SessionDownloadStrategy implements DownloadStrategyInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getDescription()
     {
-        return $this->translator->trans('description.session_download_strategy', ['%times%' => $this->times], 'NetBullMediaBundle');
+        return self::FORBIDDEN_DESCRIPTION;
+//        return $this->translator->trans('description.session_download_strategy', ['%times%' => $this->times], 'NetBullMediaBundle');
     }
 
     /**
-     * @return object
+     * @return object|Session|null
      */
     private function getSession()
     {

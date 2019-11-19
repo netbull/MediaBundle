@@ -3,7 +3,6 @@
 namespace NetBull\MediaBundle\Security;
 
 use Symfony\Component\HttpFoundation\Request;
-
 use NetBull\MediaBundle\Model\MediaInterface;
 
 /**
@@ -12,11 +11,13 @@ use NetBull\MediaBundle\Model\MediaInterface;
  */
 interface DownloadStrategyInterface
 {
+    const FORBIDDEN_DESCRIPTION = 'This strategy is forbidden';
+
     /**
      * @abstract
      *
-     * @param MediaInterface    $media
-     * @param Request           $request
+     * @param MediaInterface $media
+     * @param Request $request
      *
      * @return bool
      */
