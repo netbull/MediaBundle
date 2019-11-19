@@ -2,6 +2,7 @@
 
 namespace NetBull\MediaBundle\Model;
 
+use DateTime;
 use Imagine\Image\Box;
 
 /**
@@ -11,178 +12,152 @@ use Imagine\Image\Box;
 interface MediaInterface
 {
     /**
-     * @return mixed
+     * @return int
      */
     public function getId();
 
     /**
-     * Get name.
-     *
-     * @return string $name
+     * @return string|null
      */
     public function getName();
 
     /**
-     * Set name.
-     *
-     * @param string $name
+     * @param string|null $name
+     * @return $this
      */
-    public function setName($name);
+    public function setName(?string $name);
 
     /**
-     * Set enabled.
-     *
      * @return bool $enabled
      */
     public function isEnabled();
 
     /**
-     * Set enabled.
-     *
-     * @param $enabled
+     * @param bool $enabled
      * @return $this
      */
-    public function setEnabled($enabled);
+    public function setEnabled(bool $enabled);
 
     /**
-     * Get provider_name.
-     *
-     * @return string $providerName
+     * @return string|null $providerName
      */
     public function getProviderName();
 
     /**
-     * Set provider_name.
-     *
-     * @param string $providerName
+     * @param string|null $providerName
+     * @return $this
      */
-    public function setProviderName($providerName);
+    public function setProviderName(?string $providerName);
 
     /**
-     * Get provider_reference.
-     *
-     * @return string $providerReference
+     * @return string|null $providerReference
      */
     public function getProviderReference();
 
     /**
-     * Set provider_reference.
-     *
-     * @param string $providerReference
+     * @param string|null $providerReference
+     * @return $this
      */
-    public function setProviderReference($providerReference);
+    public function setProviderReference(?string $providerReference);
 
     /**
-     * Get provider_metadata.
-     *
      * @return array $providerMetadata
      */
     public function getProviderMetadata();
 
     /**
-     * Set provider_metadata.
-     *
      * @param array $providerMetadata
+     * @return $this
      */
     public function setProviderMetadata(array $providerMetadata = []);
 
     /**
-     * Get width.
-     *
-     * @return int $width
+     * @return int|null $width
      */
     public function getWidth();
 
     /**
-     * Set width.
-     *
-     * @param int $width
+     * @param int|null $width
+     * @return $this
      */
-    public function setWidth($width);
+    public function setWidth(?int $width);
 
     /**
-     * Get height.
-     *
-     * @return int $height
+     * @return int|null $height
      */
     public function getHeight();
 
     /**
-     * Set height.
-     *
-     * @param int $height
+     * @param int|null $height
+     * @return $this
      */
-    public function setHeight($height);
+    public function setHeight(?int $height);
 
     /**
-     * Get length.
-     *
-     * @return float $length
+     * @return float|null $length
      */
     public function getLength();
 
     /**
-     * Set length.
-     *
-     * @param float $length
+     * @param float|null $length
+     * @return $this
      */
-    public function setLength($length);
+    public function setLength(?float $length);
 
     /**
-     * Get size.
-     *
-     * @return int $size
+     * @return int|null $size
      */
     public function getSize();
 
     /**
-     * Set size.
-     *
-     * @param int $size
+     * @param int|null $size
+     * @return $this
      */
-    public function setSize($size);
+    public function setSize(?int $size);
 
     /**
-     * Get content_type.
-     *
-     * @return string $contentType
+     * @return string|null $contentType
      */
     public function getContentType();
 
     /**
-     * Set content_type.
-     *
-     * @param string $contentType
+     * @param string|null $contentType
+     * @return $this
      */
-    public function setContentType($contentType);
+    public function setContentType(?string $contentType);
 
     /**
-     * Get context.
-     *
-     * @return string $context
+     * @return string|null $context
      */
     public function getContext();
 
     /**
-     * Set context.
-     *
-     * @param string $context
+     * @param string|null $context
+     * @return $this
      */
-    public function setContext($context);
+    public function setContext(?string $context);
 
     /**
-     * Get caption.
-     *
-     * @return string $caption
+     * @return string|null $caption
      */
     public function getCaption();
 
     /**
-     * Set caption.
-     *
-     * @param string $caption
+     * @param string|null $caption
+     * @return $this
      */
-    public function setCaption($caption);
+    public function setCaption(?string $caption);
+
+    /**
+     * @return int|null
+     */
+    public function getPosition();
+
+    /**
+     * @param int|null $position
+     * @return $this
+     */
+    public function setPosition(int $position);
 
     /**
      * @return boolean
@@ -191,8 +166,31 @@ interface MediaInterface
 
     /**
      * @param bool $main
+     * @return $this
      */
     public function setMain(bool $main);
+
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt();
+
+    /**
+     * @param DateTime $createdAt
+     * @return $this
+     */
+    public function setCreatedAt(DateTime $createdAt);
+
+    /**
+     * @return DateTime
+     */
+    public function getUpdatedAt();
+
+    /**
+     * @param DateTime $updatedAt
+     * @return $this
+     */
+    public function setUpdatedAt(DateTime $updatedAt);
 
     #################################################
     #               Helper Methods                  #
@@ -220,13 +218,13 @@ interface MediaInterface
 
     /**
      * @param string $name
-     * @param null   $default
+     * @param null $default
      */
     public function getMetadataValue($name, $default = null);
 
     /**
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function setMetadataValue($name, $value);
 

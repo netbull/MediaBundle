@@ -3,7 +3,7 @@
 namespace NetBull\MediaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-
+use Exception;
 use NetBull\MediaBundle\Entity\Media;
 
 /**
@@ -12,7 +12,7 @@ use NetBull\MediaBundle\Entity\Media;
  */
 class MediaRepository extends EntityRepository
 {
-    const MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position';
+    const MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt';
 
     /**
      * @param array $criteria
@@ -20,9 +20,9 @@ class MediaRepository extends EntityRepository
      */
     public function count(array $criteria)
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('COUNT(m.id) as medias', 'm.context')
-            ->from($this->getEntityName(), 'm')
+        $qb = $this->createQueryBuilder('m');
+        $qb
+            ->select('COUNT(m.id) as medias', 'm.context')
             ->where($qb->expr()->neq('m.context', ':context'))
             ->setParameter('context', 'avatar')
             ->groupBy('m.context')
@@ -36,9 +36,9 @@ class MediaRepository extends EntityRepository
      */
     public function getMediaContexts()
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $contexts = $qb->select('m.context')
-            ->from($this->getEntityName(), 'm')
+        $qb = $this->createQueryBuilder('m');
+        $contexts = $qb
+            ->select('m.context')
             ->groupBy('m.context')
             ->orderBy('m.context', 'ASC')
             ->getQuery()
@@ -55,8 +55,9 @@ class MediaRepository extends EntityRepository
      */
     public function toggleMain($media, $status = false)
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->update($this->getEntityName(), 'm')
+        $qb = $this->createQueryBuilder('m');
+        $qb
+            ->update($this->getEntityName(), 'm')
             ->set('m.main', ':status')
             ->setParameter('status', $status)
         ;
@@ -72,15 +73,13 @@ class MediaRepository extends EntityRepository
         try {
             $qb->getQuery()->execute();
             return true;
-        } catch ( \Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
 
     ################################################
-    #                                              #
     #               Helper Methods                 #
-    #                                              #
     ################################################
 
     /**
@@ -89,7 +88,7 @@ class MediaRepository extends EntityRepository
      */
     private function normalizeContexts($contexts)
     {
-        $tmp = ['all'   => 'All'];
+        $tmp = ['all' => 'All'];
         foreach ($contexts as $context){
             $tmp[$context['context']] = ucwords(str_replace('_', ' ', $context['context']));
         }

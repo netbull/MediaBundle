@@ -2,17 +2,16 @@
 
 namespace NetBull\MediaBundle\Entity;
 
+use DateTime;
+use Exception;
 use Imagine\Image\Box;
 use Doctrine\ORM\Mapping as ORM;
-
 use NetBull\MediaBundle\Model\MediaInterface;
 
 /**
- * Class Media
- * @package NetBull\MediaBundle\Entity
- *
  * @ORM\Table(name="media")
  * @ORM\Entity(repositoryClass="NetBull\MediaBundle\Repository\MediaRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Media implements MediaInterface
 {
@@ -26,97 +25,116 @@ class Media implements MediaInterface
     private $id;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @ORM\Column(nullable=true)
      */
     private $name;
 
     /**
-     * @var boolean
+     * @var bool
      *
-     * @ORM\Column(name="enabled", type="boolean", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $enabled = false;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="provider_name", type="string", length=255, nullable=true)
+     * @ORM\Column(nullable=true)
      */
     private $providerName;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="provider_reference", type="string", length=255, nullable=true)
+     * @ORM\Column(nullable=true)
      */
     private $providerReference;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="provider_metadata", type="json", nullable=true)
+     * @ORM\Column(type="json", nullable=true)
      */
     private $providerMetadata = [];
 
     /**
-     * @var string
+     * @var int|null
      *
-     * @ORM\Column(name="width", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $width;
 
     /**
-     * @var string
+     * @var int|null
      *
-     * @ORM\Column(name="height", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $height;
 
     /**
-     * @var $length
-     * @ORM\Column(name="length", type="decimal", nullable=true)
+     * @var float|null
+     *
+     * @ORM\Column(type="decimal", nullable=true)
      */
     private $length;
 
     /**
-     * @var integer $size
-     * @ORM\Column(name="content_size", type="integer", nullable=true)
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $size;
 
     /**
-     * @var string $content_type
-     * @ORM\Column(name="content_type", type="string", length=255, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(nullable=true)
      */
     private $contentType;
 
     /**
-     * @var string $context
-     * @ORM\Column(name="context", type="string", length=64, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(length=64, nullable=true)
      */
     private $context;
 
     /**
-     * @var string $caption
-     * @ORM\Column(name="caption", type="string", length=255, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(nullable=true)
      */
     private $caption;
 
     /**
-     * @var int
+     * @var int|null
      *
-     * @ORM\Column(name="position", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $position;
 
     /**
-     * @var boolean
+     * @var bool
      *
-     * @ORM\Column(name="main", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     private $main = false;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
 
     #################################################
     #               Helper Properties               #
@@ -129,17 +147,37 @@ class Media implements MediaInterface
     private $previousProviderReference;
 
     /**
-     * {@inheritdoc}
+     * Media constructor.
      */
-    public function getId()
+    public function __construct()
+    {
+        try {
+            $this->createdAt = new DateTime('now');
+            $this->updatedAt = new DateTime('now');
+        } catch (Exception $e) {}
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
-    public function setName($name)
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     * @return Media
+     */
+    public function setName(?string $name): Media
     {
         $this->name = $name;
 
@@ -147,41 +185,37 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
-     * {@inheritdoc}
+     * @param bool $enabled
+     * @return Media
      */
-    public function setEnabled($enabled)
+    public function setEnabled(bool $enabled): Media
     {
         $this->enabled = $enabled;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
-    public function getProviderName()
+    public function getProviderName(): ?string
     {
         return $this->providerName;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $providerName
+     * @return Media
      */
-    public function setProviderName($providerName)
+    public function setProviderName(?string $providerName): Media
     {
         $this->providerName = $providerName;
 
@@ -189,17 +223,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
-    public function getProviderReference()
+    public function getProviderReference(): ?string
     {
         return $this->providerReference;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $providerReference
+     * @return Media
      */
-    public function setProviderReference($providerReference)
+    public function setProviderReference(?string $providerReference): Media
     {
         $this->providerReference = $providerReference;
 
@@ -207,17 +242,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function getProviderMetadata()
+    public function getProviderMetadata(): array
     {
         return $this->providerMetadata;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $providerMetadata
+     * @return Media
      */
-    public function setProviderMetadata(array $providerMetadata = [])
+    public function setProviderMetadata(array $providerMetadata = []): Media
     {
         $this->providerMetadata = $providerMetadata;
 
@@ -225,17 +261,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|null
      */
-    public function getWidth()
+    public function getWidth(): ?int
     {
         return $this->width;
     }
 
     /**
-     * {@inheritdoc}
+     * @param int|null $width
+     * @return Media
      */
-    public function setWidth($width)
+    public function setWidth(?int $width): Media
     {
         $this->width = $width;
 
@@ -243,17 +280,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|null
      */
-    public function getHeight()
+    public function getHeight(): ?int
     {
         return $this->height;
     }
 
     /**
-     * {@inheritdoc}
+     * @param int|null $height
+     * @return Media
      */
-    public function setHeight($height)
+    public function setHeight(?int $height): Media
     {
         $this->height = $height;
 
@@ -261,17 +299,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return float|null
      */
-    public function getLength()
+    public function getLength(): ?float
     {
         return $this->length;
     }
 
     /**
-     * {@inheritdoc}
+     * @param float|null $length
+     * @return Media
      */
-    public function setLength($length)
+    public function setLength(?float $length): Media
     {
         $this->length = $length;
 
@@ -279,17 +318,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|null
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
     /**
-     * {@inheritdoc}
+     * @param int|null $size
+     * @return Media
      */
-    public function setSize($size)
+    public function setSize(?int $size): Media
     {
         $this->size = $size;
 
@@ -297,17 +337,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return $this->contentType;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $contentType
+     * @return Media
      */
-    public function setContentType($contentType)
+    public function setContentType(?string $contentType): Media
     {
         $this->contentType = $contentType;
 
@@ -315,9 +356,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
-    public function setContext($context)
+    public function getContext(): ?string
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param string|null $context
+     * @return Media
+     */
+    public function setContext(?string $context): Media
     {
         $this->context = $context;
 
@@ -325,59 +375,98 @@ class Media implements MediaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCaption()
+    public function getCaption(): ?string
     {
         return $this->caption;
     }
 
     /**
-     * @param string $caption
+     * @param string|null $caption
+     * @return Media
      */
-    public function setCaption($caption)
+    public function setCaption(?string $caption): Media
     {
         $this->caption = $caption;
+
+        return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getPosition()
+    public function getPosition(): ?int
     {
         return $this->position;
     }
 
     /**
-     * @param int $position
+     * @param int|null $position
+     * @return Media
      */
-    public function setPosition($position)
+    public function setPosition(?int $position): Media
     {
         $this->position = $position;
+
+        return $this;
     }
 
     /**
      * @return bool
      */
-    public function isMain()
+    public function isMain(): bool
     {
         return $this->main;
     }
 
     /**
      * @param bool $main
+     * @return Media
      */
-    public function setMain(bool $main)
+    public function setMain(bool $main): Media
     {
         $this->main = $main;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param DateTime $createdAt
+     * @return Media
+     */
+    public function setCreatedAt(DateTime $createdAt): Media
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param DateTime $updatedAt
+     * @return Media
+     */
+    public function setUpdatedAt(DateTime $updatedAt): Media
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     #################################################
@@ -484,6 +573,24 @@ class Media implements MediaInterface
     public function getPreviousProviderReference()
     {
         return $this->previousProviderReference;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function preFlush()
+    {
+        $timestamp = null;
+        try {
+            $timestamp = new DateTime('now');
+        } catch (Exception $e) {}
+
+        $this->setUpdatedAt($timestamp);
+
+        if (null === $this->getCreatedAt()) {
+            $this->setCreatedAt($timestamp);
+        }
     }
 
     /**
