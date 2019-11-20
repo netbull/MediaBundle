@@ -12,7 +12,7 @@ use Imagine\Image\Box;
 interface MediaInterface
 {
     /**
-     * @return int
+     * @return int|null
      */
     public function getId();
 

@@ -16,9 +16,9 @@ use NetBull\MediaBundle\Model\MediaInterface;
 class Media implements MediaInterface
 {
     /**
-     * @var integer
+     * @var int|null
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -158,9 +158,9 @@ class Media implements MediaInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
