@@ -4,6 +4,10 @@ namespace NetBull\MediaBundle\Helpers;
 
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Model\MediaInterface;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * Class PathGenerator
@@ -20,16 +24,16 @@ class PathGenerator
     private $pool;
 
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     private $twig;
 
     /**
      * PathGenerator constructor.
      * @param Pool $pool
-     * @param null|\Twig_Environment $twig
+     * @param null|Environment $twig
      */
-    function __construct(Pool $pool, ?\Twig_Environment $twig)
+    function __construct(Pool $pool, ?Environment $twig)
     {
         $this->pool = $pool;
         $this->twig = $twig;
@@ -42,11 +46,11 @@ class PathGenerator
     public static function generatePath($media)
     {
         if ($media instanceof MediaInterface) {
-            $id         = $media->getId();
-            $context    = $media->getContext();
+            $id = $media->getId();
+            $context = $media->getContext();
         } else {
-            $id         = $media['id'];
-            $context    = $media['context'];
+            $id = $media['id'];
+            $context = $media['context'];
         }
         $rep_first_level = (int) ($id / self::FIRST_LEVEL);
         $rep_second_level = (int) (($id - ($rep_first_level * self::FIRST_LEVEL)) / self::SECOND_LEVEL);
@@ -94,12 +98,15 @@ class PathGenerator
         $options = $provider->getViewProperties($media, $format, []);
 
         try {
-            return $this->twig->render($provider->getTemplate('helper_view'), [
-                'media' => $media,
-                'options' => $options,
-            ]);
-        } catch (\Twig_Error_Loader | \Twig_Error_Runtime | \Twig_Error_Syntax $e) {
-            return null;
-        }
+            return $this->twig->render(
+                $provider->getTemplate('helper_view'),
+                [
+                    'media' => $media,
+                    'options' => $options,
+                ]
+            );
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {}
+
+        return null;
     }
 }
