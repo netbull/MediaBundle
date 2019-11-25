@@ -3,15 +3,20 @@
 namespace NetBull\MediaBundle\Twig;
 
 use Doctrine\ORM\EntityManager;
-
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Model\MediaInterface;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Class MediaExtension
  * @package NetBull\MediaBundle\Twig
  */
-class MediaExtension extends \Twig_Extension
+class MediaExtension extends AbstractExtension
 {
     /**
      * @var Pool
@@ -45,9 +50,9 @@ class MediaExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('path', [$this, 'generatePublicPath']),
-            new \Twig_SimpleFilter('thumbnail', [$this, 'generateThumbnail'], ['is_safe' => ['html'], 'needs_environment' => true]),
-            new \Twig_SimpleFilter('view', [$this, 'generateView'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new TwigFilter('path', [$this, 'generatePublicPath']),
+            new TwigFilter('thumbnail', [$this, 'generateThumbnail'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new TwigFilter('view', [$this, 'generateView'], ['is_safe' => ['html'], 'needs_environment' => true]),
         ];
     }
 
@@ -72,38 +77,38 @@ class MediaExtension extends \Twig_Extension
     }
 
     /**
-     * @param \Twig_Environment $environment
+     * @param Environment $environment
      * @param                   $media
      * @param                   $format
      * @param array             $options
      * @return mixed|string
      */
-    public function generateThumbnail(\Twig_Environment $environment, $media, $format, $options = [])
+    public function generateThumbnail(Environment $environment, $media, $format, $options = [])
     {
         return $this->generateTemplate($environment, $media, $format, $options, 'thumbnail');
     }
 
     /**
-     * @param \Twig_Environment $environment
+     * @param Environment $environment
      * @param                   $media
      * @param                   $format
      * @param array             $options
      * @return mixed|string
      */
-    public function generateView(\Twig_Environment $environment, $media, $format, $options = [])
+    public function generateView(Environment $environment, $media, $format, $options = [])
     {
         return $this->generateTemplate($environment, $media, $format, $options, 'view');
     }
 
     /**
-     * @param \Twig_Environment $environment
+     * @param Environment $environment
      * @param                   $media
      * @param                   $format
      * @param array             $options
      * @param string            $template
      * @return string
      */
-    private function generateTemplate(\Twig_Environment $environment, $media, $format, $options = [], $template)
+    private function generateTemplate(Environment $environment, $media, $format, $options = [], $template)
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -141,17 +146,17 @@ class MediaExtension extends \Twig_Extension
     }
 
     /**
-     * @param \Twig_Environment $environment
+     * @param Environment $environment
      * @param $template
      * @param array $parameters
      * @return mixed
      */
-    public function render(\Twig_Environment $environment, $template, array $parameters = [])
+    public function render(Environment $environment, $template, array $parameters = [])
     {
         if (!isset($this->resources[$template])) {
             try {
                 $this->resources[$template] = $environment->loadTemplate($template);
-            } catch (\Twig_Error_Loader | \Twig_Error_Runtime | \Twig_Error_Syntax $e) {}
+            } catch (LoaderError | RuntimeError | SyntaxError $e) {}
         }
 
         return $this->resources[$template]->render($parameters);
