@@ -5,7 +5,6 @@ namespace NetBull\MediaBundle\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use NetBull\MediaBundle\Entity\Media;
 
 /**
@@ -59,5 +58,7 @@ class PhotoCreateThumbnailCommand extends BaseCommand
         }
 
         $this->log(sprintf('Done with %d - %s', $media->getId(), $format));
+
+        return 0;
     }
 }

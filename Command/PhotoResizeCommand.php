@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-
 use NetBull\MediaBundle\Entity\Media;
 
 /**
@@ -66,6 +65,7 @@ class PhotoResizeCommand extends BaseCommand
         }
 
         $this->log('Done.');
+        return 0;
     }
 
     /**

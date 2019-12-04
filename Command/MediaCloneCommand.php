@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
-
 use NetBull\MediaBundle\Entity\Media;
 
 /**
@@ -72,11 +71,11 @@ class MediaCloneCommand extends BaseCommand
             $content = file_get_contents($remote);
 
             if (!$content) {
-                return;
+                return 0;
             }
 
             if (!file_put_contents($tmp, $content)) {
-                return;
+                return 0;
             }
 
             $clone->setBinaryContent(new File($tmp));
@@ -85,12 +84,14 @@ class MediaCloneCommand extends BaseCommand
                 $em->persist($clone);
                 $em->flush();
             } catch (\Exception $e) {
-                return;
+                return 0;
             }
 
             unlink($tmp);
             $this->log($clone->getId());
         }
+
+        return 0;
     }
 
     /**

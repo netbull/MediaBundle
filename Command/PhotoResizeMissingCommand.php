@@ -4,7 +4,6 @@ namespace NetBull\MediaBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use NetBull\MediaBundle\Entity\Media;
 
 /**
@@ -50,6 +49,8 @@ class PhotoResizeMissingCommand extends BaseCommand
         }
 
         $this->log('Done.');
+
+        return 0;
     }
 
     /**

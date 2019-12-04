@@ -2,6 +2,8 @@
 
 namespace NetBull\MediaBundle\Command;
 
+use Doctrine\Common\Persistence\ObjectManager;
+use LogicException;
 use NetBull\MediaBundle\Provider\Pool;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -49,12 +51,12 @@ abstract class BaseCommand extends Command
     }
 
     /**
-     * @return \Doctrine\Common\Persistence\ObjectManager|object
+     * @return ObjectManager|object
      */
     public function getManager()
     {
         if (!$this->em) {
-            throw new \LogicException('The DoctrineBundle is not registered in your application. Try running "composer require symfony/orm-pack".');
+            throw new LogicException('The DoctrineBundle is not registered in your application. Try running "composer require symfony/orm-pack".');
         }
 
         return $this->em;
