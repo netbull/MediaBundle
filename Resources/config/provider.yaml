@@ -1,73 +1,73 @@
 parameters:
-  netbull_media.provider.image.class: NetBull\MediaBundle\Provider\ImageProvider
-  netbull_media.provider.file.class: NetBull\MediaBundle\Provider\FileProvider
-  netbull_media.provider.youtube.class: NetBull\MediaBundle\Provider\YouTubeProvider
-  netbull_media.provider.vimeo.class: NetBull\MediaBundle\Provider\VimeoProvider
-  netbull_media.provider.youku.class: NetBull\MediaBundle\Provider\YoukuProvider
-  netbull_media.thumbnail.format: NetBull\MediaBundle\Thumbnail\FormatThumbnail
-  netbull_media.thumbnail.format.default: jpg
+    netbull_media.provider.image.class: NetBull\MediaBundle\Provider\ImageProvider
+    netbull_media.provider.file.class: NetBull\MediaBundle\Provider\FileProvider
+    netbull_media.provider.youtube.class: NetBull\MediaBundle\Provider\YouTubeProvider
+    netbull_media.provider.vimeo.class: NetBull\MediaBundle\Provider\VimeoProvider
+    netbull_media.provider.youku.class: NetBull\MediaBundle\Provider\YoukuProvider
+    netbull_media.thumbnail.format: NetBull\MediaBundle\Thumbnail\FormatThumbnail
+    netbull_media.thumbnail.format.default: jpg
 
 services:
-  netbull_media.buzz.response_factory:
-    class: Nyholm\Psr7\Factory\Psr17Factory
+    netbull_media.buzz.response_factory:
+        class: Nyholm\Psr7\Factory\Psr17Factory
 
-  netbull_media.buzz.connector.file_get_contents:
-    class: Buzz\Client\FileGetContents
+    netbull_media.buzz.connector.file_get_contents:
+        class: Buzz\Client\FileGetContents
 
-  netbull_media.buzz.connector.curl:
-    class: Buzz\Client\Curl
+    netbull_media.buzz.connector.curl:
+        class: Buzz\Client\Curl
 
-  netbull_media.buzz.browser:
-    class: Buzz\Browser
+    netbull_media.buzz.browser:
+        class: Buzz\Browser
 
-  netbull_media.pool:
-    class: NetBull\MediaBundle\Provider\Pool
-    arguments: ['']
-    public: true
+    netbull_media.pool:
+        class: NetBull\MediaBundle\Provider\Pool
+        arguments: ['']
+        public: true
 
-  NetBull\MediaBundle\Provider\Pool:
-    alias: netbull_media.pool
+    NetBull\MediaBundle\Provider\Pool:
+        alias: netbull_media.pool
 
-  netbull_media.thumbnail.format:
-    class: '%netbull_media.thumbnail.format%'
-    arguments: ['%netbull_media.thumbnail.format.default%', '@kernel', '@logger']
+    netbull_media.thumbnail.format:
+        class: '%netbull_media.thumbnail.format%'
+        arguments: ['%netbull_media.thumbnail.format.default%', '@kernel', '@logger']
 
-  netbull_media.provider.image:
-    class: '%netbull_media.provider.image.class%'
-    tags:
-      - { name: netbull_media.provider }
-    arguments: ['netbull_media.provider.image', '', '', '@netbull_media.thumbnail.format', '', '', '', '@netbull_media.metadata.amazon']
-    calls:
-      - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\\@NetBullMedia/Provider/view_image.html.twig' }]]
+    netbull_media.provider.image:
+        class: '%netbull_media.provider.image.class%'
+        tags:
+            - { name: netbull_media.provider }
+        arguments: ['netbull_media.provider.image', '', '', '@netbull_media.thumbnail.format', '', '', '', '@netbull_media.metadata.amazon']
+        calls:
+            - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\\@NetBullMedia/Provider/view_image.html.twig' }]]
 
-  netbull_media.provider.file:
-    class: '%netbull_media.provider.file.class%'
-    tags:
-      - { name: netbull_media.provider }
-    arguments: ['netbull_media.provider.file', '', '', '@netbull_media.thumbnail.format', '', '', '@netbull_media.metadata.amazon']
-    calls:
-      - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_file.html.twig' }]]
+    netbull_media.provider.file:
+        class: '%netbull_media.provider.file.class%'
+        tags:
+            - { name: netbull_media.provider }
+        arguments: ['netbull_media.provider.file', '', '', '@netbull_media.thumbnail.format', '', '', '@netbull_media.metadata.amazon']
+        calls:
+            - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_file.html.twig' }]]
 
-  netbull_media.provider.youtube:
-    class: '%netbull_media.provider.youtube.class%'
-    tags:
-      - { name: netbull_media.provider }
-    arguments: ['netbull_media.provider.youtube', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon', '']
-    calls:
-      - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_youtube.html.twig' }]]
+    netbull_media.provider.youtube:
+        class: '%netbull_media.provider.youtube.class%'
+        tags:
+            - { name: netbull_media.provider }
+        arguments: ['netbull_media.provider.youtube', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon', '']
+        calls:
+            - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_youtube.html.twig' }]]
 
-  netbull_media.provider.vimeo:
-    class: '%netbull_media.provider.vimeo.class%'
-    tags:
-      - { name: netbull_media.provider }
-    arguments: ['netbull_media.provider.vimeo', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
-    calls:
-      - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_vimeo.html.twig' }]]
+    netbull_media.provider.vimeo:
+        class: '%netbull_media.provider.vimeo.class%'
+        tags:
+            - { name: netbull_media.provider }
+        arguments: ['netbull_media.provider.vimeo', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
+        calls:
+            - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_vimeo.html.twig' }]]
 
-  netbull_media.provider.youku:
-    class: '%netbull_media.provider.youku.class%'
-    tags:
-      - { name: netbull_media.provider }
-    arguments: ['netbull_media.provider.youku', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
-    calls:
-      - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_youku.html.twig' }]]
+    netbull_media.provider.youku:
+        class: '%netbull_media.provider.youku.class%'
+        tags:
+            - { name: netbull_media.provider }
+        arguments: ['netbull_media.provider.youku', '', '', '@netbull_media.thumbnail.format', '@netbull_media.buzz.browser', '@netbull_media.metadata.amazon']
+        calls:
+            - [setTemplates, [{ helper_thumbnail: '\@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\@NetBullMedia/Provider/view_youku.html.twig' }]]
