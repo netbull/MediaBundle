@@ -167,7 +167,7 @@ class MediaExtension extends AbstractExtension
     {
         if (!isset($this->resources[$template])) {
             try {
-                $this->resources[$template] = $environment->loadTemplate($template);
+                $this->resources[$template] = $environment->loadTemplate("@$template");
             } catch (LoaderError | RuntimeError | SyntaxError $e) {
                 return '';
             }
