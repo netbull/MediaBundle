@@ -41,7 +41,7 @@ class MediaExtension extends AbstractExtension
     public function __construct(Pool $pool, EntityManager $em)
     {
         $this->pool = $pool;
-        $this->em   = $em;
+        $this->em = $em;
     }
 
     /**
@@ -51,24 +51,30 @@ class MediaExtension extends AbstractExtension
     {
         return [
             new TwigFilter('path', [$this, 'generatePublicPath']),
-            new TwigFilter('thumbnail', [$this, 'generateThumbnail'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new TwigFilter(
+                'thumbnail',
+                [$this, 'generateThumbnail'],
+                ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
             new TwigFilter('view', [$this, 'generateView'], ['is_safe' => ['html'], 'needs_environment' => true]),
         ];
     }
 
     /**
-     * @param array|MediaInterface  $media
-     * @param string                $format
+     * @param array|MediaInterface $media
+     * @param string $format
      * @return string
      */
     public function generatePublicPath($media, $format = 'normal')
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
-        } else if(isset($media['providerName'])) {
-            $providerName = $media['providerName'];
         } else {
-            return '';
+            if (isset($media['providerName'])) {
+                $providerName = $media['providerName'];
+            } else {
+                return '';
+            }
         }
 
         $provider = $this->pool->getProvider($providerName);
@@ -80,7 +86,7 @@ class MediaExtension extends AbstractExtension
      * @param Environment $environment
      * @param                   $media
      * @param                   $format
-     * @param array             $options
+     * @param array $options
      * @return mixed|string
      */
     public function generateThumbnail(Environment $environment, $media, $format, $options = [])
@@ -92,7 +98,7 @@ class MediaExtension extends AbstractExtension
      * @param Environment $environment
      * @param                   $media
      * @param                   $format
-     * @param array             $options
+     * @param array $options
      * @return mixed|string
      */
     public function generateView(Environment $environment, $media, $format, $options = [])
@@ -104,20 +110,22 @@ class MediaExtension extends AbstractExtension
      * @param Environment $environment
      * @param                   $media
      * @param                   $format
-     * @param array             $options
-     * @param string            $template
+     * @param array $options
+     * @param string $template
      * @return string
      */
     private function generateTemplate(Environment $environment, $media, $format, $options = [], $template)
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
-        } else if(isset($media['providerName'])) {
-            $providerName = $media['providerName'];
         } else {
-            return '';
+            if (isset($media['providerName'])) {
+                $providerName = $media['providerName'];
+            } else {
+                return '';
+            }
         }
-        $defaultOptions= [];
+        $defaultOptions = [];
 
         $provider = $this->pool->getProvider($providerName);
         $format = $provider->getFormatName($media, $format);
@@ -139,10 +147,14 @@ class MediaExtension extends AbstractExtension
             $options = $provider->getHelperProperties($media, $format, $options);
         }
 
-        return $this->render($environment, $provider->getTemplate('helper_' . $template), [
-            'media'    => $media,
-            'options'  => $options,
-        ]);
+        return $this->render(
+            $environment,
+            $provider->getTemplate('helper_'.$template),
+            [
+                'media' => $media,
+                'options' => $options,
+            ]
+        );
     }
 
     /**
@@ -156,7 +168,9 @@ class MediaExtension extends AbstractExtension
         if (!isset($this->resources[$template])) {
             try {
                 $this->resources[$template] = $environment->loadTemplate($template);
-            } catch (LoaderError | RuntimeError | SyntaxError $e) {}
+            } catch (LoaderError | RuntimeError | SyntaxError $e) {
+                return '';
+            }
         }
 
         return $this->resources[$template]->render($parameters);
