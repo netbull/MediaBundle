@@ -108,9 +108,7 @@ class ProviderDataTransformer implements DataTransformerInterface
 
         $provider = $this->pool->getProvider($newMedia->getProviderName());
 
-        dump($newMedia);
         $provider->transform($newMedia);
-        dump($newMedia);
 
         return $newMedia;
     }
