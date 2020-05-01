@@ -1,0 +1,19 @@
+services:
+    netbull_media.adapter.image.gd:
+        class: Imagine\Gd\Imagine
+
+    netbull_media.resizer.simple:
+        class: NetBull\MediaBundle\Resizer\SimpleResizer
+        arguments: ['@netbull_media.adapter.image.gd', '%netbull_media.resizer.simple.adapter.mode%', '@netbull_media.metadata.amazon']
+
+    netbull_media.resizer.square:
+        class: NetBull\MediaBundle\Resizer\SquareResizer
+        arguments: ['@netbull_media.adapter.image.gd', '%netbull_media.resizer.square.adapter.mode%', '@netbull_media.metadata.amazon']
+
+    netbull_media.cdn.server:
+        class: NetBull\MediaBundle\Cdn\Server
+        arguments: ['', '']
+
+    netbull_media.cdn.local.server:
+        class: NetBull\MediaBundle\Cdn\LocalServer
+        arguments: ['', '', '', '']

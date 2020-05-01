@@ -1,0 +1,5 @@
+services:
+    NetBull\MediaBundle\EventListener\MediaEventSubscriber:
+        tags:
+            - { name: 'doctrine.event_subscriber' }
+        arguments: ['@NetBull\MediaBundle\Provider\Pool']

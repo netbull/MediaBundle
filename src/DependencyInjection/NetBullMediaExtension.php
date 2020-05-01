@@ -1,0 +1,189 @@
+<?php
+
+namespace NetBull\MediaBundle\DependencyInjection;
+
+use Exception;
+use NetBull\MediaBundle\Provider\Pool;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+
+/**
+ * This is the class that loads and manages your bundle configuration.
+ *
+ * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
+ */
+class NetBullMediaExtension extends Extension
+{
+    /**
+     * @var array
+     */
+    private $config = [];
+
+    /**
+     * @param array $configs
+     * @param ContainerBuilder $container
+     * @throws Exception
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        $configuration = new Configuration();
+        $this->config = $this->processConfiguration($configuration, $configs);
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('provider.yaml');
+        $loader->load('listener.yaml');
+        $loader->load('media.yaml');
+        $loader->load('security.yaml');
+        $loader->load('gaufrette.yaml');
+        $loader->load('form.yaml');
+        $loader->load('twig.yaml');
+        $loader->load('helpers.yaml');
+        $loader->load('console.yaml');
+
+        $this->configureFilesystemAdapter($container);
+        $this->configureCdnAdapter($container);
+
+        $pool = $container->getDefinition(Pool::class);
+        $pool->replaceArgument(0, $this->config['default_context']);
+
+        $container->setParameter('netbull_media.resizer.simple.adapter.mode', $this->config['resizer']['simple']['mode']);
+        $container->setParameter('netbull_media.resizer.square.adapter.mode', $this->config['resizer']['square']['mode']);
+
+        $strategies = [];
+        foreach ($this->config['contexts'] as $name => $settings) {
+            $formats = [];
+            foreach ($settings['formats'] as $format => $value) {
+                $formats[$name.'_'.$format] = $value;
+            }
+
+            $strategies[] = $settings['download']['strategy'];
+            $pool->addMethodCall('addContext', [$name, $settings['providers'], $formats, $settings['download']]);
+        }
+
+        $strategies = array_unique($strategies);
+        foreach ($strategies as $strategyId) {
+            $pool->addMethodCall('addDownloadSecurity', [$strategyId, new Reference($strategyId)]);
+        }
+
+        $this->configureProviders($container);
+    }
+
+    /**
+     * Inject filesystem dependency to default provider.
+     *
+     * @param ContainerBuilder  $container
+     */
+    public function configureFilesystemAdapter(ContainerBuilder $container)
+    {
+        // Add the default configuration for the local filesystem
+        if ($container->hasDefinition('netbull_media.adapter.filesystem.local') && isset($this->config['filesystem']['local'])) {
+            $container->getDefinition('netbull_media.adapter.filesystem.local')
+                ->replaceArgument(0, $this->config['filesystem']['local']['directory'])
+                ->addArgument($this->config['filesystem']['local']['create'])
+            ;
+        } else {
+            $container->removeDefinition('netbull_media.adapter.filesystem.local');
+        }
+
+        // Add the default configuration for the S3 filesystem
+        if ($container->hasDefinition('netbull_media.adapter.filesystem.s3') && isset($this->config['filesystem']['s3'])) {
+            $container->getDefinition('netbull_media.wrapper.s3')
+                ->replaceArgument(0, [
+                    'version' => $this->config['filesystem']['s3']['defaults']['version'],
+                    'region' => $this->config['filesystem']['s3']['defaults']['region'],
+                    'credentials' => $this->config['filesystem']['s3']['defaults']['credentials']
+                ]);
+
+            $container->getDefinition('netbull_media.adapter.filesystem.s3')
+                ->replaceArgument(1, $this->config['filesystem']['s3']['options']['bucket'])
+                ->replaceArgument(2, [
+                    'create' => $this->config['filesystem']['s3']['options']['create'],
+                    'acl' => $this->config['filesystem']['s3']['options']['acl'],
+                    'directory' => $this->config['filesystem']['s3']['options']['directory']
+                ]);
+
+            $container->getDefinition('netbull_media.metadata.amazon')
+                ->addArgument([
+                    'acl' => $this->config['filesystem']['s3']['options']['acl'],
+                    'storage' => $this->config['filesystem']['s3']['options']['storage'],
+                    'encryption' => $this->config['filesystem']['s3']['options']['encryption'],
+                    'meta' => $this->config['filesystem']['s3']['options']['meta'],
+                    'cache_control' => $this->config['filesystem']['s3']['options']['cache_control']
+                ])
+            ;
+        } else {
+            $container->removeDefinition('netbull_media.adapter.filesystem.s3');
+            $container->removeDefinition('netbull_media.filesystem.s3');
+        }
+
+        // If there is no local or s3 filesystem then remove the local.server service
+        if (
+            !$container->hasDefinition('netbull_media.adapter.filesystem.local') &&
+            !$container->hasDefinition('netbull_media.adapter.filesystem.s3') &&
+            $container->hasDefinition('netbull_media.adapter.filesystem.local.server')
+        ) {
+            $container->removeDefinition('netbull_media.adapter.filesystem.local.server');
+        }
+    }
+
+    /**
+     * Inject CDN dependency to default provider.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function configureCdnAdapter(ContainerBuilder $container)
+    {
+        // add the default configuration for the server cdn
+        if ($container->hasDefinition('netbull_media.cdn.server') && isset($this->config['cdn']['server'])) {
+            $container->getDefinition('netbull_media.cdn.server')
+                ->replaceArgument(0, $this->config['cdn']['server']['path'])
+                ->replaceArgument(1, $this->config['cdn']['server']['paths'])
+            ;
+        } else {
+            $container->removeDefinition('netbull_media.cdn.server');
+        }
+        // add the default configuration for the server cdn
+        if ($container->hasDefinition('netbull_media.cdn.local.server') && isset($this->config['filesystem']['local'])) {
+            $container->getDefinition('netbull_media.cdn.local.server')
+                ->replaceArgument(0, $this->config['cdn']['server']['path'])
+                ->replaceArgument(1, $this->config['cdn']['dev']['path'])
+                ->replaceArgument(2, $this->config['filesystem']['local']['directory'])
+                ->replaceArgument(3, $this->config['cdn']['server']['paths'])
+            ;
+        } else {
+            $container->removeDefinition('netbull_media.cdn.local.server');
+        }
+    }
+
+    /**
+     * @param ContainerBuilder  $container
+     */
+    public function configureProviders(ContainerBuilder $container)
+    {
+        $container->getDefinition('netbull_media.provider.image')
+            ->replaceArgument(4, new Reference($this->config['providers']['image']['adapter']))
+            ->replaceArgument(5, array_map('strtolower', $this->config['providers']['image']['allowed_extensions']))
+            ->replaceArgument(6, $this->config['providers']['image']['allowed_mime_types'])
+        ;
+
+        $container->getDefinition('netbull_media.provider.file')
+            ->replaceArgument(4, $this->config['providers']['file']['allowed_extensions'])
+            ->replaceArgument(5, $this->config['providers']['file']['allowed_mime_types'])
+        ;
+
+        $container->getDefinition('netbull_media.provider.youtube')
+            ->replaceArgument(5, $this->config['providers']['youtube']['html5'])
+        ;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return 'netbull_media';
+    }
+}

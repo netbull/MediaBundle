@@ -1,0 +1,6 @@
+services:
+    NetBull\MediaBundle\Twig\MediaExtension:
+        public: true
+        arguments: [ '@NetBull\MediaBundle\Provider\Pool', '@doctrine.orm.entity_manager' ]
+        tags:
+            - { name: twig.extension }

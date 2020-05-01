@@ -1,9 +1,0 @@
-parameters:
-    netbull_media.class: NetBull\MediaBundle\Entity\Media
-
-services:
-    netbull_media.doctrine.event_subscriber:
-        class: NetBull\MediaBundle\Listener\MediaEventSubscriber
-        tags:
-            - { name: doctrine.event_subscriber }
-        arguments: ['@netbull_media.pool']

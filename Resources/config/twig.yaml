@@ -1,7 +1,0 @@
-services:
-    netbull_media.twig.extension:
-        class     : NetBull\MediaBundle\Twig\MediaExtension
-        public    : true
-        arguments : [ '@netbull_media.pool', '@doctrine.orm.entity_manager' ]
-        tags      :
-            - { name: twig.extension }

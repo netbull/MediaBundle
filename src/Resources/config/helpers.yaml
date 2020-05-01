@@ -1,0 +1,4 @@
+services:
+    NetBull\MediaBundle\Helpers\PathGenerator:
+        arguments: ['@NetBull\MediaBundle\Provider\Pool', '@?twig']
+        public: true
