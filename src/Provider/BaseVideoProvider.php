@@ -64,7 +64,7 @@ abstract class BaseVideoProvider extends BaseProvider
 
     /**
      * @param array|MediaInterface $media
-     * @return File|mixed
+     * @return File|null
      */
     public function getReferenceFile($media)
     {
@@ -76,12 +76,20 @@ abstract class BaseVideoProvider extends BaseProvider
         } else {
             $referenceFile = $this->getFilesystem()->get($key, true);
             $metadata = $this->metadata ? $this->metadata->get($referenceFile->getName()) : [];
+            $thumbnailUrl = $this->getReferenceImage($media);
+
+            if (!$thumbnailUrl) {
+                return null;
+            }
+
             try {
                 $referenceFile->setContent(
-                    $this->httpClient->request('GET', $this->getReferenceImage($media))->getContent(),
+                    $this->httpClient->request('GET', $thumbnailUrl)->getContent(),
                     $metadata
                 );
-            } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {}
+            } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
+                return null;
+            }
         }
 
         return $referenceFile;
