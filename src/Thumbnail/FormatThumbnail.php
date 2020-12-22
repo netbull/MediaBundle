@@ -76,7 +76,7 @@ class FormatThumbnail implements ThumbnailInterface
 
         $referenceFile = $provider->getReferenceFile($media);
 
-        if (!$referenceFile->exists()) {
+        if (!$referenceFile || !$referenceFile->exists()) {
             return;
         }
 
