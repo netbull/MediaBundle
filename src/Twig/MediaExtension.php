@@ -47,7 +47,7 @@ class MediaExtension extends AbstractExtension
     /**
      * @inheritdoc
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('path', [$this, 'generatePublicPath']),
@@ -61,7 +61,7 @@ class MediaExtension extends AbstractExtension
      * @param string $format
      * @return string
      */
-    public function generatePublicPath($media, string $format = 'normal')
+    public function generatePublicPath($media, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -85,9 +85,9 @@ class MediaExtension extends AbstractExtension
      * @param array $options
      * @return mixed|string
      */
-    public function generateThumbnail(Environment $environment, $media, string $format, $options = [])
+    public function generateThumbnail(Environment $environment, $media, string $format, $options = []): string
     {
-        return $this->generateTemplate($environment, $media, $format, $options, 'thumbnail');
+        return $this->generateTemplate($environment, $media, $format, 'thumbnail', $options);
     }
 
     /**
@@ -97,9 +97,9 @@ class MediaExtension extends AbstractExtension
      * @param array $options
      * @return mixed|string
      */
-    public function generateView(Environment $environment, $media, string $format, $options = [])
+    public function generateView(Environment $environment, $media, string $format, $options = []): string
     {
-        return $this->generateTemplate($environment, $media, $format, $options, 'view');
+        return $this->generateTemplate($environment, $media, $format, 'view', $options);
     }
 
     /**
@@ -110,7 +110,7 @@ class MediaExtension extends AbstractExtension
      * @param array $options
      * @return string
      */
-    private function generateTemplate(Environment $environment, $media, string $format, $template, $options = [])
+    private function generateTemplate(Environment $environment, $media, string $format, $template, $options = []): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -159,7 +159,7 @@ class MediaExtension extends AbstractExtension
      * @param array $parameters
      * @return string
      */
-    public function render(Environment $environment, string $template, array $parameters = [])
+    public function render(Environment $environment, string $template, array $parameters = []): string
     {
         if (!isset($this->resources[$template])) {
             try {
@@ -175,7 +175,7 @@ class MediaExtension extends AbstractExtension
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'netbull_media.extension';
     }
