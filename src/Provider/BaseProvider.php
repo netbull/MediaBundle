@@ -161,7 +161,7 @@ abstract class BaseProvider implements MediaProviderInterface
     {
         $path = $this->getReferenceImage($media);
 
-        if ($this->getFilesystem()->has($path)) {
+        if ($path && $this->getFilesystem()->has($path)) {
             $this->getFilesystem()->delete($path);
         }
 
