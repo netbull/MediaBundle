@@ -232,8 +232,6 @@ abstract class BaseVideoProvider extends BaseProvider
             return;
         }
 
-        $this->generateThumbnails($media);
-
         $media->resetBinaryContent();
     }
 
@@ -293,5 +291,13 @@ abstract class BaseVideoProvider extends BaseProvider
         }
 
         return $this->resizer->getBox($media, $settings);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postFlush(MediaInterface $media)
+    {
+        $this->generateThumbnails($media);
     }
 }
