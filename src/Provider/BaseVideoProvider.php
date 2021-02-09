@@ -10,7 +10,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
@@ -134,25 +133,6 @@ abstract class BaseVideoProvider extends BaseProvider
             ];
         }
 
-        $locale = $options['locale'];
-        unset($options['locale']);
-
-        $translationsOptions = [
-            'fields' => [
-                'caption' => [
-                    'field_type'    => TextareaType::class,
-                    'required'      => false
-                ],
-            ],
-            'label' => false,
-            'render_type' => 'tabs-small',
-            'exclude_fields' => ['description', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', 'deletedBy'],
-        ];
-
-        if ($locale) {
-            $translationsOptions['locales'] = [$locale];
-        }
-
         $formBuilder
             ->add('providerName', ChoiceType::class, [
                 'label' => false,
@@ -181,19 +161,16 @@ abstract class BaseVideoProvider extends BaseProvider
                     'placeholder' => 'Caption'
                 ],
                 'required' => false,
-            ])
-        ;
+            ]);
 
-        if($mainField){
-            $formBuilder
-                ->add('main', RadioType::class, [
-                    'label' => 'Main',
-                    'attr' => [
-                        'class' => 'video-main'
-                    ],
-                    'required'  => false,
-                ])
-            ;
+        if ($mainField) {
+            $formBuilder->add('main', RadioType::class, [
+                'label' => 'Main',
+                'attr' => [
+                    'class' => 'video-main'
+                ],
+                'required'  => false,
+            ]);
         }
     }
 
@@ -203,16 +180,14 @@ abstract class BaseVideoProvider extends BaseProvider
      */
     public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = [])
     {
-        $formBuilder
-            ->add('newBinaryContent', TextType::class, [
-                'label' => 'YouTube URL',
-                'required' => false,
-                'attr' => [
-                    'placeholder' => 'e.g. https://www.youtube.com/watch?v=7sXMUJROuS8',
-                    'class' => 'videoUrl',
-                ]
-            ])
-        ;
+        $formBuilder->add('newBinaryContent', TextType::class, [
+            'label' => 'YouTube URL',
+            'required' => false,
+            'attr' => [
+                'placeholder' => 'e.g. https://www.youtube.com/watch?v=7sXMUJROuS8',
+                'class' => 'videoUrl',
+            ]
+        ]);
     }
 
     /**
@@ -231,8 +206,6 @@ abstract class BaseVideoProvider extends BaseProvider
         if (!$media->getBinaryContent()) {
             return;
         }
-
-        $this->generateThumbnails($media);
 
         $media->resetBinaryContent();
     }
@@ -293,5 +266,13 @@ abstract class BaseVideoProvider extends BaseProvider
         }
 
         return $this->resizer->getBox($media, $settings);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postFlush(MediaInterface $media)
+    {
+        $this->generateThumbnails($media);
     }
 }
