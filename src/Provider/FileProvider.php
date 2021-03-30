@@ -59,7 +59,7 @@ class FileProvider extends BaseProvider
     /**
      * {@inheritdoc}
      */
-    public function getReferenceImage($media)
+    public function getReferenceImage($media): string
     {
         return sprintf('%s/%s',
             $this->generatePath($media),
@@ -70,7 +70,7 @@ class FileProvider extends BaseProvider
     /**
      * {@inheritdoc}
      */
-    public function getReferenceFile($media)
+    public function getReferenceFile($media): \Gaufrette\File
     {
         return $this->getFilesystem()->get($this->getReferenceImage($media), true);
     }
@@ -92,13 +92,11 @@ class FileProvider extends BaseProvider
      */
     public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = [])
     {
-        $formBuilder
-            ->add('newBinaryContent', FileType::class, array_merge([
-                'attr' => [
-                    'class' => 'image-upload',
-                ],
-            ], $options))
-        ;
+        $formBuilder->add('newBinaryContent', FileType::class, array_merge([
+            'attr' => [
+                'class' => 'image-upload',
+            ],
+        ], $options));
     }
 
     /**
@@ -106,11 +104,12 @@ class FileProvider extends BaseProvider
      */
     public function postPersist(MediaInterface $media)
     {
-        if ($media->getBinaryContent() === null) {
+        if (null === $media->getBinaryContent()) {
             return;
         }
 
         $this->setFileContents($media);
+        $media->resetBinaryContent();
     }
 
     /**
@@ -155,7 +154,7 @@ class FileProvider extends BaseProvider
      */
     protected function fixBinaryContent(MediaInterface $media)
     {
-        if ($media->getBinaryContent() === null) {
+        if (null === $media->getBinaryContent()) {
             return;
         }
 
@@ -227,7 +226,7 @@ class FileProvider extends BaseProvider
     /**
      * {@inheritdoc}
      */
-    public function generatePublicUrl($media, $format)
+    public function generatePublicUrl($media, $format): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
@@ -241,7 +240,7 @@ class FileProvider extends BaseProvider
     /**
      * {@inheritdoc}
      */
-    public function getHelperProperties($media, string $format, array $options = [])
+    public function getHelperProperties($media, string $format, array $options = []): array
     {
         if ($media instanceof MediaInterface) {
             $data = [
@@ -295,7 +294,7 @@ class FileProvider extends BaseProvider
      *
      * @return string
      */
-    protected function generateReferenceName(MediaInterface $media)
+    protected function generateReferenceName(MediaInterface $media): string
     {
         return $this->generateMediaUniqId($media).'.'.$media->getBinaryContent()->guessExtension();
     }
@@ -305,7 +304,7 @@ class FileProvider extends BaseProvider
      *
      * @return string
      */
-    protected function generateMediaUniqId(MediaInterface $media)
+    protected function generateMediaUniqId(MediaInterface $media): string
     {
         return sha1($media->getName().uniqid().rand(11111, 99999));
     }

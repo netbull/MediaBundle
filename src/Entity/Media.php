@@ -491,7 +491,7 @@ class Media implements MediaInterface
     /**
      * {@inheritdoc}
      */
-    public function setBinaryContent($binaryContent)
+    public function setBinaryContent($binaryContent): Media
     {
         $this->previousProviderReference = $this->providerReference;
         $this->providerReference = null;
@@ -529,7 +529,7 @@ class Media implements MediaInterface
     /**
      * {@inheritdoc}
      */
-    public function setMetadataValue($name, $value)
+    public function setMetadataValue($name, $value): Media
     {
         $metadata = $this->getProviderMetadata();
         $metadata[$name] = $value;
@@ -541,7 +541,7 @@ class Media implements MediaInterface
     /**
      * {@inheritdoc}
      */
-    public function unsetMetadataValue($name)
+    public function unsetMetadataValue($name): Media
     {
         $metadata = $this->getProviderMetadata();
         unset($metadata[$name]);
@@ -561,7 +561,7 @@ class Media implements MediaInterface
     /**
      * {@inheritdoc}
      */
-    public function getBox()
+    public function getBox(): Box
     {
         return new Box($this->width, $this->height);
     }
@@ -569,7 +569,7 @@ class Media implements MediaInterface
     /**
      * {@inheritdoc}
      */
-    public function getPreviousProviderReference()
+    public function getPreviousProviderReference(): string
     {
         return $this->previousProviderReference;
     }
@@ -595,7 +595,7 @@ class Media implements MediaInterface
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName() ?: 'n/a';
     }
