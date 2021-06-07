@@ -18,11 +18,11 @@ trait ImageTrait
      */
     public function reorderImages($type, $images)
     {
-        $sql = 'SET @i=0; SET @Count=0; UPDATE yarduna.media SET `position` = @Count+(@i:=@i+1)-1 WHERE `id` IN (:images) AND `context` = :type ORDER BY FIELD(id,:images)';
+        $sql = 'SET @i=0; SET @Count=0; UPDATE media SET `position` = @Count+(@i:=@i+1)-1 WHERE `id` IN (:images) AND `context` = :type ORDER BY FIELD(id,:images)';
 
         $params = [
-            'images'   => $images,
-            'type'     => $type
+            'images' => $images,
+            'type' => $type
         ];
 
         $types = [
@@ -36,9 +36,9 @@ trait ImageTrait
     /**
      * @param $object
      * @param bool $orderById
-     * @return |null
+     * @return array|null
      */
-    public function getImages($object, $orderById = false)
+    public function getImages($object, bool $orderById = false): ?array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('partial o.{id}', 'partial m.{' . MediaRepository::MEDIA_FIELDS . '}')
@@ -46,15 +46,14 @@ trait ImageTrait
             ->leftJoin('o.photos', 'm')
             ->where($qb->expr()->eq('o.id', ':object'))
             ->orderBy('m.position', 'ASC')
-            ->setParameter('object', $object)
-        ;
+            ->setParameter('object', $object);
 
         if ($orderById) {
             $qb->addOrderBy('m.id', 'ASC');
         }
 
         $result = $qb->getQuery()->getSingleResult(Query::HYDRATE_ARRAY);
-        return ($result) ? $result['photos'] : null;
+        return $result['photos'] ?? null;
     }
 
     /**
@@ -68,8 +67,7 @@ trait ImageTrait
             ->from(Media::class, 'm')
             ->where($qb->expr()->in('m.id', ':images'))
             ->orderBy('m.position')
-            ->setParameter('images', $images)
-        ;
+            ->setParameter('images', $images);
 
         return $qb->getQuery()->getArrayResult();
     }
@@ -78,15 +76,14 @@ trait ImageTrait
      * @param $object
      * @return int
      */
-    public function getImageIndex($object)
+    public function getImageIndex($object): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('o.id', $qb->expr()->countDistinct('m'))
             ->from($this->getEntityName(), 'o')
             ->leftJoin('o.photos', 'm')
             ->where($qb->expr()->eq('o.id', ':object'))
-            ->setParameter('object', $object)
-        ;
+            ->setParameter('object', $object);
 
         $result = $qb->getQuery()->getScalarResult();
 

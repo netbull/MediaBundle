@@ -12,21 +12,19 @@ use NetBull\MediaBundle\Entity\Media;
  */
 class MediaRepository extends EntityRepository
 {
-    const MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt';
+    const MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption';
 
     /**
      * @param array $criteria
-     * @return array|int
+     * @return array
      */
-    public function count(array $criteria)
+    public function count(array $criteria): array
     {
         $qb = $this->createQueryBuilder('m');
-        $qb
-            ->select('COUNT(m.id) as medias', 'm.context')
+        $qb->select('COUNT(m.id) as medias', 'm.context')
             ->where($qb->expr()->neq('m.context', ':context'))
             ->setParameter('context', 'avatar')
-            ->groupBy('m.context')
-        ;
+            ->groupBy('m.context');
 
         return $qb->getQuery()->getArrayResult();
     }
@@ -34,16 +32,14 @@ class MediaRepository extends EntityRepository
     /**
      * @return array
      */
-    public function getMediaContexts()
+    public function getMediaContexts(): array
     {
         $qb = $this->createQueryBuilder('m');
-        $contexts = $qb
-            ->select('m.context')
+        $contexts = $qb->select('m.context')
             ->groupBy('m.context')
             ->orderBy('m.context', 'ASC')
             ->getQuery()
-            ->getArrayResult()
-        ;
+            ->getArrayResult();
 
         return $this->normalizeContexts($contexts);
     }
@@ -53,14 +49,12 @@ class MediaRepository extends EntityRepository
      * @param bool $status
      * @return bool
      */
-    public function toggleMain($media, $status = false)
+    public function toggleMain($media, bool $status = false): bool
     {
         $qb = $this->createQueryBuilder('m');
-        $qb
-            ->update($this->getEntityName(), 'm')
+        $qb->update($this->getEntityName(), 'm')
             ->set('m.main', ':status')
-            ->setParameter('status', $status)
-        ;
+            ->setParameter('status', $status);
 
         if (is_array($media)) {
             $qb->where($qb->expr()->in('m.id', ':media'));
@@ -86,7 +80,7 @@ class MediaRepository extends EntityRepository
      * @param $contexts
      * @return array
      */
-    private function normalizeContexts($contexts)
+    private function normalizeContexts($contexts): array
     {
         $tmp = ['all' => 'All'];
         foreach ($contexts as $context){
