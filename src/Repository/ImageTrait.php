@@ -58,9 +58,9 @@ trait ImageTrait
 
     /**
      * @param $images
-     * @return mixed
+     * @return array
      */
-    public function getImagesByIds($images)
+    public function getImagesByIds($images): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('partial m.{' . MediaRepository::MEDIA_FIELDS . '}')

@@ -18,19 +18,19 @@ interface ImageInterface
     /**
      * @param $object
      * @param bool $orderById
-     * @return mixed
+     * @return array|null
      */
-    public function getImages($object, $orderById = false);
+    public function getImages($object, bool $orderById = false): ?array;
 
     /**
      * @param $images
-     * @return mixed
+     * @return array
      */
-    public function getImagesByIds($images);
+    public function getImagesByIds($images): array;
 
     /**
      * @param $object
-     * @return mixed
+     * @return int
      */
-    public function getImageIndex($object);
+    public function getImageIndex($object): int;
 }
