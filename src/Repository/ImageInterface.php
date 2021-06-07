@@ -11,7 +11,6 @@ interface ImageInterface
     /**
      * @param $type
      * @param $images
-     * @return mixed
      */
     public function reorderImages($type, $images);
 
