@@ -8,6 +8,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use NetBull\MediaBundle\Entity\Media;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class PhotoCreateThumbnailCommand
@@ -20,21 +22,21 @@ class PhotoCreateThumbnailCommand extends BaseCommand
      */
     public function configure()
     {
-        $this
-            ->setName('netbull:media:create-thumbnail')
+        $this->setName('netbull:media:create-thumbnail')
             ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
             ->addArgument('format', InputArgument::OPTIONAL, 'The thumbnail format', 'normal')
-            ->setDescription('Create Image thumbnail with new media formats')
-        ;
+            ->setDescription('Create Image thumbnail with new media formats');
     }
 
     /**
-     * {@inheritdoc}
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $em = $this->getManager();
-        $this->output = $output;
+        $this->io = new SymfonyStyle($input, $output);
 
         $mediaId = $input->getArgument('mediaId');
         $format = $input->getArgument('format');
@@ -44,8 +46,8 @@ class PhotoCreateThumbnailCommand extends BaseCommand
 
         if (!$media){
             $this->log(sprintf('NOT FOUND: %s - %s', $mediaId, $format));
-            echo "Media not found with id: " . $mediaId;
-            exit(1);
+            $this->io->writeLn("Media not found with id: " . $mediaId);
+            return Command::FAILURE;
         }
 
         $provider = $this->pool->getProvider($media->getProviderName());
@@ -56,12 +58,12 @@ class PhotoCreateThumbnailCommand extends BaseCommand
             $provider->generateThumbnail($media, $format);
         } catch (Exception $e) {
             $this->log(sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
-            echo "Generating thumbnails error: " . $e->getMessage();
-            exit(1);
+            $this->io->writeln("Generating thumbnails error: " . $e->getMessage());
+            return Command::FAILURE;
         }
 
         $this->log(sprintf('Done with %d - %s', $media->getId(), $format));
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

@@ -4,9 +4,13 @@ namespace NetBull\MediaBundle\Command;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use NetBull\MediaBundle\Entity\Media;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class PhotoResizeMissingCommand
@@ -19,30 +23,42 @@ class PhotoResizeMissingCommand extends BaseCommand
      */
     public function configure()
     {
-        $this
-            ->setName('media:resize')
-            ->setDescription('Resize missing thumbnails')
-        ;
+        $this->setName('media:resize')
+            ->addArgument('context', InputArgument::OPTIONAL, 'The context')
+            ->setDescription('Resize missing thumbnails');
     }
 
     /**
-     * {@inheritdoc}
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $em = $this->getManager();
-        $this->output = $output;
+        $this->io = new SymfonyStyle($input, $output);
+
+        $context  = $input->getArgument('context');
+        if (null === $context) {
+            $contexts = array_keys($this->pool->getContexts());
+            $helper = $this->getHelper('question');
+            $question = new ChoiceQuestion('Please select the context', $contexts);
+            $context = $helper->ask($input, $output, $question);
+        }
 
         $qb = $em->createQueryBuilder();
         $medias = $qb->select('m.id')
             ->from(Media::class, 'm')
-            ->where($qb->expr()->eq('m.providerName', ':providerName'))
+            ->where($qb->expr()->andX(
+                $qb->expr()->eq('m.providerName', ':providerName'),
+                $qb->expr()->eq('m.context', ':context')
+            ))
             ->setParameters([
                 'providerName' => 'netbull_media.provider.image',
+                'context' => $context,
             ])
             ->getQuery()
-            ->getArrayResult()
-        ;
+            ->getArrayResult();
 
         $this->log(sprintf('Loaded %s medias for generating thumbs', count($medias)));
 
@@ -52,7 +68,7 @@ class PhotoResizeMissingCommand extends BaseCommand
 
         $this->log('Done.');
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -107,10 +123,10 @@ class PhotoResizeMissingCommand extends BaseCommand
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @return bool
      */
-    private function hasThumbnails($url)
+    private function hasThumbnails(string $url): bool
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$url);
