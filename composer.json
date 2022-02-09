@@ -14,9 +14,9 @@
     "aws/aws-sdk-php": "3.*",
     "imagine/imagine": "1.*",
     "knplabs/gaufrette": "0.9.*",
-    "symfony/http-client": "5.1.*|5.2.*",
-    "symfony/process": "5.1.*|5.2.*",
-    "symfony/mime": "5.1.*|5.2.*",
+    "symfony/http-client": "5.2.*|5.3.*|5.4.*",
+    "symfony/process": "5.2.*|5.3.*|5.4.*",
+    "symfony/mime": "5.2.*|5.3.*|5.4.*",
     "knplabs/doctrine-behaviors": "^2.0",
     "ext-curl": "*"
   },
