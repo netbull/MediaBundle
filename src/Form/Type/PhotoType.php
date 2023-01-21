@@ -14,14 +14,11 @@ use NetBull\MediaBundle\Entity\Media;
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Form\DataTransformer\ProviderDataTransformer;
 
-/**
- * Class PhotoType
- * @package NetBull\MediaBundle\Form\Type
- */
 class PhotoType extends BaseType
 {
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $builder
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -55,7 +52,7 @@ class PhotoType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -69,9 +66,9 @@ class PhotoType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'netbull_media_photo_type';
     }

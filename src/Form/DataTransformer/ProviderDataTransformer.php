@@ -7,10 +7,6 @@ use NetBull\MediaBundle\Entity\Media;
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Class ProviderDataTransformer
- * @package NetBull\MediaBundle\Form\DataTransformer
- */
 class ProviderDataTransformer implements DataTransformerInterface
 {
     /**
@@ -34,13 +30,10 @@ class ProviderDataTransformer implements DataTransformerInterface
     }
 
     /**
-     * Define the default options for the DataTransformer.
-     *
      * @param array $options
-     *
      * @return array
      */
-    protected function getOptions(array $options)
+    protected function getOptions(array $options): array
     {
         return array_merge([
             'provider' => false,
@@ -51,7 +44,8 @@ class ProviderDataTransformer implements DataTransformerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param $value
+     * @return MediaInterface
      */
     public function transform($value)
     {
@@ -63,7 +57,8 @@ class ProviderDataTransformer implements DataTransformerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param $media
+     * @return MediaInterface|null
      */
     public function reverseTransform($media)
     {

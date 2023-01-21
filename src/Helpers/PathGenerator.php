@@ -9,10 +9,6 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-/**
- * Class PathGenerator
- * @package NetBull\MediaBundle\Helpers
- */
 class PathGenerator
 {
     const FIRST_LEVEL = 100000;
@@ -29,9 +25,8 @@ class PathGenerator
     private $twig;
 
     /**
-     * PathGenerator constructor.
      * @param Pool $pool
-     * @param null|Environment $twig
+     * @param Environment|null $twig
      */
     function __construct(Pool $pool, ?Environment $twig)
     {
@@ -41,9 +36,9 @@ class PathGenerator
 
     /**
      * @param $media
-     * @return mixed
+     * @return string
      */
-    public static function generatePath($media)
+    public static function generatePath($media): string
     {
         if ($media instanceof MediaInterface) {
             $id = $media->getId();
@@ -63,7 +58,7 @@ class PathGenerator
      * @param string $format
      * @return string
      */
-    public function generate($media, string $format = 'normal')
+    public function generate($media, string $format = 'normal'): string
     {
         $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
 
@@ -74,9 +69,9 @@ class PathGenerator
     /**
      * @param $media
      * @param string $format
-     * @return null|string
+     * @return string|null
      */
-    public function view($media, string $format = 'normal')
+    public function view($media, string $format = 'normal'): ?string
     {
         if (!$this->twig) {
             return null;

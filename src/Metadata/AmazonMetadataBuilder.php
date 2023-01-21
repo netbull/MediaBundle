@@ -2,10 +2,6 @@
 
 namespace NetBull\MediaBundle\Metadata;
 
-/**
- * Class AmazonMetadataBuilder
- * @package NetBull\MediaBundle\Metadata
- */
 class AmazonMetadataBuilder implements MetadataBuilderInterface
 {
     /**
@@ -216,11 +212,9 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     }
 
     /**
-     * Get data passed from the config.
-     *
      * @return array
      */
-    protected function getDefaultMetadata()
+    protected function getDefaultMetadata(): array
     {
         //merge acl
         $output = [];
@@ -255,13 +249,10 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     }
 
     /**
-     * Gets the correct content-type.
-     *
      * @param string $filename
-     *
-     * @return array
+     * @return string[]
      */
-    protected function getContentType($filename)
+    protected function getContentType(string $filename): array
     {
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         $contentType = self::getMimeType($extension);
@@ -270,9 +261,10 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $filename
+     * @return array
      */
-    public function get($filename)
+    public function get(string $filename): array
     {
         return array_replace_recursive(
             $this->getDefaultMetadata(),
@@ -286,9 +278,9 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
      * @param string $ext (Required) The file extension to attempt to map.
      * @return string The mime-type to use for the file extension.
      */
-    public static function getMimeType($ext)
+    public static function getMimeType(string $ext): string
     {
         $ext = strtolower($ext);  // Make sure the passed in extension is lowercase
-        return isset(self::$mime_types[$ext]) ? self::$mime_types[$ext] : 'application/octet-stream';
+        return self::$mime_types[$ext] ?? 'application/octet-stream';
     }
 }

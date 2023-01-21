@@ -8,14 +8,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use NetBull\MediaBundle\Entity\Media;
 
-/**
- * Class MediaDynamicType
- * @package NetBull\MediaBundle\Form\Type
- */
 class MediaDynamicType extends BaseType
 {
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $builder
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -29,7 +26,9 @@ class MediaDynamicType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @param FormView $view
+     * @param FormInterface $form
+     * @param array $options
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -39,7 +38,7 @@ class MediaDynamicType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -55,9 +54,9 @@ class MediaDynamicType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'netbull_media_dynamic_type';
     }

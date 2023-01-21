@@ -10,11 +10,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-/**
- * This is the class that loads and manages your bundle configuration.
- *
- * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
- */
 class NetBullMediaExtension extends Extension
 {
     /**
@@ -72,9 +67,7 @@ class NetBullMediaExtension extends Extension
     }
 
     /**
-     * Inject filesystem dependency to default provider.
-     *
-     * @param ContainerBuilder  $container
+     * @param ContainerBuilder $container
      */
     public function configureFilesystemAdapter(ContainerBuilder $container)
     {
@@ -82,8 +75,7 @@ class NetBullMediaExtension extends Extension
         if ($container->hasDefinition('netbull_media.adapter.filesystem.local') && isset($this->config['filesystem']['local'])) {
             $container->getDefinition('netbull_media.adapter.filesystem.local')
                 ->replaceArgument(0, $this->config['filesystem']['local']['directory'])
-                ->addArgument($this->config['filesystem']['local']['create'])
-            ;
+                ->addArgument($this->config['filesystem']['local']['create']);
         } else {
             $container->removeDefinition('netbull_media.adapter.filesystem.local');
         }
@@ -112,8 +104,7 @@ class NetBullMediaExtension extends Extension
                     'encryption' => $this->config['filesystem']['s3']['options']['encryption'],
                     'meta' => $this->config['filesystem']['s3']['options']['meta'],
                     'cache_control' => $this->config['filesystem']['s3']['options']['cache_control']
-                ])
-            ;
+                ]);
         } else {
             $container->removeDefinition('netbull_media.adapter.filesystem.s3');
             $container->removeDefinition('netbull_media.filesystem.s3');
@@ -130,8 +121,6 @@ class NetBullMediaExtension extends Extension
     }
 
     /**
-     * Inject CDN dependency to default provider.
-     *
      * @param ContainerBuilder $container
      */
     public function configureCdnAdapter(ContainerBuilder $container)
@@ -140,8 +129,7 @@ class NetBullMediaExtension extends Extension
         if ($container->hasDefinition('netbull_media.cdn.server') && isset($this->config['cdn']['server'])) {
             $container->getDefinition('netbull_media.cdn.server')
                 ->replaceArgument(0, $this->config['cdn']['server']['path'])
-                ->replaceArgument(1, $this->config['cdn']['server']['paths'])
-            ;
+                ->replaceArgument(1, $this->config['cdn']['server']['paths']);
         } else {
             $container->removeDefinition('netbull_media.cdn.server');
         }
@@ -151,8 +139,7 @@ class NetBullMediaExtension extends Extension
                 ->replaceArgument(0, $this->config['cdn']['server']['path'])
                 ->replaceArgument(1, $this->config['cdn']['dev']['path'])
                 ->replaceArgument(2, $this->config['filesystem']['local']['directory'])
-                ->replaceArgument(3, $this->config['cdn']['server']['paths'])
-            ;
+                ->replaceArgument(3, $this->config['cdn']['server']['paths']);
         } else {
             $container->removeDefinition('netbull_media.cdn.local.server');
         }
@@ -166,23 +153,20 @@ class NetBullMediaExtension extends Extension
         $container->getDefinition('netbull_media.provider.image')
             ->replaceArgument(4, new Reference($this->config['providers']['image']['adapter']))
             ->replaceArgument(5, array_map('strtolower', $this->config['providers']['image']['allowed_extensions']))
-            ->replaceArgument(6, $this->config['providers']['image']['allowed_mime_types'])
-        ;
+            ->replaceArgument(6, $this->config['providers']['image']['allowed_mime_types']);
 
         $container->getDefinition('netbull_media.provider.file')
             ->replaceArgument(4, $this->config['providers']['file']['allowed_extensions'])
-            ->replaceArgument(5, $this->config['providers']['file']['allowed_mime_types'])
-        ;
+            ->replaceArgument(5, $this->config['providers']['file']['allowed_mime_types']);
 
         $container->getDefinition('netbull_media.provider.youtube')
-            ->replaceArgument(5, $this->config['providers']['youtube']['html5'])
-        ;
+            ->replaceArgument(5, $this->config['providers']['youtube']['html5']);
     }
 
     /**
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'netbull_media';
     }

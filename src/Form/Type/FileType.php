@@ -6,14 +6,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use NetBull\MediaBundle\Entity\Media;
 
-/**
- * Class FileType
- * @package NetBull\MediaBundle\Form\Type
- */
 class FileType extends BaseType
 {
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $builder
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -28,7 +25,7 @@ class FileType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -43,9 +40,9 @@ class FileType extends BaseType
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'netbull_media_file_type';
     }

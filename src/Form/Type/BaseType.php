@@ -9,18 +9,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
-/**
- * Class BaseType
- * @package NetBull\MediaBundle\Form\Type
- */
 abstract class BaseType extends AbstractType
 {
     /**
      * @var Pool
      */
     protected $pool;
+
     /**
-     * MediaType constructor.
      * @param Pool $pool
      */
     public function __construct(Pool $pool)
@@ -29,7 +25,8 @@ abstract class BaseType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $builder
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -42,7 +39,9 @@ abstract class BaseType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @param FormView $view
+     * @param FormInterface $form
+     * @param array $options
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {

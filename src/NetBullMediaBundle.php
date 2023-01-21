@@ -8,14 +8,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use NetBull\MediaBundle\DependencyInjection\NetBullMediaExtension;
 use NetBull\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
 
-/**
- * Class NetBullMediaBundle
- * @package NetBull\MediaBundle
- */
 class NetBullMediaBundle extends Bundle
 {
     /**
-     * {@inheritdoc}
+     * @param ContainerBuilder $container
      */
     public function build(ContainerBuilder $container)
     {
@@ -23,9 +19,9 @@ class NetBullMediaBundle extends Bundle
     }
 
     /**
-     * @return NetBullMediaExtension|null|ExtensionInterface
+     * @return ExtensionInterface|null
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new NetBullMediaExtension();
     }

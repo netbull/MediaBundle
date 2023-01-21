@@ -10,10 +10,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-/**
- * Class AddProviderCompilerPass
- * @package NetBull\MediaBundle\DependencyInjection\Compiler
- */
 class AddProviderCompilerPass implements CompilerPassInterface
 {
     /**
@@ -22,7 +18,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     private $config = [];
 
     /**
-     * {@inheritDoc}
+     * @param ContainerBuilder $container
      */
     public function process(ContainerBuilder $container)
     {
@@ -72,10 +68,8 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 if ($config['service'] === $id) {
                     $definition = $container->getDefinition($id);
 
-                    $definition
-                        ->replaceArgument(1, new Reference($config['filesystem']))
-                        ->replaceArgument(2, new Reference($config['cdn']))
-                    ;
+                    $definition->replaceArgument(1, new Reference($config['filesystem']))
+                        ->replaceArgument(2, new Reference($config['cdn']));
 
                     if ($config['resizer']) {
                         $definition->addMethodCall('setResizer', [new Reference($config['resizer'])]);
@@ -86,7 +80,6 @@ class AddProviderCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Define the default settings to the config array.
      * @param ContainerBuilder $container
      */
     public function applyFormats(ContainerBuilder $container)
@@ -101,10 +94,10 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 $definition = $container->getDefinition($id);
 
                 foreach ($context['formats'] as $format => $config) {
-                    $config['quality'] = isset($config['quality']) ? $config['quality'] : 80;
-                    $config['format'] = isset($config['format']) ? $config['format'] : 'jpg';
-                    $config['height'] = isset($config['height']) ? $config['height'] : null;
-                    $config['constraint'] = isset($config['constraint']) ? $config['constraint'] : true;
+                    $config['quality'] = $config['quality'] ?? 80;
+                    $config['format'] = $config['format'] ?? 'jpg';
+                    $config['height'] = $config['height'] ?? null;
+                    $config['constraint'] = $config['constraint'] ?? true;
 
                     $formatName = sprintf('%s_%s', $name, $format);
                     $definition->addMethodCall('addFormat', [$formatName, $config]);
