@@ -1,3 +1,10 @@
+## [6.0.1](https://github.com/netbull/MediaBundle/compare/v6.0.0...v6.0.1) (2023-09-28)
+
+
+### Performance Improvements
+
+* **pencil:** bump versions ([2ab2a9a](https://github.com/netbull/MediaBundle/commit/2ab2a9a66a6b3b384932ccd358d8ee2687ddcaec))
+
 # [6.0.0](https://github.com/netbull/MediaBundle/compare/v5.4.2...v6.0.0) (2023-09-28)
 
 
