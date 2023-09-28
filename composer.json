@@ -15,7 +15,7 @@
     "imagine/imagine": "1.*",
     "knplabs/gaufrette": "0.9.*",
     "symfony/http-client": "6.3.*",
-    "symfony/process": "6.43.*",
+    "symfony/process": "6.3.*",
     "symfony/mime": "6.3.*",
     "knplabs/doctrine-behaviors": "^2.0",
     "ext-curl": "*"
