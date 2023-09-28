@@ -1,3 +1,15 @@
+# [6.0.0](https://github.com/netbull/MediaBundle/compare/v5.4.2...v6.0.0) (2023-09-28)
+
+
+### Performance Improvements
+
+* **pencil:** bump versions ([8a1c8a0](https://github.com/netbull/MediaBundle/commit/8a1c8a0b8744c0446721dd78d6fb0bc746e40a2b))
+
+
+### BREAKING CHANGES
+
+* **pencil:** bump to Symfony 6.3
+
 ## [5.4.2](https://github.com/netbull/MediaBundle/compare/v5.4.1...v5.4.2) (2023-01-21)
 
 
