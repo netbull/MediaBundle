@@ -47,6 +47,13 @@ class NetBullMediaExtension extends Extension
         $container->setParameter('netbull_media.resizer.simple.adapter.mode', $this->config['resizer']['simple']['mode']);
         $container->setParameter('netbull_media.resizer.square.adapter.mode', $this->config['resizer']['square']['mode']);
 
+        foreach (['netbull_media.resizer.simple', 'netbull_media.resizer.square'] as $resizerId) {
+            if ($container->hasDefinition($resizerId)) {
+                $container->getDefinition($resizerId)
+                    ->replaceArgument(0, new Reference('netbull_media.adapter.image.'.$this->config['resizer']['adapter']));
+            }
+        }
+
         $strategies = [];
         foreach ($this->config['contexts'] as $name => $settings) {
             $formats = [];
