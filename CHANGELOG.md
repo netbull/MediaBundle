@@ -1,3 +1,10 @@
+## [6.0.2](https://github.com/netbull/MediaBundle/compare/v6.0.1...v6.0.2) (2023-12-06)
+
+
+### Bug Fixes
+
+* added option to change resize adapter ([7821758](https://github.com/netbull/MediaBundle/commit/78217583d749f66e7dc1afe07e8f27e0eb0a78e6))
+
 ## [6.0.1](https://github.com/netbull/MediaBundle/compare/v6.0.0...v6.0.1) (2023-09-28)
 
 
