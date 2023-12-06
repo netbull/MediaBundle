@@ -295,6 +295,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('resizer')
                     ->addDefaultsIfNotSet()
                     ->children()
+                        ->scalarNode('adapter')->defaultValue('imagick')->end()
                         ->arrayNode('simple')
                             ->addDefaultsIfNotSet()
                             ->children()
