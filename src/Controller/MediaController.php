@@ -3,6 +3,7 @@
 namespace NetBull\MediaBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Gaufrette\Exception\FileNotFound;
 use NetBull\MediaBundle\EventListener\HashedMediaViewEvent;
 use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -77,7 +78,12 @@ class MediaController extends AbstractController
             $format = 'reference';
         }
         $provider = $this->getProvider($media);
-        $response = $provider->getDownloadResponse($media, $provider->getFormatName($media, $format), $this->pool->getDownloadMode($media));
+
+        try {
+            $response = $provider->getDownloadResponse($media, $provider->getFormatName($media, $format), $this->pool->getDownloadMode($media));
+        } catch (FileNotFound $e) {
+            throw $this->createNotFoundException();
+        }
 
         if ($response instanceof BinaryFileResponse) {
             $response->prepare($request);
@@ -110,7 +116,12 @@ class MediaController extends AbstractController
             $format = 'reference';
         }
         $provider = $this->getProvider($media);
-        $response = $provider->getViewResponse($media, $provider->getFormatName($media, $format));
+
+        try {
+            $response = $provider->getViewResponse($media, $provider->getFormatName($media, $format));
+        } catch (FileNotFound $e) {
+            throw $this->createNotFoundException();
+        }
 
         if ($response instanceof BinaryFileResponse) {
             $response->prepare($request);
