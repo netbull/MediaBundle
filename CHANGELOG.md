@@ -1,3 +1,10 @@
+# [5.5.0](https://github.com/netbull/MediaBundle/compare/v5.4.3...v5.5.0) (2024-08-27)
+
+
+### Features
+
+* added HashSecurityStrategy ([9c7578a](https://github.com/netbull/MediaBundle/commit/9c7578affdf559dc76f0e3cad1db1047e4e6dcd5))
+
 ## [5.4.2](https://github.com/netbull/MediaBundle/compare/v5.4.1...v5.4.2) (2023-01-21)
 
 
