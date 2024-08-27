@@ -9,6 +9,7 @@ use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class YouTubeProvider
@@ -280,9 +281,25 @@ class YouTubeProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param $format
+     * @param $mode
+     * @param array $headers
+     * @return Response
      */
-    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = [])
+    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = []): Response
+    {
+        return new RedirectResponse(sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
+    }
+
+    /**
+     * @param MediaInterface $media
+     * @param $format
+     * @param $mode
+     * @param array $headers
+     * @return Response
+     */
+    public function getViewResponse(MediaInterface $media, $format, array $headers = []): Response
     {
         return new RedirectResponse(sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }

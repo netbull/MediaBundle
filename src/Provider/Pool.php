@@ -3,34 +3,35 @@
 namespace NetBull\MediaBundle\Provider;
 
 use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Security\DownloadStrategyInterface;
+use NetBull\MediaBundle\Security\SecurityStrategyInterface;
 use RuntimeException;
 
-/**
- * Class Pool
- * @package NetBull\MediaBundle\Provider
- */
 class Pool
 {
     /**
      * @var array
      */
-    protected $providers = [];
+    protected array $providers = [];
 
     /**
      * @var array
      */
-    protected $contexts = [];
+    protected array $contexts = [];
 
     /**
      * @var array
      */
-    protected $downloadSecurities = [];
+    protected array $downloadSecurities = [];
+
+    /**
+     * @var array
+     */
+    protected array $viewSecurities = [];
 
     /**
      * @var string
      */
-    protected $defaultContext;
+    protected string $defaultContext;
 
     /**
      * @param string $context
@@ -41,13 +42,13 @@ class Pool
     }
 
     /**
-     * @throws RuntimeException
-     *
      * @param string $name
      *
      * @return MediaProviderInterface
+     * @throws RuntimeException
+     *
      */
-    public function getProvider($name)
+    public function getProvider(string $name): MediaProviderInterface
     {
         if (!isset($this->providers[$name])) {
             throw new RuntimeException(sprintf('unable to retrieve the provider named : `%s`', $name));
@@ -67,11 +68,20 @@ class Pool
 
     /**
      * @param string $name
-     * @param DownloadStrategyInterface $security
+     * @param SecurityStrategyInterface $security
      */
-    public function addDownloadSecurity(string $name, DownloadStrategyInterface $security)
+    public function addDownloadSecurity(string $name, SecurityStrategyInterface $security)
     {
         $this->downloadSecurities[$name] = $security;
+    }
+
+    /**
+     * @param string $name
+     * @param SecurityStrategyInterface $security
+     */
+    public function addViewSecurity(string $name, SecurityStrategyInterface $security)
+    {
+        $this->viewSecurities[$name] = $security;
     }
 
     /**
@@ -85,7 +95,7 @@ class Pool
     /**
      * @return MediaProviderInterface[]
      */
-    public function getProviders()
+    public function getProviders(): array
     {
         return $this->providers;
     }
@@ -95,20 +105,24 @@ class Pool
      * @param array $providers
      * @param array $formats
      * @param array $download
+     * @param array $view
+     * @return void
      */
-    public function addContext(string $name, array $providers = [], array $formats = [], array $download = [])
+    public function addContext(string $name, array $providers = [], array $formats = [], array $download = [], array $view = [])
     {
         if (!$this->hasContext($name)) {
             $this->contexts[$name] = [
                 'providers' => [],
                 'formats' => [],
                 'download' => [],
+                'view' => [],
             ];
         }
 
         $this->contexts[$name]['providers'] = $providers;
         $this->contexts[$name]['formats'] = $formats;
         $this->contexts[$name]['download'] = $download;
+        $this->contexts[$name]['view'] = $view;
     }
 
     /**
@@ -116,7 +130,7 @@ class Pool
      *
      * @return bool
      */
-    public function hasContext(string $name)
+    public function hasContext(string $name): bool
     {
         return isset($this->contexts[$name]);
     }
@@ -126,7 +140,7 @@ class Pool
      *
      * @return array|null
      */
-    public function getContext(string $name)
+    public function getContext(string $name): ?array
     {
         if (!$this->hasContext($name)) {
             return null;
@@ -140,7 +154,7 @@ class Pool
      *
      * @return array
      */
-    public function getContexts()
+    public function getContexts(): array
     {
         return $this->contexts;
     }
@@ -150,7 +164,7 @@ class Pool
      *
      * @return array|null
      */
-    public function getProviderNamesByContext(string $name)
+    public function getProviderNamesByContext(string $name): ?array
     {
         $context = $this->getContext($name);
 
@@ -166,7 +180,7 @@ class Pool
      *
      * @return array|null
      */
-    public function getFormatNamesByContext(string $name)
+    public function getFormatNamesByContext(string $name): ?array
     {
         $context = $this->getContext($name);
 
@@ -182,7 +196,7 @@ class Pool
      *
      * @return array
      */
-    public function getProvidersByContext(string $name)
+    public function getProvidersByContext(string $name): array
     {
         $providers = [];
 
@@ -200,7 +214,7 @@ class Pool
     /**
      * @return array
      */
-    public function getProviderList()
+    public function getProviderList(): array
     {
         $choices = [];
         foreach (array_keys($this->providers) as $name) {
@@ -213,11 +227,11 @@ class Pool
     /**
      * @param MediaInterface $media
      *
-     * @return DownloadStrategyInterface
+     * @return SecurityStrategyInterface
      *
      * @throws RuntimeException
      */
-    public function getDownloadSecurity(MediaInterface $media)
+    public function getDownloadSecurity(MediaInterface $media): SecurityStrategyInterface
     {
         $context = $this->getContext($media->getContext());
 
@@ -233,9 +247,29 @@ class Pool
     /**
      * @param MediaInterface $media
      *
+     * @return SecurityStrategyInterface
+     *
+     * @throws RuntimeException
+     */
+    public function getViewSecurity(MediaInterface $media): SecurityStrategyInterface
+    {
+        $context = $this->getContext($media->getContext());
+
+        $id = $context['view']['strategy'];
+
+        if (!isset($this->viewSecurities[$id])) {
+            throw new RuntimeException('Unable to retrieve the view security : '.$id);
+        }
+
+        return $this->viewSecurities[$id];
+    }
+
+    /**
+     * @param MediaInterface $media
+     *
      * @return string
      */
-    public function getDownloadMode(MediaInterface $media)
+    public function getDownloadMode(MediaInterface $media): string
     {
         $context = $this->getContext($media->getContext());
 
@@ -245,7 +279,7 @@ class Pool
     /**
      * @return string
      */
-    public function getDefaultContext()
+    public function getDefaultContext(): string
     {
         return $this->defaultContext;
     }

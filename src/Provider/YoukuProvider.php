@@ -8,6 +8,7 @@ use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class YoukuProvider
@@ -180,9 +181,25 @@ class YoukuProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param $format
+     * @param $mode
+     * @param array $headers
+     * @return Response
      */
-    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = [])
+    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = []): Response
+    {
+        return new RedirectResponse(sprintf('http://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
+    }
+
+    /**
+     * @param MediaInterface $media
+     * @param $format
+     * @param $mode
+     * @param array $headers
+     * @return Response
+     */
+    public function getViewResponse(MediaInterface $media, $format, array $headers = []): Response
     {
         return new RedirectResponse(sprintf('http://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
     }

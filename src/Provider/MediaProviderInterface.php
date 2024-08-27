@@ -144,6 +144,18 @@ interface MediaProviderInterface
     public function generatePublicUrl($media, string $format);
 
     /**
+     * Generate the secured url.
+     *
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @param string $identifier
+     * @param int $expires
+     *
+     * @return string
+     */
+    public function generateSecuredUrl($media, string $format, string $identifier, int $expires = 300): string;
+
+    /**
      * Generate the private path.
      *
      * @param MediaInterface $media
@@ -178,7 +190,16 @@ interface MediaProviderInterface
      *
      * @return Response
      */
-    public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []);
+    public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response;
+
+    /**
+     * @param MediaInterface $media
+     * @param string $format
+     * @param array $headers
+     *
+     * @return Response
+     */
+    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response;
 
     /**
      * @return ResizerInterface

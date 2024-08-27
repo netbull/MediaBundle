@@ -10,7 +10,7 @@ services:
         class: NetBull\MediaBundle\Provider\ImageProvider
         tags:
             - { name: netbull_media.provider }
-        arguments: ['netbull_media.provider.image', '', '', '@NetBull\MediaBundle\Thumbnail\FormatThumbnail', '', '', '', '@netbull_media.metadata.amazon']
+        arguments: ['netbull_media.provider.image', '', '', '@NetBull\MediaBundle\Thumbnail\FormatThumbnail', '@router', '@NetBull\MediaBundle\Signature\SimpleSignatureHasher', '', '', '', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMedia/Provider/thumbnail.html.twig', helper_view: '\NetBullMedia/Provider/view_image.html.twig' }]]
 
@@ -18,7 +18,7 @@ services:
         class: NetBull\MediaBundle\Provider\FileProvider
         tags:
             - { name: netbull_media.provider }
-        arguments: ['netbull_media.provider.file', '', '', '@NetBull\MediaBundle\Thumbnail\FormatThumbnail', '', '', '@netbull_media.metadata.amazon']
+        arguments: ['netbull_media.provider.file', '', '', '@NetBull\MediaBundle\Thumbnail\FormatThumbnail', '@router', '@NetBull\MediaBundle\Signature\SimpleSignatureHasher', '', '', '@netbull_media.metadata.amazon']
         calls:
             - [setTemplates, [{ helper_thumbnail: 'NetBullMedia/Provider/thumbnail.html.twig', helper_view: 'NetBullMedia/Provider/view_file.html.twig' }]]
 

@@ -37,6 +37,8 @@ class NetBullMediaExtension extends Extension
         $loader->load('twig.yaml');
         $loader->load('helpers.yaml');
         $loader->load('console.yaml');
+        $loader->load('signature.yaml');
+        $loader->load('controller.yaml');
 
         $this->configureFilesystemAdapter($container);
         $this->configureCdnAdapter($container);
@@ -54,20 +56,25 @@ class NetBullMediaExtension extends Extension
             }
         }
 
-        $strategies = [];
+        $downloadStrategies = $viewStrategies = [];
         foreach ($this->config['contexts'] as $name => $settings) {
             $formats = [];
             foreach ($settings['formats'] as $format => $value) {
                 $formats[$name.'_'.$format] = $value;
             }
 
-            $strategies[] = $settings['download']['strategy'];
-            $pool->addMethodCall('addContext', [$name, $settings['providers'], $formats, $settings['download']]);
+            $downloadStrategies[] = $settings['download']['strategy'];
+            $viewStrategies[] = $settings['view']['strategy'];
+            $pool->addMethodCall('addContext', [$name, $settings['providers'], $formats, $settings['download'], $settings['view']]);
         }
 
-        $strategies = array_unique($strategies);
-        foreach ($strategies as $strategyId) {
+        $downloadStrategies = array_unique($downloadStrategies);
+        foreach ($downloadStrategies as $strategyId) {
             $pool->addMethodCall('addDownloadSecurity', [$strategyId, new Reference($strategyId)]);
+        }
+        $viewStrategies = array_unique($viewStrategies);
+        foreach ($viewStrategies as $strategyId) {
+            $pool->addMethodCall('addViewSecurity', [$strategyId, new Reference($strategyId)]);
         }
 
         $this->configureProviders($container);
@@ -158,13 +165,13 @@ class NetBullMediaExtension extends Extension
     public function configureProviders(ContainerBuilder $container)
     {
         $container->getDefinition('netbull_media.provider.image')
-            ->replaceArgument(4, new Reference($this->config['providers']['image']['adapter']))
-            ->replaceArgument(5, array_map('strtolower', $this->config['providers']['image']['allowed_extensions']))
-            ->replaceArgument(6, $this->config['providers']['image']['allowed_mime_types']);
+            ->replaceArgument(6, new Reference($this->config['providers']['image']['adapter']))
+            ->replaceArgument(7, array_map('strtolower', $this->config['providers']['image']['allowed_extensions']))
+            ->replaceArgument(8, $this->config['providers']['image']['allowed_mime_types']);
 
         $container->getDefinition('netbull_media.provider.file')
-            ->replaceArgument(4, $this->config['providers']['file']['allowed_extensions'])
-            ->replaceArgument(5, $this->config['providers']['file']['allowed_mime_types']);
+            ->replaceArgument(6, $this->config['providers']['file']['allowed_extensions'])
+            ->replaceArgument(7, $this->config['providers']['file']['allowed_mime_types']);
 
         $container->getDefinition('netbull_media.provider.youtube')
             ->replaceArgument(5, $this->config['providers']['youtube']['html5']);

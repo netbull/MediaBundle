@@ -1,11 +1,18 @@
 services:
     netbull_media.security.public_strategy:
-        class: NetBull\MediaBundle\Security\PublicDownloadStrategy
+        class: NetBull\MediaBundle\Security\PublicSecurityStrategy
+
     netbull_media.security.forbidden_strategy:
-        class: NetBull\MediaBundle\Security\ForbiddenDownloadStrategy
+        class: NetBull\MediaBundle\Security\ForbiddenSecurityStrategy
+
     netbull_media.security.superadmin_strategy:
-        class: NetBull\MediaBundle\Security\RolesDownloadStrategy
+        class: NetBull\MediaBundle\Security\RolesSecurityStrategy
         arguments: ['@security.authorization_checker', [ROLE_SUPER_ADMIN, ROLE_ADMIN]]
+
     netbull_media.security.connected_strategy:
-        class: NetBull\MediaBundle\Security\RolesDownloadStrategy
+        class: NetBull\MediaBundle\Security\RolesSecurityStrategy
         arguments: ['@security.authorization_checker', [IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED]]
+
+    netbull_media.security.hash_strategy:
+        class: NetBull\MediaBundle\Security\HashSecurityStrategy
+        arguments: ['@NetBull\MediaBundle\Signature\SimpleSignatureHasher']

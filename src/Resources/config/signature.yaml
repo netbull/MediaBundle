@@ -1,0 +1,3 @@
+services:
+    NetBull\MediaBundle\Signature\SimpleSignatureHasher:
+      arguments: [ '%kernel.secret%' ]

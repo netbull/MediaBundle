@@ -11,6 +11,7 @@
   ],
   "license" : "AGPL-3.0-or-later",
   "require" : {
+    "php": ">=7.4|8.*",
     "aws/aws-sdk-php": "3.*",
     "imagine/imagine": "1.*",
     "knplabs/gaufrette": "0.9.*",
