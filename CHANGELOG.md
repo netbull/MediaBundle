@@ -1,3 +1,10 @@
+## [6.1.1](https://github.com/netbull/MediaBundle/compare/v6.1.0...v6.1.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* adjusted the format ([e808fe4](https://github.com/netbull/MediaBundle/commit/e808fe43234aafe2361e66bae2c2dd9773479b94))
+
 # [6.1.0](https://github.com/netbull/MediaBundle/compare/v6.0.2...v6.1.0) (2024-08-27)
 
 
