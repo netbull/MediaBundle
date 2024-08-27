@@ -1,3 +1,10 @@
+## [5.5.3](https://github.com/netbull/MediaBundle/compare/v5.5.2...v5.5.3) (2024-08-27)
+
+
+### Bug Fixes
+
+* headers ([9386e0f](https://github.com/netbull/MediaBundle/commit/9386e0fc359df22202b0672f6ae3f2d350ad44bf))
+
 ## [5.5.2](https://github.com/netbull/MediaBundle/compare/v5.5.1...v5.5.2) (2024-08-27)
 
 
