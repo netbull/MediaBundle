@@ -77,7 +77,7 @@ class PathGenerator
         $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
 
         $provider = $this->pool->getProvider($providerName);
-        return $provider->generateSecuredUrl($media, $provider->getFormatName($media, $format), $identifier);
+        return $provider->generateSecuredUrl($media, $format, $identifier);
     }
 
     /**
