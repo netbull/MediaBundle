@@ -1,3 +1,10 @@
+## [5.5.2](https://github.com/netbull/MediaBundle/compare/v5.5.1...v5.5.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* helper path ([55d9f02](https://github.com/netbull/MediaBundle/commit/55d9f028d3cd5c698e197e6b25452552d376406d))
+
 ## [5.5.1](https://github.com/netbull/MediaBundle/compare/v5.5.0...v5.5.1) (2024-08-27)
 
 
