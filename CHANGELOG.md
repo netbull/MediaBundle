@@ -1,3 +1,10 @@
+## [6.1.4](https://github.com/netbull/MediaBundle/compare/v6.1.3...v6.1.4) (2024-08-27)
+
+
+### Bug Fixes
+
+* headers ([d7b220a](https://github.com/netbull/MediaBundle/commit/d7b220a2454e4fba98b1d90e42c5d921be7eef83))
+
 ## [6.1.3](https://github.com/netbull/MediaBundle/compare/v6.1.2...v6.1.3) (2024-08-27)
 
 
