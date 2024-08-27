@@ -1,3 +1,10 @@
+## [5.5.4](https://github.com/netbull/MediaBundle/compare/v5.5.3...v5.5.4) (2024-08-27)
+
+
+### Bug Fixes
+
+* removed not needed format normalization ([ee34d6c](https://github.com/netbull/MediaBundle/commit/ee34d6c3d60976a3e62fdc20c7a1daa30f283c87))
+
 ## [5.5.3](https://github.com/netbull/MediaBundle/compare/v5.5.2...v5.5.3) (2024-08-27)
 
 
