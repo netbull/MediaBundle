@@ -73,6 +73,9 @@ class MediaController extends AbstractController
             throw new AccessDeniedException();
         }
 
+        if ('netbull_media.provider.image' !== $media->getProviderName()) {
+            $format = 'reference';
+        }
         $provider = $this->getProvider($media);
         $response = $provider->getDownloadResponse($media, $provider->getFormatName($media, $format), $this->pool->getDownloadMode($media));
 
@@ -103,6 +106,9 @@ class MediaController extends AbstractController
         }
 
         $this->dispatcher->dispatch(new HashedMediaViewEvent($media->getId(), $request->query->get('u')));
+        if ('netbull_media.provider.image' !== $media->getProviderName()) {
+            $format = 'reference';
+        }
         $provider = $this->getProvider($media);
         $response = $provider->getViewResponse($media, $provider->getFormatName($media, $format));
 
