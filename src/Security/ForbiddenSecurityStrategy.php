@@ -5,11 +5,7 @@ namespace NetBull\MediaBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Class PublicDownloadStrategy
- * @package NetBull\MediaBundle\Security
- */
-class PublicDownloadStrategy implements DownloadStrategyInterface
+class ForbiddenSecurityStrategy implements SecurityStrategyInterface
 {
     /**
      * @param MediaInterface $media
@@ -17,15 +13,15 @@ class PublicDownloadStrategy implements DownloadStrategyInterface
      *
      * @return bool
      */
-    public function isGranted(MediaInterface $media, Request $request)
+    public function isGranted(MediaInterface $media, Request $request): bool
     {
-        return true;
+        return false;
     }
 
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return self::FORBIDDEN_DESCRIPTION;
     }

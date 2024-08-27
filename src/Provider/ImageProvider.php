@@ -6,6 +6,7 @@ use Exception;
 use Gaufrette\Filesystem;
 use Imagine\Image\ImagineInterface;
 use LogicException;
+use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use RuntimeException;
 use SplFileObject;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,32 +17,30 @@ use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use Symfony\Component\Routing\RouterInterface;
 
-/**
- * Class ImageProvider
- * @package NetBull\MediaBundle\Provider
- */
 class ImageProvider extends FileProvider
 {
     /**
      * @var ImagineInterface
      */
-    protected $imagineAdapter;
+    protected ImagineInterface $imagineAdapter;
 
     /**
-     * ImageProvider constructor.
      * @param string $name
      * @param Filesystem $filesystem
      * @param CdnInterface $cdn
      * @param ThumbnailInterface $thumbnail
+     * @param RouterInterface $router
+     * @param SimpleSignatureHasher $simpleSignatureHasher
      * @param ImagineInterface $adapter
      * @param array $allowedExtensions
      * @param array $allowedMimeTypes
      * @param MetadataBuilderInterface|null $metadata
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, ImagineInterface $adapter, array $allowedExtensions = [], array $allowedMimeTypes = [], MetadataBuilderInterface $metadata = null)
+    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, RouterInterface $router, SimpleSignatureHasher $simpleSignatureHasher, ImagineInterface $adapter, array $allowedExtensions = [], array $allowedMimeTypes = [], MetadataBuilderInterface $metadata = null)
     {
-        parent::__construct($name, $filesystem, $cdn, $thumbnail, $allowedExtensions, $allowedMimeTypes, $metadata);
+        parent::__construct($name, $filesystem, $cdn, $thumbnail, $router, $simpleSignatureHasher, $allowedExtensions, $allowedMimeTypes, $metadata);
 
         $this->imagineAdapter = $adapter;
     }

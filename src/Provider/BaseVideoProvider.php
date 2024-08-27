@@ -33,9 +33,9 @@ abstract class BaseVideoProvider extends BaseProvider
     protected $httpClient;
 
     /**
-     * @var MetadataBuilderInterface
+     * @var MetadataBuilderInterface|null
      */
-    protected $metadata;
+    protected ?MetadataBuilderInterface $metadata;
 
     /**
      * BaseVideoProvider constructor.
@@ -98,6 +98,25 @@ abstract class BaseVideoProvider extends BaseProvider
      * {@inheritdoc}
      */
     public function generatePublicUrl($media, $format)
+    {
+        if ('reference' === $format) {
+            $path = $this->getReferenceImage($media);
+        } else {
+            $path = $this->thumbnail->generatePublicUrl($this, $media, $format);
+        }
+
+        return $this->getCdn()->getPath($path);
+    }
+
+    /**
+     * @param MediaInterface|array $media
+     * @param string $format
+     * @param string $identifier
+     * @param int $expires
+     * 
+     * @return string
+     */
+    public function generateSecuredUrl($media, string $format, string $identifier, int $expires = 300): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);

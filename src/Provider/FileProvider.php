@@ -3,11 +3,13 @@
 namespace NetBull\MediaBundle\Provider;
 
 use Gaufrette\Filesystem;
+use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use RuntimeException;
 use SplFileInfo;
 use SplFileObject;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -15,46 +17,35 @@ use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
-/**
- * Class FileProvider
- * @package NetBull\MediaBundle\Provider
- */
 class FileProvider extends BaseProvider
 {
     /**
-     * @var array
+     * @var RouterInterface
      */
-    protected $allowedExtensions;
+    protected RouterInterface $router;
+
+    /**
+     * @var SimpleSignatureHasher
+     */
+    protected SimpleSignatureHasher $simpleSignatureHasher;
 
     /**
      * @var array
      */
-    protected $allowedMimeTypes;
+    protected array $allowedExtensions;
 
     /**
-     * @var MetadataBuilderInterface
+     * @var array
      */
-    protected $metadata;
+    protected array $allowedMimeTypes;
 
     /**
-     * FileProvider constructor.
-     * @param string $name
-     * @param Filesystem $filesystem
-     * @param CdnInterface $cdn
-     * @param ThumbnailInterface $thumbnail
-     * @param array $allowedExtensions
-     * @param array $allowedMimeTypes
-     * @param MetadataBuilderInterface|null $metadata
+     * @var MetadataBuilderInterface|null
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, array $allowedExtensions = [], array $allowedMimeTypes = [], MetadataBuilderInterface $metadata = null)
-    {
-        parent::__construct($name, $filesystem, $cdn, $thumbnail);
-
-        $this->allowedExtensions = $allowedExtensions;
-        $this->allowedMimeTypes = $allowedMimeTypes;
-        $this->metadata = $metadata;
-    }
+    protected ?MetadataBuilderInterface $metadata;
 
     /**
      * {@inheritdoc}
@@ -112,6 +103,28 @@ class FileProvider extends BaseProvider
 
         $this->setFileContents($media);
         $media->resetBinaryContent();
+    }
+
+    /**
+     * @param string $name
+     * @param Filesystem $filesystem
+     * @param CdnInterface $cdn
+     * @param ThumbnailInterface $thumbnail
+     * @param RouterInterface $router
+     * @param SimpleSignatureHasher $simpleSignatureHasher
+     * @param array $allowedExtensions
+     * @param array $allowedMimeTypes
+     * @param MetadataBuilderInterface|null $metadata
+     */
+    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, RouterInterface $router, SimpleSignatureHasher $simpleSignatureHasher, array $allowedExtensions = [], array $allowedMimeTypes = [], MetadataBuilderInterface $metadata = null)
+    {
+        parent::__construct($name, $filesystem, $cdn, $thumbnail);
+
+        $this->router = $router;
+        $this->simpleSignatureHasher = $simpleSignatureHasher;
+        $this->allowedExtensions = $allowedExtensions;
+        $this->allowedMimeTypes = $allowedMimeTypes;
+        $this->metadata = $metadata;
     }
 
     /**
@@ -240,6 +253,40 @@ class FileProvider extends BaseProvider
     }
 
     /**
+     * Generate the secured url.
+     *
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @param string $identifier
+     * @param int $expires
+     *
+     * @return string
+     */
+    public function generateSecuredUrl($media, string $format, string $identifier, int $expires = 300): string
+    {
+        if ('reference' === $format) {
+            $path = $this->getReferenceImage($media);
+        } else {
+            $path = sprintf('../files/%s/file.png', $format);
+        }
+
+        $id = $media instanceof MediaInterface ? $media->getId() : $media['id'];
+
+        $time = time()+$expires;
+
+        $hash = $this->simpleSignatureHasher->computeSignatureHash($identifier, $time);
+        $params = [
+            'id' => $id,
+            'format' => $format,
+            'u' => $identifier,
+            'e' => $time,
+            'h' => $hash,
+        ];
+
+        return $this->router->generate('netbull_media_view', $params, UrlGeneratorInterface::ABSOLUTE_URL);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getHelperProperties($media, string $format, array $options = [])
@@ -312,9 +359,13 @@ class FileProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param $format
+     * @param $mode
+     * @param array $headers
+     * @return Response
      */
-    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = [])
+    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = []): Response
     {
         // build the default headers
         $headers = array_merge([
@@ -325,6 +376,30 @@ class FileProvider extends BaseProvider
         if (!in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'])) {
             throw new RuntimeException('Invalid mode provided');
         }
+
+        if ('reference' === $format) {
+            $file = $this->getReferenceFile($media);
+        } else {
+            $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
+        }
+
+        return new StreamedResponse(function () use ($file) {
+            echo $file->getContent();
+        }, 200, $headers);
+    }
+
+    /**
+     * @param MediaInterface $media
+     * @param $format
+     * @param array $headers
+     * @return Response
+     */
+    public function getViewResponse(MediaInterface $media, $format, array $headers = []): Response
+    {
+        // build the default headers
+        $headers = array_merge([
+            'Content-Type' => $media->getContentType(),
+        ], $headers);
 
         if ('reference' === $format) {
             $file = $this->getReferenceFile($media);

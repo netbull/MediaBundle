@@ -6,24 +6,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Class RolesDownloadStrategy
- * @package NetBull\MediaBundle\Security
- */
-class RolesDownloadStrategy implements DownloadStrategyInterface
+class RolesSecurityStrategy implements SecurityStrategyInterface
 {
     /**
      * @var array
      */
-    protected $roles;
+    protected array $roles;
 
     /**
      * @var AuthorizationChecker
      */
-    protected $security;
+    protected AuthorizationChecker $security;
 
     /**
-     * RolesDownloadStrategy constructor.
      * @param AuthorizationChecker $security
      * @param array $roles
      */
@@ -39,7 +34,7 @@ class RolesDownloadStrategy implements DownloadStrategyInterface
      *
      * @return bool
      */
-    public function isGranted(MediaInterface $media, Request $request)
+    public function isGranted(MediaInterface $media, Request $request): bool
     {
         return $this->security->isGranted($this->roles);
     }
@@ -47,9 +42,8 @@ class RolesDownloadStrategy implements DownloadStrategyInterface
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return self::FORBIDDEN_DESCRIPTION;
-//        return $this->translator->trans('description.roles_download_strategy', ['%roles%' => '<code>'.implode('</code>, <code>', $this->roles).'</code>'], 'NetBullMediaBundle');
     }
 }
