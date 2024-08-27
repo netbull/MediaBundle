@@ -1,3 +1,10 @@
+## [6.1.2](https://github.com/netbull/MediaBundle/compare/v6.1.1...v6.1.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* added twig filter ([2c1ffd7](https://github.com/netbull/MediaBundle/commit/2c1ffd7ed453a0f842be8920b734a3e70d8beff9))
+
 ## [6.1.1](https://github.com/netbull/MediaBundle/compare/v6.1.0...v6.1.1) (2024-08-27)
 
 
