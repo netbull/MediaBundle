@@ -1,3 +1,10 @@
+## [6.1.5](https://github.com/netbull/MediaBundle/compare/v6.1.4...v6.1.5) (2024-08-27)
+
+
+### Bug Fixes
+
+* removed not needed format normalization ([8893c6d](https://github.com/netbull/MediaBundle/commit/8893c6db5f19c217ba5b4f14cc393d8265cc0162))
+
 ## [6.1.4](https://github.com/netbull/MediaBundle/compare/v6.1.3...v6.1.4) (2024-08-27)
 
 
