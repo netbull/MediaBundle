@@ -1,3 +1,10 @@
+## [6.1.6](https://github.com/netbull/MediaBundle/compare/v6.1.5...v6.1.6) (2024-08-27)
+
+
+### Bug Fixes
+
+* added proper exception ([27865de](https://github.com/netbull/MediaBundle/commit/27865de3575ad5447d48bfe8172bacbb9b122762))
+
 ## [6.1.5](https://github.com/netbull/MediaBundle/compare/v6.1.4...v6.1.5) (2024-08-27)
 
 
