@@ -51,6 +51,7 @@ class MediaExtension extends AbstractExtension
     {
         return [
             new TwigFilter('path', [$this, 'generatePublicPath']),
+            new TwigFilter('secure_path', [$this, 'generateSecurePath']),
             new TwigFilter('thumbnail', [$this, 'generateThumbnail'], ['is_safe' => ['html'], 'needs_environment' => true]),
             new TwigFilter('view', [$this, 'generateView'], ['is_safe' => ['html'], 'needs_environment' => true]),
         ];
@@ -76,6 +77,29 @@ class MediaExtension extends AbstractExtension
         $provider = $this->pool->getProvider($providerName);
 
         return $provider->generatePublicUrl($media, $provider->getFormatName($media, $format));
+    }
+
+    /**
+     * @param array|MediaInterface $media
+     * @param string $identifier
+     * @param string $format
+     * @return string
+     */
+    public function generateSecurePath($media, string $identifier, string $format = 'normal'): string
+    {
+        if ($media instanceof MediaInterface) {
+            $providerName = $media->getProviderName();
+        } else {
+            if (isset($media['providerName'])) {
+                $providerName = $media['providerName'];
+            } else {
+                return '';
+            }
+        }
+
+        $provider = $this->pool->getProvider($providerName);
+
+        return $provider->generateSecuredUrl($media, $provider->getFormatName($media, $format), $identifier);
     }
 
     /**
