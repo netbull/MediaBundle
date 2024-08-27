@@ -399,6 +399,7 @@ class FileProvider extends BaseProvider
         // build the default headers
         $headers = array_merge([
             'Content-Type' => $media->getContentType(),
+            'Content-Disposition' => sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
         if ('reference' === $format) {
