@@ -54,7 +54,7 @@ class PathGenerator
     }
 
     /**
-     * @param  MediaInterface|array $media$media
+     * @param  MediaInterface|array $media
      * @param string $format
      * @return string
      */
@@ -64,6 +64,20 @@ class PathGenerator
 
         $provider = $this->pool->getProvider($providerName);
         return $provider->generatePublicUrl($media, $provider->getFormatName($media, $format));
+    }
+
+    /**
+     * @param MediaInterface|array $media
+     * @param string $identifier
+     * @param string $format
+     * @return string
+     */
+    public function generateSecure($media, string $identifier, string $format = 'normal'): string
+    {
+        $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
+
+        $provider = $this->pool->getProvider($providerName);
+        return $provider->generateSecuredUrl($media, $provider->getFormatName($media, $format), $identifier);
     }
 
     /**
