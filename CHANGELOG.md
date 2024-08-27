@@ -1,3 +1,10 @@
+## [5.5.5](https://github.com/netbull/MediaBundle/compare/v5.5.4...v5.5.5) (2024-08-27)
+
+
+### Bug Fixes
+
+* added proper exception ([b5ab504](https://github.com/netbull/MediaBundle/commit/b5ab50403de6f4903494f26c455acd7d0dc67fe3))
+
 ## [5.5.4](https://github.com/netbull/MediaBundle/compare/v5.5.3...v5.5.4) (2024-08-27)
 
 
