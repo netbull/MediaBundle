@@ -7,133 +7,115 @@ use DateTimeInterface;
 use Exception;
 use Imagine\Image\Box;
 use Doctrine\ORM\Mapping as ORM;
+use NetBull\MediaBundle\Repository\MediaRepository;
 
-/**
- * @ORM\Table(name="media")
- * @ORM\Entity(repositoryClass="NetBull\MediaBundle\Repository\MediaRepository")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Table(name: 'media')]
+#[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Media implements MediaInterface
 {
     /**
      * @var int|null
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(nullable=true)
      */
+    #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", nullable=true)
      */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $enabled = false;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(nullable=true)
      */
+    #[ORM\Column(nullable: true)]
     private ?string $providerName = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(nullable=true)
      */
+    #[ORM\Column(nullable: true)]
     private ?string $providerReference = null;
 
     /**
      * @var array
-     *
-     * @ORM\Column(type="json", nullable=true)
      */
+    #[ORM\Column(type: 'json', nullable: true)]
     private array $providerMetadata = [];
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $width = null;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $height = null;
 
     /**
      * @var float|null
-     *
-     * @ORM\Column(type="decimal", nullable=true)
      */
+    #[ORM\Column(type: 'decimal', nullable: true)]
     private ?float $length = null;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $size = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(nullable=true)
      */
+    #[ORM\Column(nullable: true)]
     private ?string $contentType = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(length=64, nullable=true)
      */
+    #[ORM\Column(length: 64, nullable: true)]
     private ?string $context = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(nullable=true)
      */
+    #[ORM\Column(nullable: true)]
     private ?string $caption = null;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $position = null;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private bool $main = false;
 
     /**
      * @var DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private DateTimeInterface $createdAt;
 
     /**
      * @var DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private DateTimeInterface $updatedAt;
 
     #################################################
