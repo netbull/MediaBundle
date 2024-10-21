@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/netbull/MediaBundle/compare/v6.1.6...v6.2.0) (2024-10-21)
+
+
+### Features
+
+* bump symfony versions ([3af048f](https://github.com/netbull/MediaBundle/commit/3af048f73632f1f926ccf7a2cd2e9b8f236ec4cd))
+
 ## [6.1.6](https://github.com/netbull/MediaBundle/compare/v6.1.5...v6.1.6) (2024-08-27)
 
 
