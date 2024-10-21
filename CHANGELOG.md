@@ -1,3 +1,10 @@
+# [6.4.0](https://github.com/netbull/MediaBundle/compare/v6.3.0...v6.4.0) (2024-10-21)
+
+
+### Features
+
+* adjusted to 6.4.* ([e90a346](https://github.com/netbull/MediaBundle/commit/e90a346750069c013cf7f8c1cf60fcbfcd53bd7d))
+
 # [6.2.0](https://github.com/netbull/MediaBundle/compare/v6.1.6...v6.2.0) (2024-10-21)
 
 
