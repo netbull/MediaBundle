@@ -33,7 +33,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param ArrayNodeDefinition $node
      */
-    private function addContextsSection(ArrayNodeDefinition $node)
+    private function addContextsSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()
@@ -82,7 +82,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param ArrayNodeDefinition $node
      */
-    private function addCdnSection(ArrayNodeDefinition $node)
+    private function addCdnSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()
@@ -113,7 +113,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param ArrayNodeDefinition $node
      */
-    private function addFilesystemSection(ArrayNodeDefinition $node)
+    private function addFilesystemSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()
@@ -188,7 +188,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param ArrayNodeDefinition $node
      */
-    private function addProvidersSection(ArrayNodeDefinition $node)
+    private function addProvidersSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()
@@ -295,7 +295,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param ArrayNodeDefinition $node
      */
-    private function addResizerSection(ArrayNodeDefinition $node)
+    private function addResizerSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()

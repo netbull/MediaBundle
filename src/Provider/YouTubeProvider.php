@@ -11,19 +11,14 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class YouTubeProvider
- * @package NetBull\MediaBundle\Provider
- */
 class YouTubeProvider extends BaseVideoProvider
 {
     /**
      * @var bool
      */
-    protected $html5;
+    protected bool $html5;
 
     /**
-     * YouTubeProvider constructor.
      * @param string $name
      * @param Filesystem $filesystem
      * @param CdnInterface $cdn
@@ -31,16 +26,19 @@ class YouTubeProvider extends BaseVideoProvider
      * @param MetadataBuilderInterface|null $metadata
      * @param bool $html5
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, MetadataBuilderInterface $metadata = null, $html5 = false)
+    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, MetadataBuilderInterface $metadata = null, bool $html5 = false)
     {
         parent::__construct($name, $filesystem, $cdn, $thumbnail, $metadata);
         $this->html5 = $html5;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @param array $options
+     * @return array
      */
-    public function getHelperProperties($media, string $format, array $options = [])
+    public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         if ($media instanceof MediaInterface) {
             if ('reference' === $format) {
@@ -63,8 +61,8 @@ class YouTubeProvider extends BaseVideoProvider
             ];
         } else {
             $data = [
-                'alt' => isset($media['name']) ? $media['name'] : $media['caption'],
-                'title' => isset($media['name']) ? $media['name'] : $media['caption'],
+                'alt' => $media['name'] ?? $media['caption'],
+                'title' => $media['name'] ?? $media['caption'],
                 'src' => $this->generatePublicUrl($media, $format),
                 'width' => $media['width'],
                 'height' => $media['height'],
@@ -75,12 +73,12 @@ class YouTubeProvider extends BaseVideoProvider
     }
 
     /**
-     * @param $media
-     * @param $format
+     * @param array|MediaInterface $media
+     * @param string $format
      * @param array $options
      * @return array
      */
-    public function getViewProperties($media, $format, array $options = [])
+    public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         // Override html5 value if $options['html5'] is a boolean
         if (!isset($options['html5'])) {
@@ -207,14 +205,13 @@ class YouTubeProvider extends BaseVideoProvider
 
         ];
 
-        $player_url_parameters = array_merge($default_player_url_parameters, isset($options['player_url_parameters']) ? $options['player_url_parameters'] : []);
-
-        $player_parameters = array_merge($default_player_parameters, isset($options['player_parameters']) ? $options['player_parameters'] : []);
+        $playerUrlParameters = array_merge($default_player_url_parameters, $options['player_url_parameters'] ?? []);
+        $playerParameters = array_merge($default_player_parameters, $options['player_parameters'] ?? []);
 
         return [
             'html5' => $options['html5'],
-            'player_url_parameters' => http_build_query($player_url_parameters),
-            'player_parameters' => $player_parameters,
+            'player_url_parameters' => http_build_query($playerUrlParameters),
+            'player_parameters' => $playerParameters,
             'width' => $media instanceof MediaInterface ? $media->getWidth() : $media['width'],
             'height' => $media instanceof MediaInterface ? $media->getHeight() : $media['height'],
         ];
@@ -222,8 +219,9 @@ class YouTubeProvider extends BaseVideoProvider
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    protected function fixBinaryContent(MediaInterface $media)
+    protected function fixBinaryContent(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
             return;
@@ -239,9 +237,10 @@ class YouTubeProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    protected function doTransform(MediaInterface $media)
+    protected function doTransform(MediaInterface $media): void
     {
         $this->fixBinaryContent($media);
 
@@ -256,9 +255,11 @@ class YouTubeProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param bool $force
+     * @return void
      */
-    public function updateMetadata(MediaInterface $media, $force = false)
+    public function updateMetadata(MediaInterface $media, bool $force = false): void
     {
         $url = sprintf('https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%s&format=json', $media->getProviderReference());
 
@@ -282,24 +283,23 @@ class YouTubeProvider extends BaseVideoProvider
 
     /**
      * @param MediaInterface $media
-     * @param $format
-     * @param $mode
+     * @param string $format
+     * @param string $mode
      * @param array $headers
      * @return Response
      */
-    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = []): Response
+    public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
         return new RedirectResponse(sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }
 
     /**
      * @param MediaInterface $media
-     * @param $format
-     * @param $mode
+     * @param string $format
      * @param array $headers
      * @return Response
      */
-    public function getViewResponse(MediaInterface $media, $format, array $headers = []): Response
+    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
     {
         return new RedirectResponse(sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }

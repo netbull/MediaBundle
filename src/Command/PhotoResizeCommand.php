@@ -12,16 +12,12 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Class PhotoResizeCommand
- * @package NetBull\MediaBundle\Command
- */
 class PhotoResizeCommand extends BaseCommand
 {
     /**
-     * {@inheritdoc}
+     * @return void
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setName('media:sync-thumbnails')
             ->addArgument('context', InputArgument::OPTIONAL, 'The context')
@@ -75,12 +71,11 @@ class PhotoResizeCommand extends BaseCommand
 
     /**
      * @param $id
+     * @return void
      */
-    protected function _processMedia($id)
+    protected function _processMedia($id): void
     {
-        $em = $this->getManager();
-
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         try {
             $media = $qb->select('m')
                 ->from(Media::class, 'm')
@@ -88,7 +83,7 @@ class PhotoResizeCommand extends BaseCommand
                 ->setParameter('id', $id)
                 ->getQuery()
                 ->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException) {
             return;
         }
 

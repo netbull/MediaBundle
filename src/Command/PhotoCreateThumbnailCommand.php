@@ -11,16 +11,12 @@ use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Class PhotoCreateThumbnailCommand
- * @package NetBull\MediaBundle\Command
- */
 class PhotoCreateThumbnailCommand extends BaseCommand
 {
     /**
-     * {@inheritdoc}
+     * @return void
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setName('netbull:media:create-thumbnail')
             ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
@@ -35,14 +31,13 @@ class PhotoCreateThumbnailCommand extends BaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $em = $this->getManager();
         $this->io = new SymfonyStyle($input, $output);
 
         $mediaId = $input->getArgument('mediaId');
         $format = $input->getArgument('format');
 
         /** @var MediaInterface|null $media */
-        $media = $em->getRepository(Media::class)->find($mediaId);
+        $media = $this->em->getRepository(Media::class)->find($mediaId);
 
         if (!$media){
             $this->log(sprintf('NOT FOUND: %s - %s', $mediaId, $format));

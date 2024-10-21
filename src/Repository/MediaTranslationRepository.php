@@ -4,20 +4,17 @@ namespace NetBull\MediaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Class MediaTranslationRepository
- * @package NetBull\MediaBundle\Repository
- */
 class MediaTranslationRepository extends EntityRepository
 {
     /**
-     * @param $media
-     * @param $locale
+     * @param int|MediaInterface $media
+     * @param string $locale
      * @return string
      * @throws NonUniqueResultException
      */
-    public function getCaptionByLocale($media, $locale)
+    public function getCaptionByLocale(int|MediaInterface $media, string $locale): string
     {
         $qb = $this->createQueryBuilder('pt');
         $translation = $qb->where($qb->expr()->eq('pt.translatable', ':media'))

@@ -15,14 +15,14 @@ class NetBullMediaExtension extends Extension
     /**
      * @var array
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * @param array $configs
      * @param ContainerBuilder $container
      * @throws Exception
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $this->config = $this->processConfiguration($configuration, $configs);
@@ -83,7 +83,7 @@ class NetBullMediaExtension extends Extension
     /**
      * @param ContainerBuilder $container
      */
-    public function configureFilesystemAdapter(ContainerBuilder $container)
+    public function configureFilesystemAdapter(ContainerBuilder $container): void
     {
         // Add the default configuration for the local filesystem
         if ($container->hasDefinition('netbull_media.adapter.filesystem.local') && isset($this->config['filesystem']['local'])) {
@@ -137,7 +137,7 @@ class NetBullMediaExtension extends Extension
     /**
      * @param ContainerBuilder $container
      */
-    public function configureCdnAdapter(ContainerBuilder $container)
+    public function configureCdnAdapter(ContainerBuilder $container): void
     {
         // add the default configuration for the server cdn
         if ($container->hasDefinition('netbull_media.cdn.server') && isset($this->config['cdn']['server'])) {
@@ -162,7 +162,7 @@ class NetBullMediaExtension extends Extension
     /**
      * @param ContainerBuilder  $container
      */
-    public function configureProviders(ContainerBuilder $container)
+    public function configureProviders(ContainerBuilder $container): void
     {
         $container->getDefinition('netbull_media.provider.image')
             ->replaceArgument(6, new Reference($this->config['providers']['image']['adapter']))

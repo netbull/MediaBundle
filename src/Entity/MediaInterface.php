@@ -2,195 +2,191 @@
 
 namespace NetBull\MediaBundle\Entity;
 
-use DateTime;
+use DateTimeInterface;
 use Imagine\Image\Box;
 
-/**
- * Interface MediaInterface
- * @package NetBull\MediaBundle\Entity
- */
 interface MediaInterface
 {
     /**
      * @return int|null
      */
-    public function getId();
+    public function getId(): ?int;
 
     /**
      * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
      * @param string|null $name
      * @return $this
      */
-    public function setName(?string $name);
+    public function setName(?string $name): self;
 
     /**
-     * @return bool $enabled
+     * @return bool
      */
-    public function isEnabled();
+    public function isEnabled(): bool;
 
     /**
      * @param bool $enabled
      * @return $this
      */
-    public function setEnabled(bool $enabled);
+    public function setEnabled(bool $enabled): self;
 
     /**
-     * @return string|null $providerName
+     * @return string|null
      */
-    public function getProviderName();
+    public function getProviderName(): ?string;
 
     /**
      * @param string|null $providerName
      * @return $this
      */
-    public function setProviderName(?string $providerName);
+    public function setProviderName(?string $providerName): self;
 
     /**
-     * @return string|null $providerReference
+     * @return string|null
      */
-    public function getProviderReference();
+    public function getProviderReference(): ?string;
 
     /**
      * @param string|null $providerReference
      * @return $this
      */
-    public function setProviderReference(?string $providerReference);
+    public function setProviderReference(?string $providerReference): self;
 
     /**
-     * @return array $providerMetadata
+     * @return array
      */
-    public function getProviderMetadata();
+    public function getProviderMetadata(): array;
 
     /**
      * @param array $providerMetadata
      * @return $this
      */
-    public function setProviderMetadata(array $providerMetadata = []);
+    public function setProviderMetadata(array $providerMetadata = []): self;
 
     /**
-     * @return int|null $width
+     * @return int|null
      */
-    public function getWidth();
+    public function getWidth(): ?int;
 
     /**
      * @param int|null $width
      * @return $this
      */
-    public function setWidth(?int $width);
+    public function setWidth(?int $width): self;
 
     /**
-     * @return int|null $height
+     * @return int|null
      */
-    public function getHeight();
+    public function getHeight(): ?int;
 
     /**
      * @param int|null $height
      * @return $this
      */
-    public function setHeight(?int $height);
+    public function setHeight(?int $height): self;
 
     /**
-     * @return float|null $length
+     * @return float|null
      */
-    public function getLength();
+    public function getLength(): ?float;
 
     /**
      * @param float|null $length
      * @return $this
      */
-    public function setLength(?float $length);
+    public function setLength(?float $length): self;
 
     /**
-     * @return int|null $size
+     * @return int|null
      */
-    public function getSize();
+    public function getSize(): ?int;
 
     /**
      * @param int|null $size
      * @return $this
      */
-    public function setSize(?int $size);
+    public function setSize(?int $size): self;
 
     /**
-     * @return string|null $contentType
+     * @return string|null
      */
-    public function getContentType();
+    public function getContentType(): ?string;
 
     /**
      * @param string|null $contentType
      * @return $this
      */
-    public function setContentType(?string $contentType);
+    public function setContentType(?string $contentType): self;
 
     /**
-     * @return string|null $context
+     * @return string|null
      */
-    public function getContext();
+    public function getContext(): ?string;
 
     /**
      * @param string|null $context
      * @return $this
      */
-    public function setContext(?string $context);
+    public function setContext(?string $context): self;
 
     /**
-     * @return string|null $caption
+     * @return string|null
      */
-    public function getCaption();
+    public function getCaption(): ?string;
 
     /**
      * @param string|null $caption
      * @return $this
      */
-    public function setCaption(?string $caption);
+    public function setCaption(?string $caption): self;
 
     /**
      * @return int|null
      */
-    public function getPosition();
+    public function getPosition(): ?int;
 
     /**
      * @param int|null $position
      * @return $this
      */
-    public function setPosition(int $position);
+    public function setPosition(?int $position): self;
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isMain();
+    public function isMain(): bool;
 
     /**
      * @param bool $main
      * @return $this
      */
-    public function setMain(bool $main);
+    public function setMain(bool $main): self;
 
     /**
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getCreatedAt();
+    public function getCreatedAt(): DateTimeInterface;
 
     /**
-     * @param DateTime $createdAt
+     * @param DateTimeInterface $createdAt
      * @return $this
      */
-    public function setCreatedAt(DateTime $createdAt);
+    public function setCreatedAt(DateTimeInterface $createdAt): self;
 
     /**
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getUpdatedAt();
+    public function getUpdatedAt(): DateTimeInterface;
 
     /**
-     * @param DateTime $updatedAt
+     * @param DateTimeInterface $updatedAt
      * @return $this
      */
-    public function setUpdatedAt(DateTime $updatedAt);
+    public function setUpdatedAt(DateTimeInterface $updatedAt): self;
 
     #################################################
     #               Helper Methods                  #
@@ -199,54 +195,54 @@ interface MediaInterface
     /**
      * @param mixed $binaryContent
      */
-    public function setBinaryContent($binaryContent);
+    public function setBinaryContent(mixed $binaryContent);
 
     /**
      * @return mixed
      */
-    public function getBinaryContent();
+    public function getBinaryContent(): mixed;
 
     /**
      * @param mixed $binaryContent
      */
-    public function setNewBinaryContent($binaryContent);
+    public function setNewBinaryContent(mixed $binaryContent);
 
     /**
      * @return mixed
      */
-    public function getNewBinaryContent();
+    public function getNewBinaryContent(): mixed;
 
     /**
      * @param string $name
      * @param null $default
      */
-    public function getMetadataValue($name, $default = null);
+    public function getMetadataValue(string $name, $default = null);
 
     /**
      * @param string $name
      * @param mixed $value
      */
-    public function setMetadataValue($name, $value);
+    public function setMetadataValue(string $name, mixed $value);
 
     /**
      * Remove a named data from the metadata.
      *
      * @param string $name
      */
-    public function unsetMetadataValue($name);
+    public function unsetMetadataValue(string $name);
 
     /**
      * @return string
      */
-    public function getExtension();
+    public function getExtension(): string;
 
     /**
      * @return Box
      */
-    public function getBox();
+    public function getBox(): Box;
 
     /**
      * @return string
      */
-    public function getPreviousProviderReference();
+    public function getPreviousProviderReference(): string;
 }

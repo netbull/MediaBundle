@@ -2,38 +2,33 @@
 
 namespace NetBull\MediaBundle\Command;
 
-use LogicException;
 use NetBull\MediaBundle\Provider\Pool;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Class BaseCommand
- * @package NetBull\MediaBundle\Command
- */
 abstract class BaseCommand extends Command
 {
     /**
      * Debug switch
      * @var bool
      */
-    protected $debug = false;
+    protected bool $debug = false;
 
     /**
      * @var SymfonyStyle|null
      */
-    protected $io = null;
+    protected ?SymfonyStyle $io = null;
 
     /**
      * @var EntityManagerInterface $em
      */
-    protected $em;
+    protected EntityManagerInterface $em;
 
     /**
      * @var Pool
      */
-    protected $pool;
+    protected Pool $pool;
 
     /**
      * BaseCommand constructor.
@@ -50,32 +45,18 @@ abstract class BaseCommand extends Command
     }
 
     /**
-     * @return EntityManagerInterface
-     */
-    public function getManager(): EntityManagerInterface
-    {
-        if (!$this->em) {
-            throw new LogicException('The DoctrineBundle is not registered in your application. Try running "composer require symfony/orm-pack".');
-        }
-
-        return $this->em;
-    }
-
-    /**
      * Clear the Doctrine's cache
      */
-    protected function optimize()
+    protected function optimize(): void
     {
-        if ($this->em) {
-            $this->em->clear();
-        }
+        $this->em->clear();
     }
 
     /**
      * Output used for nice debug
      * @param $text
      */
-    protected function log($text)
+    protected function log($text): void
     {
         if (!$this->debug) {
             return;

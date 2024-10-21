@@ -42,7 +42,7 @@ class HashSecurityStrategy implements SecurityStrategyInterface
         try {
             $this->simpleSignatureHasher->acceptSignatureHash($userIdentifier, $expires, $hash);
             $this->simpleSignatureHasher->verifySignatureHash($userIdentifier, $expires, $hash);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
 

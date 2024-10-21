@@ -4,15 +4,10 @@ namespace NetBull\MediaBundle\Form\Type;
 
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormView;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use NetBull\MediaBundle\Entity\Media;
-use NetBull\MediaBundle\Provider\Pool;
-use NetBull\MediaBundle\Form\DataTransformer\ProviderDataTransformer;
 
 class PhotoType extends BaseType
 {
@@ -20,7 +15,7 @@ class PhotoType extends BaseType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
@@ -54,7 +49,7 @@ class PhotoType extends BaseType
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Media::class,

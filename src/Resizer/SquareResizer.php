@@ -8,6 +8,7 @@ use Imagine\Image\ImagineInterface;
 use Imagine\Image\Point;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use RuntimeException;
 
 /**
  * This resizer crop the image when the width and height are specified.
@@ -25,12 +26,12 @@ class SquareResizer implements ResizerInterface
     /**
      * @var ImagineInterface
      */
-    protected $adapter;
+    protected ImagineInterface $adapter;
 
     /**
      * @var string
      */
-    protected $mode;
+    protected string $mode;
 
     /**
      * @var MetadataBuilderInterface
@@ -38,7 +39,6 @@ class SquareResizer implements ResizerInterface
     protected $metadata;
 
     /**
-     * SquareResizer constructor.
      * @param ImagineInterface $adapter
      * @param string $mode
      * @param MetadataBuilderInterface $metadata
@@ -51,12 +51,17 @@ class SquareResizer implements ResizerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param File $in
+     * @param File $out
+     * @param string $format
+     * @param array $settings
+     * @return void
      */
-    public function resize(MediaInterface $media, File $in, File $out, $format, array $settings)
+    public function resize(MediaInterface $media, File $in, File $out, string $format, array $settings): void
     {
         if (!isset($settings['width'])) {
-            throw new \RuntimeException(sprintf('Width parameter is missing in context "%s" for provider "%s"', $media->getContext(), $media->getProviderName()));
+            throw new RuntimeException(sprintf('Width parameter is missing in context "%s" for provider "%s"', $media->getContext(), $media->getProviderName()));
         }
 
         $image = $this->adapter->load($in->getContent());
@@ -114,7 +119,9 @@ class SquareResizer implements ResizerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param array $settings
+     * @return Box
      */
     public function getBox(MediaInterface $media, array $settings): Box
     {

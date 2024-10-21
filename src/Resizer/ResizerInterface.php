@@ -6,10 +6,6 @@ use Gaufrette\File;
 use Imagine\Image\Box;
 use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Interface ResizerInterface
- * @package NetBull\MediaBundle\Resizer
- */
 interface ResizerInterface
 {
     /**
@@ -18,9 +14,9 @@ interface ResizerInterface
      * @param File $out
      * @param string $format
      * @param array $settings
-     * @return mixed
+     * @return void
      */
-    public function resize(MediaInterface $media, File $in, File $out, string $format, array $settings);
+    public function resize(MediaInterface $media, File $in, File $out, string $format, array $settings): void;
 
     /**
      * @param MediaInterface $media

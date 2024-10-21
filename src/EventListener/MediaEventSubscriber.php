@@ -11,24 +11,19 @@ use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
 
-/**
- * Class MediaEventSubscriber
- * @package NetBull\MediaBundle\EventListener
- */
 class MediaEventSubscriber implements EventSubscriber
 {
     /**
      * @var Pool
      */
-    private $pool;
+    private Pool $pool;
 
     /**
      * @var ArrayCollection
      */
-    private $medias;
+    private ArrayCollection $medias;
 
     /**
-     * MediaEventSubscriber constructor.
      * @param Pool $pool
      */
     public function __construct(Pool $pool)
@@ -40,7 +35,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @return Pool
      */
-    public function getPool()
+    public function getPool(): Pool
     {
         return $this->pool;
     }
@@ -48,7 +43,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @return array
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::prePersist,
@@ -64,7 +59,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    protected function recomputeSingleEntityChangeSet(LifecycleEventArgs $args)
+    protected function recomputeSingleEntityChangeSet(LifecycleEventArgs $args): void
     {
         $em = $args->getObjectManager();
 
@@ -76,10 +71,11 @@ class MediaEventSubscriber implements EventSubscriber
 
     /**
      * @param LifecycleEventArgs $args
-     * @return mixed
+     * @return MediaInterface
      */
-    protected function getMedia(LifecycleEventArgs $args)
+    protected function getMedia(LifecycleEventArgs $args): MediaInterface
     {
+        /** @var MediaInterface $entity */
         $entity = $args->getObject();
         if (!$this->medias->contains($entity)) {
             $this->medias->add($entity);
@@ -90,9 +86,9 @@ class MediaEventSubscriber implements EventSubscriber
 
     /**
      * @param LifecycleEventArgs $args
-     * @return null|MediaProviderInterface
+     * @return MediaProviderInterface|null
      */
-    protected function getProvider(LifecycleEventArgs $args)
+    protected function getProvider(LifecycleEventArgs $args): ?MediaProviderInterface
     {
         $media = $this->getMedia($args);
 
@@ -103,7 +99,7 @@ class MediaEventSubscriber implements EventSubscriber
      * @param $media
      * @return MediaProviderInterface|null
      */
-    protected function getProviderByMedia($media)
+    protected function getProviderByMedia($media): ?MediaProviderInterface
     {
         if (!$media instanceof MediaInterface) {
             return null;
@@ -115,7 +111,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         if (!($provider = $this->getProvider($args))) {
             return;
@@ -127,7 +123,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         if (!($provider = $this->getProvider($args))) {
             return;
@@ -139,7 +135,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         if (!($provider = $this->getProvider($args))) {
             return;
@@ -151,7 +147,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param PostFlushEventArgs $args
      */
-    public function postFlush(PostFlushEventArgs $args)
+    public function postFlush(PostFlushEventArgs $args): void
     {
         foreach ($this->medias as $media) {
             if (!($provider = $this->getProviderByMedia($media))) {
@@ -165,7 +161,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function preUpdate(LifecycleEventArgs $args)
+    public function preUpdate(LifecycleEventArgs $args): void
     {
         if (!($provider = $this->getProvider($args))) {
             return;
@@ -180,7 +176,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         if (!($provider = $this->getProvider($args))) {
             return;
@@ -192,7 +188,7 @@ class MediaEventSubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(LifecycleEventArgs $args): void
     {
         if (!($provider = $this->getProvider($args))) {
             return;

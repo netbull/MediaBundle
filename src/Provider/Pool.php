@@ -61,7 +61,7 @@ class Pool
      * @param string $name
      * @param MediaProviderInterface $instance
      */
-    public function addProvider(string $name, MediaProviderInterface $instance)
+    public function addProvider(string $name, MediaProviderInterface $instance): void
     {
         $this->providers[$name] = $instance;
     }
@@ -70,7 +70,7 @@ class Pool
      * @param string $name
      * @param SecurityStrategyInterface $security
      */
-    public function addDownloadSecurity(string $name, SecurityStrategyInterface $security)
+    public function addDownloadSecurity(string $name, SecurityStrategyInterface $security): void
     {
         $this->downloadSecurities[$name] = $security;
     }
@@ -79,7 +79,7 @@ class Pool
      * @param string $name
      * @param SecurityStrategyInterface $security
      */
-    public function addViewSecurity(string $name, SecurityStrategyInterface $security)
+    public function addViewSecurity(string $name, SecurityStrategyInterface $security): void
     {
         $this->viewSecurities[$name] = $security;
     }
@@ -87,7 +87,7 @@ class Pool
     /**
      * @param array $providers
      */
-    public function setProviders(array $providers)
+    public function setProviders(array $providers): void
     {
         $this->providers = $providers;
     }
@@ -108,7 +108,7 @@ class Pool
      * @param array $view
      * @return void
      */
-    public function addContext(string $name, array $providers = [], array $formats = [], array $download = [], array $view = [])
+    public function addContext(string $name, array $providers = [], array $formats = [], array $download = [], array $view = []): void
     {
         if (!$this->hasContext($name)) {
             $this->contexts[$name] = [

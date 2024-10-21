@@ -35,10 +35,10 @@ class PathGenerator
     }
 
     /**
-     * @param $media
+     * @param array|MediaInterface $media
      * @return string
      */
-    public static function generatePath($media): string
+    public static function generatePath(array|MediaInterface $media): string
     {
         if ($media instanceof MediaInterface) {
             $id = $media->getId();
@@ -54,11 +54,11 @@ class PathGenerator
     }
 
     /**
-     * @param  MediaInterface|array $media
+     * @param array|MediaInterface $media
      * @param string $format
      * @return string
      */
-    public function generate($media, string $format = 'normal'): string
+    public function generate(array|MediaInterface $media, string $format = 'normal'): string
     {
         $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
 
@@ -67,12 +67,12 @@ class PathGenerator
     }
 
     /**
-     * @param MediaInterface|array $media
+     * @param array|MediaInterface $media
      * @param string $identifier
      * @param string $format
      * @return string
      */
-    public function generateSecure($media, string $identifier, string $format = 'normal'): string
+    public function generateSecure(array|MediaInterface $media, string $identifier, string $format = 'normal'): string
     {
         $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
 
@@ -96,15 +96,7 @@ class PathGenerator
         $provider = $this->pool->getProvider($providerName);
 
         $format = $provider->getFormatName($media, $format);
-        $format_definition = $provider->getFormat($format);
-        if ($format_definition['width']) {
-            $defaultOptions['width'] = $format_definition['width'];
-        }
-        if ($format_definition['height']) {
-            $defaultOptions['height'] = $format_definition['height'];
-        }
-
-        $options = $provider->getViewProperties($media, $format, []);
+        $options = $provider->getViewProperties($media, $format);
 
         try {
             return $this->twig->render(
@@ -114,7 +106,7 @@ class PathGenerator
                     'options' => $options,
                 ]
             );
-        } catch (LoaderError | RuntimeError | SyntaxError $e) {}
+        } catch (LoaderError | RuntimeError | SyntaxError) {}
 
         return null;
     }

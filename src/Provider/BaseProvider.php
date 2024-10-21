@@ -3,55 +3,51 @@
 namespace NetBull\MediaBundle\Provider;
 
 use Gaufrette\Filesystem;
+use Gaufrette\FilesystemInterface;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Helpers\PathGenerator;
 use NetBull\MediaBundle\Resizer\ResizerInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 
-/**
- * Class BaseProvider
- * @package NetBull\MediaBundle\Provider
- */
 abstract class BaseProvider implements MediaProviderInterface
 {
     /**
      * @var array
      */
-    protected $formats = [];
+    protected array $formats = [];
 
     /**
      * @var array
      */
-    protected $templates = [];
+    protected array $templates = [];
 
     /**
      * @var
      */
-    protected $resizer;
+    protected mixed $resizer;
 
     /**
      * @var Filesystem
      */
-    protected $filesystem;
+    protected Filesystem $filesystem;
 
     /**
      * @var ThumbnailInterface
      */
-    protected $thumbnail;
+    protected ThumbnailInterface $thumbnail;
 
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var CdnInterface
      */
-    protected $cdn;
+    protected CdnInterface $cdn;
 
     /**
-     * BaseProvider constructor.
      * @param string $name
      * @param Filesystem $filesystem
      * @param CdnInterface $cdn
@@ -67,14 +63,14 @@ abstract class BaseProvider implements MediaProviderInterface
 
     /**
      * @param MediaInterface $media
-     * @return mixed
+     * @return void
      */
-    abstract protected function doTransform(MediaInterface $media);
+    abstract protected function doTransform(MediaInterface $media): void;
 
     /**
      * @param MediaInterface $media
      */
-    final public function transform(MediaInterface $media)
+    final public function transform(MediaInterface $media): void
     {
         if (null === $media->getBinaryContent()) {
             return;
@@ -87,59 +83,62 @@ abstract class BaseProvider implements MediaProviderInterface
      * @param $name
      * @param $format
      */
-    public function addFormat($name, $format)
+    public function addFormat($name, $format): void
     {
         $this->formats[$name] = $format;
     }
 
     /**
-     * @param $name
-     * @return bool|mixed
+     * @param string $name
+     * @return array|false
      */
-    public function getFormat($name)
+    public function getFormat(string $name): array|false
     {
-        return isset($this->formats[$name]) ? $this->formats[$name] : false;
+        return $this->formats[$name] ?? false;
     }
 
     /**
      * @return bool
      */
-    public function requireThumbnails()
+    public function requireThumbnails(): bool
     {
         return $this->getResizer() !== null;
     }
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    public function generateThumbnails(MediaInterface $media)
+    public function generateThumbnails(MediaInterface $media): void
     {
         $this->thumbnail->generate($this, $media);
     }
 
     /**
-     * @param MediaInterface    $media
-     * @param string            $format
+     * @param MediaInterface $media
+     * @param string $format
+     * @return void
      */
-    public function generateThumbnail(MediaInterface $media, $format)
+    public function generateThumbnail(MediaInterface $media, string $format): void
     {
         $this->thumbnail->generateByFormat($this, $media, $format);
     }
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    public function removeThumbnails(MediaInterface $media)
+    public function removeThumbnails(MediaInterface $media): void
     {
         $this->thumbnail->delete($this, $media);
     }
 
     /**
-     * @param MediaInterface|array  $media
-     * @param                       $format
+     * @param array|MediaInterface $media
+     * @param string $format
      * @return string
      */
-    public function getFormatName($media, $format)
+    public function getFormatName(array|MediaInterface $media, string $format): string
     {
         if ('reference' === $format) {
             return 'reference';
@@ -147,7 +146,7 @@ abstract class BaseProvider implements MediaProviderInterface
 
         $context = ($media instanceof MediaInterface) ? $media->getContext() : $media['context'];
         $baseName = $context . '_';
-        if (substr($format, 0, strlen($baseName)) === $baseName) {
+        if (str_starts_with($format, $baseName)) {
             return $format;
         }
 
@@ -156,8 +155,9 @@ abstract class BaseProvider implements MediaProviderInterface
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    public function preRemove(MediaInterface $media)
+    public function preRemove(MediaInterface $media): void
     {
         $path = $this->getReferenceImage($media);
 
@@ -172,19 +172,23 @@ abstract class BaseProvider implements MediaProviderInterface
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    public function postRemove(MediaInterface $media){ }
+    public function postRemove(MediaInterface $media): void
+    { }
 
     /**
-     * @inheritdoc
+     * @param MediaInterface $media
+     * @return void
      */
-    public function postFlush(MediaInterface $media){ }
+    public function postFlush(MediaInterface $media): void
+    { }
 
     /**
      * @param array|MediaInterface $media
-     * @return mixed
+     * @return string
      */
-    public function generatePath($media)
+    public function generatePath(array|MediaInterface $media): string
     {
         return PathGenerator::generatePath($media);
     }
@@ -192,15 +196,16 @@ abstract class BaseProvider implements MediaProviderInterface
     /**
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         return $this->formats;
     }
 
     /**
-     * @param $name
+     * @param string $name
+     * @return void
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -208,23 +213,23 @@ abstract class BaseProvider implements MediaProviderInterface
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @return mixed
+     * @return ResizerInterface
      */
-    public function getResizer()
+    public function getResizer(): ResizerInterface
     {
         return $this->resizer;
     }
 
     /**
-     * @return Filesystem
+     * @return FilesystemInterface
      */
-    public function getFilesystem()
+    public function getFilesystem(): FilesystemInterface
     {
         return $this->filesystem;
     }
@@ -232,7 +237,7 @@ abstract class BaseProvider implements MediaProviderInterface
     /**
      * @return CdnInterface
      */
-    public function getCdn()
+    public function getCdn(): CdnInterface
     {
         return $this->cdn;
     }
@@ -241,33 +246,38 @@ abstract class BaseProvider implements MediaProviderInterface
      * @param string $relativePath
      * @return string
      */
-    public function getCdnPath($relativePath)
+    public function getCdnPath(string $relativePath): string
     {
         return $this->getCdn()->getPath($relativePath);
     }
 
     /**
      * @param ResizerInterface $resizer
+     * @return void
      */
-    public function setResizer(ResizerInterface $resizer)
+    public function setResizer(ResizerInterface $resizer): void
     {
         $this->resizer = $resizer;
     }
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    public function prePersist(MediaInterface $media) { }
+    public function prePersist(MediaInterface $media): void
+    { }
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    public function preUpdate(MediaInterface $media) { }
+    public function preUpdate(MediaInterface $media): void
+    { }
 
     /**
      * @param array $templates
      */
-    public function setTemplates(array $templates)
+    public function setTemplates(array $templates): void
     {
         $this->templates = $templates;
     }
@@ -275,27 +285,27 @@ abstract class BaseProvider implements MediaProviderInterface
     /**
      * @return array
      */
-    public function getTemplates()
+    public function getTemplates(): array
     {
         return $this->templates;
     }
 
     /**
-     * @param $name
-     * @return mixed|null
+     * @param string $name
+     * @return mixed
      */
-    public function getTemplate($name)
+    public function getTemplate(string $name): mixed
     {
-        return isset($this->templates[$name]) ? $this->templates[$name] : null;
+        return $this->templates[$name] ?? null;
     }
 
     /**
-     * @param $media
-     * @param $format
+     * @param array|MediaInterface $media
+     * @param string $format
      * @param array $options
-     * @return mixed
+     * @return array
      */
-    public function getViewProperties($media, $format, array $options = [])
+    public function getViewProperties(array|MediaInterface $media, string $format, array $options = [])
     {
         return $this->getHelperProperties($media, $format, $options);
     }

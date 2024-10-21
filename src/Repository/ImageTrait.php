@@ -2,21 +2,18 @@
 
 namespace NetBull\MediaBundle\Repository;
 
-use Doctrine\ORM\Query;
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\ORM\AbstractQuery;
 use NetBull\MediaBundle\Entity\Media;
 
-/**
- * Trait ImageTrait
- * @package NetBull\MediaBundle\Repository
- */
 trait ImageTrait
 {
     /**
-     * @param $type
-     * @param $images
+     * @param string $type
+     * @param array $images
+     * @return void
      */
-    public function reorderImages($type, $images)
+    public function reorderImages(string $type, array $images): void
     {
         $sql = 'SET @i=0; SET @Count=0; UPDATE media SET `position` = @Count+(@i:=@i+1)-1 WHERE `id` IN (:images) AND `context` = :type ORDER BY FIELD(id,:images)';
 
@@ -26,7 +23,7 @@ trait ImageTrait
         ];
 
         $types = [
-            'images' => Connection::PARAM_INT_ARRAY,
+            'images' => ArrayParameterType::INTEGER,
         ];
 
         $connection = $this->getEntityManager()->getConnection();
@@ -34,11 +31,11 @@ trait ImageTrait
     }
 
     /**
-     * @param $object
+     * @param mixed $object
      * @param bool $orderById
      * @return array|null
      */
-    public function getImages($object, bool $orderById = false): ?array
+    public function getImages(mixed $object, bool $orderById = false): ?array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('partial o.{id}', 'partial m.{' . MediaRepository::MEDIA_FIELDS . '}')
@@ -52,15 +49,15 @@ trait ImageTrait
             $qb->addOrderBy('m.id', 'ASC');
         }
 
-        $result = $qb->getQuery()->getSingleResult(Query::HYDRATE_ARRAY);
+        $result = $qb->getQuery()->getSingleResult(AbstractQuery::HYDRATE_ARRAY);
         return $result['photos'] ?? null;
     }
 
     /**
-     * @param $images
+     * @param array $images
      * @return array
      */
-    public function getImagesByIds($images): array
+    public function getImagesByIds(array $images): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('partial m.{' . MediaRepository::MEDIA_FIELDS . '}')
@@ -73,10 +70,10 @@ trait ImageTrait
     }
 
     /**
-     * @param $object
+     * @param mixed $object
      * @return int
      */
-    public function getImageIndex($object): int
+    public function getImageIndex(mixed $object): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('o.id', $qb->expr()->countDistinct('m'))

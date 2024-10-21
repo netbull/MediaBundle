@@ -7,12 +7,12 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     /**
      * @var array
      */
-    protected $settings;
+    protected array $settings;
 
     /**
      * @var array
      */
-    protected $acl = [
+    protected array $acl = [
         'private' => 'private',
         'public' => 'public-read',
         'open' => 'public-read-write',
@@ -24,7 +24,7 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     /**
      * Map of the extension-to-mime-types that we support.
      */
-    public static $mime_types = array(
+    public static array $mime_types = array(
         '3gp' => 'video/3gpp',
         'ai' => 'application/postscript',
         'aif' => 'audio/x-aiff',

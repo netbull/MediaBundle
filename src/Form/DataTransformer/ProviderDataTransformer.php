@@ -12,12 +12,12 @@ class ProviderDataTransformer implements DataTransformerInterface
     /**
      * @var Pool
      */
-    protected $pool;
+    protected Pool $pool;
 
     /**
      * @var array
      */
-    protected $options;
+    protected array $options;
 
     /**
      * @param Pool   $pool
@@ -47,7 +47,7 @@ class ProviderDataTransformer implements DataTransformerInterface
      * @param $value
      * @return MediaInterface
      */
-    public function transform($value)
+    public function transform($value): MediaInterface
     {
         if ($value === null) {
             return new Media();
@@ -57,40 +57,40 @@ class ProviderDataTransformer implements DataTransformerInterface
     }
 
     /**
-     * @param $media
+     * @param $value
      * @return MediaInterface|null
      */
-    public function reverseTransform($media)
+    public function reverseTransform($value): MediaInterface|null
     {
-        if (!$media instanceof MediaInterface) {
-            return $media;
+        if (!$value instanceof MediaInterface) {
+            return $value;
         }
 
-        $binaryContent = $media->getNewBinaryContent();
+        $binaryContent = $value->getNewBinaryContent();
 
         // no binary
         if (empty($binaryContent)) {
             // and no media id
-            if (null === $media->getId() && $this->options['empty_on_new']) {
+            if (null === $value->getId() && $this->options['empty_on_new']) {
                 return null;
-            } elseif ($media->getId()) {
-                return $media;
+            } elseif ($value->getId()) {
+                return $value;
             }
 
-            return $media;
+            return $value;
         }
 
-        // no update, but the the media exists ...
-        if (empty($binaryContent) && $media->getId() !== null) {
-            return $media;
+        // no update, but the media exists ...
+        if (empty($binaryContent) && $value->getId() !== null) {
+            return $value;
         }
 
         // create a new media to avoid erasing other media or not ...
-        $newMedia = $this->options['new_on_update'] ? new Media() : $media;
+        $newMedia = $this->options['new_on_update'] ? new Media() : $value;
         $newMedia->setBinaryContent($binaryContent);
 
-        $newMedia->setProviderName($media->getProviderName());
-        $newMedia->setContext($media->getContext());
+        $newMedia->setProviderName($value->getProviderName());
+        $newMedia->setContext($value->getContext());
         $newMedia->setBinaryContent($binaryContent);
 
         if (!$newMedia->getProviderName() && $this->options['provider']) {

@@ -2,7 +2,7 @@
 
 namespace NetBull\MediaBundle\Twig;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use Twig\Environment;
@@ -12,33 +12,28 @@ use Twig\Error\SyntaxError;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
-/**
- * Class MediaExtension
- * @package NetBull\MediaBundle\Twig
- */
 class MediaExtension extends AbstractExtension
 {
     /**
      * @var Pool
      */
-    private $pool;
+    private Pool $pool;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
-    private $em;
+    private EntityManagerInterface $em;
 
     /**
      * @var array
      */
-    protected $resources = [];
+    protected array $resources = [];
 
     /**
-     * MediaExtension constructor.
      * @param Pool $pool
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(Pool $pool, EntityManager $em)
+    public function __construct(Pool $pool, EntityManagerInterface $em)
     {
         $this->pool = $pool;
         $this->em = $em;
@@ -62,7 +57,7 @@ class MediaExtension extends AbstractExtension
      * @param string $format
      * @return string
      */
-    public function generatePublicPath($media, string $format = 'normal'): string
+    public function generatePublicPath(array|MediaInterface $media, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -85,7 +80,7 @@ class MediaExtension extends AbstractExtension
      * @param string $format
      * @return string
      */
-    public function generateSecurePath($media, string $identifier, string $format = 'normal'): string
+    public function generateSecurePath(array|MediaInterface $media, string $identifier, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -107,9 +102,9 @@ class MediaExtension extends AbstractExtension
      * @param array|MediaInterface $media
      * @param string $format
      * @param array $options
-     * @return mixed|string
+     * @return string
      */
-    public function generateThumbnail(Environment $environment, $media, string $format, $options = []): string
+    public function generateThumbnail(Environment $environment, array|MediaInterface $media, string $format, array $options = []): string
     {
         return $this->generateTemplate($environment, $media, $format, 'thumbnail', $options);
     }
@@ -119,9 +114,9 @@ class MediaExtension extends AbstractExtension
      * @param array|MediaInterface $media
      * @param string $format
      * @param array $options
-     * @return mixed|string
+     * @return string
      */
-    public function generateView(Environment $environment, $media, string $format, $options = []): string
+    public function generateView(Environment $environment, array|MediaInterface $media, string $format, array $options = []): string
     {
         return $this->generateTemplate($environment, $media, $format, 'view', $options);
     }
@@ -134,7 +129,7 @@ class MediaExtension extends AbstractExtension
      * @param array $options
      * @return string
      */
-    private function generateTemplate(Environment $environment, $media, string $format, $template, $options = []): string
+    private function generateTemplate(Environment $environment, array|MediaInterface $media, string $format, string $template, array $options = []): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();

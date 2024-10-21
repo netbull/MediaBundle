@@ -5,10 +5,6 @@ namespace NetBull\MediaBundle\Thumbnail;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
 
-/**
- * Interface ThumbnailInterface
- * @package NetBull\MediaBundle\Thumbnail
- */
 interface ThumbnailInterface
 {
     /**
@@ -17,7 +13,7 @@ interface ThumbnailInterface
      * @param string $format
      * @return string
      */
-    public function generatePublicUrl(MediaProviderInterface $provider, $media, string $format);
+    public function generatePublicUrl(MediaProviderInterface $provider, array|MediaInterface $media, string $format): string;
 
     /**
      * @param MediaProviderInterface $provider
@@ -25,27 +21,27 @@ interface ThumbnailInterface
      * @param string $format
      * @return string
      */
-    public function generatePrivateUrl(MediaProviderInterface $provider, MediaInterface $media, string $format);
+    public function generatePrivateUrl(MediaProviderInterface $provider, MediaInterface $media, string $format): string;
 
     /**
      * @param MediaProviderInterface $provider
      * @param MediaInterface $media
-     * @return string
+     * @return void
      */
-    public function generate(MediaProviderInterface $provider, MediaInterface $media);
+    public function generate(MediaProviderInterface $provider, MediaInterface $media): void;
 
     /**
      * @param MediaProviderInterface $provider
      * @param MediaInterface $media
      * @param string $format
-     * @return string
+     * @return void
      */
-    public function generateByFormat(MediaProviderInterface $provider, MediaInterface $media, string $format);
+    public function generateByFormat(MediaProviderInterface $provider, MediaInterface $media, string $format): void;
 
     /**
      * @param MediaProviderInterface $provider
      * @param MediaInterface $media
-     * @return string
+     * @return void
      */
-    public function delete(MediaProviderInterface $provider, MediaInterface $media);
+    public function delete(MediaProviderInterface $provider, MediaInterface $media): void;
 }

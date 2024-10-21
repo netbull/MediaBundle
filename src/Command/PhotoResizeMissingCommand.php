@@ -12,16 +12,12 @@ use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Class PhotoResizeMissingCommand
- * @package NetBull\MediaBundle\Command
- */
 class PhotoResizeMissingCommand extends BaseCommand
 {
     /**
-     * {@inheritdoc}
+     * @return void
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setName('media:resize')
             ->addArgument('context', InputArgument::OPTIONAL, 'The context')
@@ -73,12 +69,11 @@ class PhotoResizeMissingCommand extends BaseCommand
 
     /**
      * @param $id
+     * @return void
      */
-    protected function _processMedia($id)
+    protected function _processMedia($id): void
     {
-        $em = $this->getManager();
-
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         try {
             $media = $qb->select('m')
                 ->from(Media::class, 'm')
@@ -86,7 +81,7 @@ class PhotoResizeMissingCommand extends BaseCommand
                 ->setParameter('id', $id)
                 ->getQuery()
                 ->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException) {
             return;
         }
 

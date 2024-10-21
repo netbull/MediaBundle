@@ -6,22 +6,24 @@ use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Class MediaCollection
- * @package NetBull\MediaBundle\Utils
- */
 class MediaCollection extends ArrayCollection
 {
     /**
      * @var bool
      */
-    private $isArrayCollection = true;
-
-    private $main;
-    private $rest;
+    private bool $isArrayCollection = true;
 
     /**
-     * MediaCollection constructor.
+     * @var MediaInterface|null
+     */
+    private ?MediaInterface $main = null;
+
+    /**
+     * @var array
+     */
+    private array $rest = [];
+
+    /**
      * @param array $elements
      */
     public function __construct(array $elements = [])
@@ -40,9 +42,9 @@ class MediaCollection extends ArrayCollection
     }
 
     /**
-     * @return mixed
+     * @return MediaInterface|null
      */
-    public function main()
+    public function main(): ?MediaInterface
     {
         if ($this->main) {
             return $this->main;
@@ -52,11 +54,11 @@ class MediaCollection extends ArrayCollection
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function rest()
+    public function rest(): array
     {
-        if ($this->rest) {
+        if (!empty($this->rest)) {
             return $this->rest;
         }
 
@@ -69,15 +71,15 @@ class MediaCollection extends ArrayCollection
      * @param Closure $p
      * @return ArrayCollection
      */
-    public function filterCustom(Closure $p)
+    public function filterCustom(Closure $p): ArrayCollection
     {
         return new ArrayCollection(array_filter($this->toArray(), $p));
     }
 
     /**
-     * @return mixed
+     * @return MediaInterface|null
      */
-    private function findMain()
+    private function findMain(): ?MediaInterface
     {
         $isArrayCollection = $this->isArrayCollection;
         $filtered = $this->filterCustom(function ($media) use ($isArrayCollection) {
@@ -98,7 +100,7 @@ class MediaCollection extends ArrayCollection
         });
 
         $this->main = $main;
-        $this->rest = $rest;
+        $this->rest = $rest->toArray();
 
         return $this->main;
     }

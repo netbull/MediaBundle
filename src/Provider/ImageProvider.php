@@ -46,9 +46,12 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @param array $options
+     * @return array
      */
-    public function getHelperProperties($media, string $format, array $options = [])
+    public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         if($media instanceof MediaInterface){
             if ($format !== 'reference') {
@@ -79,9 +82,10 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @return string
      */
-    public function getReferenceImage($media)
+    public function getReferenceImage(array|MediaInterface $media): string
     {
         return sprintf('%s/%s',
             $this->generatePath($media),
@@ -90,9 +94,11 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $formBuilder
+     * @param array $options
+     * @return void
      */
-    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = [])
+    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         $formBuilder
             ->add('newBinaryContent', FileType::class, array_merge([
@@ -105,9 +111,11 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $formBuilder
+     * @param array $options
+     * @return void
      */
-    public function buildMediaType(FormBuilderInterface $formBuilder, array $options = [])
+    public function buildMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         $mainField = $options['main_field'];
         unset($options['main_field']);
@@ -143,7 +151,7 @@ class ImageProvider extends FileProvider
     /**
      * @param MediaInterface $media
      */
-    protected function fixOrientation(MediaInterface $media)
+    protected function fixOrientation(MediaInterface $media): void
     {
         $binaryContent = $media->getBinaryContent();
         if ($binaryContent === null) {
@@ -185,9 +193,10 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    protected function doTransform(MediaInterface $media)
+    protected function doTransform(MediaInterface $media): void
     {
         parent::doTransform($media);
 
@@ -210,9 +219,11 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param bool $force
+     * @return void
      */
-    public function updateMetadata(MediaInterface $media, $force = true)
+    public function updateMetadata(MediaInterface $media, bool $force = true): void
     {
         try {
             // this is now optimized at all!!!
@@ -234,9 +245,11 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @return string
      */
-    public function generatePublicUrl($media, $format)
+    public function generatePublicUrl(array|MediaInterface $media, string $format): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
@@ -248,9 +261,11 @@ class ImageProvider extends FileProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param string $format
+     * @return string
      */
-    public function generatePrivateUrl(MediaInterface $media, $format)
+    public function generatePrivateUrl(MediaInterface $media, string $format): string
     {
         return $this->thumbnail->generatePrivateUrl($this, $media, $format);
     }

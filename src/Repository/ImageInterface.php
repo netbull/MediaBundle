@@ -2,34 +2,31 @@
 
 namespace NetBull\MediaBundle\Repository;
 
-/**
- * Interface ImageInterface
- * @package NetBull\MediaBundle\Repository
- */
 interface ImageInterface
 {
     /**
-     * @param $type
-     * @param $images
+     * @param string $type
+     * @param array $images
+     * @return void
      */
-    public function reorderImages($type, $images);
+    public function reorderImages(string $type, array $images): void;
 
     /**
-     * @param $object
+     * @param mixed $object
      * @param bool $orderById
      * @return array|null
      */
-    public function getImages($object, bool $orderById = false): ?array;
+    public function getImages(mixed $object, bool $orderById = false): ?array;
 
     /**
-     * @param $images
+     * @param array $images
      * @return array
      */
-    public function getImagesByIds($images): array;
+    public function getImagesByIds(array $images): array;
 
     /**
-     * @param $object
+     * @param mixed $object
      * @return int
      */
-    public function getImageIndex($object): int;
+    public function getImageIndex(mixed $object): int;
 }

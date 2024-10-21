@@ -9,29 +9,24 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
 
-/**
- * Class FormatThumbnail
- * @package NetBull\MediaBundle\Thumbnail
- */
 class FormatThumbnail implements ThumbnailInterface
 {
     /**
      * @var bool
      */
-    private $isProd;
+    private bool $isProd;
 
     /**
      * @var string
      */
-    private $projectDir;
+    private string $projectDir;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
-     * FormatThumbnail constructor.
      * @param ParameterBagInterface $parameterBag
      * @param LoggerInterface $logger
      */
@@ -43,9 +38,12 @@ class FormatThumbnail implements ThumbnailInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaProviderInterface $provider
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @return string
      */
-    public function generatePublicUrl(MediaProviderInterface $provider, $media, string $format)
+    public function generatePublicUrl(MediaProviderInterface $provider, array|MediaInterface $media, string $format): string
     {
         if ('reference' === $format) {
             $path = $provider->getReferenceImage($media);
@@ -57,18 +55,23 @@ class FormatThumbnail implements ThumbnailInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaProviderInterface $provider
+     * @param MediaInterface $media
+     * @param string $format
+     * @return string
      */
-    public function generatePrivateUrl(MediaProviderInterface $provider, MediaInterface $media, string $format)
+    public function generatePrivateUrl(MediaProviderInterface $provider, MediaInterface $media, string $format): string
     {
         $id = $media instanceof MediaInterface ? $media->getId() : $media['id'];
         return sprintf('%s/thumb_%s_%s.%s', $provider->generatePath($media), $id, $format, $this->getExtension($media));
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaProviderInterface $provider
+     * @param MediaInterface $media
+     * @return void
      */
-    public function generate(MediaProviderInterface $provider, MediaInterface $media)
+    public function generate(MediaProviderInterface $provider, MediaInterface $media): void
     {
         if (!$provider->requireThumbnails()) {
             return;
@@ -81,7 +84,7 @@ class FormatThumbnail implements ThumbnailInterface
         }
 
         foreach ($provider->getFormats() as $format => $settings) {
-            if (substr($format, 0, strlen($media->getContext())) === $media->getContext()) {
+            if (str_starts_with($format, $media->getContext())) {
                 $shortFormat = str_replace($media->getContext() . '_', '', $format);
                 $shouldWait = 'normal' === $shortFormat || !$this->isProd;
 
@@ -95,7 +98,7 @@ class FormatThumbnail implements ThumbnailInterface
      * @param string $shortFormat
      * @param bool $wait
      */
-    private function forkProcess(MediaInterface $media, string $shortFormat, bool $wait = false)
+    private function forkProcess(MediaInterface $media, string $shortFormat, bool $wait = false): void
     {
         $phpPath = (new PhpExecutableFinder)->find();
         if (!$phpPath) {
@@ -125,9 +128,9 @@ class FormatThumbnail implements ThumbnailInterface
      * @param MediaProviderInterface $provider
      * @param MediaInterface $media
      * @param string $format
-     * @return string|void
+     * @return void
      */
-    public function generateByFormat(MediaProviderInterface $provider, MediaInterface $media, string $format)
+    public function generateByFormat(MediaProviderInterface $provider, MediaInterface $media, string $format): void
     {
         if (!$provider->requireThumbnails()) {
             return;
@@ -141,7 +144,7 @@ class FormatThumbnail implements ThumbnailInterface
 
         foreach ($provider->getFormats() as $providerFormat => $settings) {
             if (
-                substr($providerFormat, 0, strlen($media->getContext())) === $media->getContext() &&
+                str_starts_with($providerFormat, $media->getContext()) &&
                 $format === str_replace($media->getContext() . '_', '', $providerFormat)
             ) {
                 $provider->getResizer()->resize(
@@ -156,9 +159,11 @@ class FormatThumbnail implements ThumbnailInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaProviderInterface $provider
+     * @param MediaInterface $media
+     * @return void
      */
-    public function delete(MediaProviderInterface $provider, MediaInterface $media)
+    public function delete(MediaProviderInterface $provider, MediaInterface $media): void
     {
         // delete the different formats
         foreach ($provider->getFormats() as $format => $definition) {
@@ -173,7 +178,7 @@ class FormatThumbnail implements ThumbnailInterface
      * @param array|MediaInterface $media
      * @return string the file extension for the $media, or the $defaultExtension if not available
      */
-    protected function getExtension($media)
+    protected function getExtension(array|MediaInterface $media): string
     {
         $ext = ($media instanceof MediaInterface)?$media->getExtension():pathinfo($media['providerReference'], PATHINFO_EXTENSION);
         if (!is_string($ext) || strlen($ext) < 3) {

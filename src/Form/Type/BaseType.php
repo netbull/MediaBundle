@@ -14,7 +14,7 @@ abstract class BaseType extends AbstractType
     /**
      * @var Pool
      */
-    protected $pool;
+    protected Pool $pool;
 
     /**
      * @param Pool $pool
@@ -28,7 +28,7 @@ abstract class BaseType extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new ProviderDataTransformer($this->pool, [
             'provider' => $options['provider'],
@@ -43,7 +43,7 @@ abstract class BaseType extends AbstractType
      * @param FormInterface $form
      * @param array $options
      */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['context'] = $options['context'];
         $view->vars['provider'] = $options['provider'];

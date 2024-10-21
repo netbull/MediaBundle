@@ -2,43 +2,25 @@
 
 namespace NetBull\MediaBundle\Provider;
 
-use Gaufrette\Filesystem;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
-use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class VimeoProvider
- * @package NetBull\MediaBundle\Provider
- */
 class VimeoProvider extends BaseVideoProvider
 {
     /**
      * @var bool
      */
-    protected $html5;
+    protected bool $html5;
 
     /**
-     * VimeoProvider constructor.
-     * @param string $name
-     * @param Filesystem $filesystem
-     * @param CdnInterface $cdn
-     * @param ThumbnailInterface $thumbnail
-     * @param MetadataBuilderInterface|null $metadata
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @param array $options
+     * @return array
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, MetadataBuilderInterface $metadata = null)
-    {
-        parent::__construct($name, $filesystem, $cdn, $thumbnail, $metadata);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHelperProperties($media, string $format, array $options = [])
+    public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         if ($media instanceof MediaInterface) {
             if ('reference' === $format) {
@@ -61,8 +43,8 @@ class VimeoProvider extends BaseVideoProvider
             ];
         } else {
             $data = [
-                'alt' => isset($media['name']) ? $media['name'] : $media['caption'],
-                'title' => isset($media['name']) ? $media['name'] : $media['caption'],
+                'alt' => $media['name'] ?? $media['caption'],
+                'title' => $media['name'] ?? $media['caption'],
                 'src' => $this->generatePublicUrl($media, $format),
                 'width' => $media['width'],
                 'height' => $media['height'],
@@ -73,14 +55,17 @@ class VimeoProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @param array $options
+     * @return array
      */
-    public function getViewProperties($media, $format, array $options = [])
+    public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         // documentation : http://vimeo.com/api/docs/moogaloop
         $defaults = array(
             // (optional) Flash Player version of app. Defaults to 9 .NEW!
-            // 10 - New Moogaloop. 9 - Old Moogaloop without newest features.
+            // 10 - New Moogaloop. 9 - Old Moogaloop without the newest features.
             'fp_version' => 10,
 
             // (optional) Enable fullscreen capability. Defaults to true.
@@ -111,14 +96,12 @@ class VimeoProvider extends BaseVideoProvider
             'js_swf_id' => uniqid('vimeo_player_'),
         );
 
-        $player_parameters = array_merge($defaults, isset($options['player_parameters']) ? $options['player_parameters'] : []);
-
-//        $box = $this->getBoxHelperProperties($media, $format, $options);
+        $player_parameters = array_merge($defaults, $options['player_parameters'] ?? []);
 
         return [
             'src' => http_build_query($player_parameters),
             'id' => $player_parameters['js_swf_id'],
-            'frameborder' => isset($options['frameborder']) ? $options['frameborder'] : 0,
+            'frameborder' => $options['frameborder'] ?? 0,
             'width' => $media instanceof MediaInterface ? $media->getWidth() : $media['width'],
             'height' => $media instanceof MediaInterface ? $media->getHeight() : $media['height'],
         ];
@@ -126,8 +109,9 @@ class VimeoProvider extends BaseVideoProvider
 
     /**
      * @param MediaInterface $media
+     * @return void
      */
-    protected function fixBinaryContent(MediaInterface $media)
+    protected function fixBinaryContent(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
             return;
@@ -139,9 +123,10 @@ class VimeoProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    protected function doTransform(MediaInterface $media)
+    protected function doTransform(MediaInterface $media): void
     {
         $this->fixBinaryContent($media);
 
@@ -157,15 +142,17 @@ class VimeoProvider extends BaseVideoProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param bool $force
+     * @return void
      */
-    public function updateMetadata(MediaInterface $media, $force = false)
+    public function updateMetadata(MediaInterface $media, bool $force = false): void
     {
-        $url = sprintf('http://vimeo.com/api/oembed.json?url=http://vimeo.com/%s', $media->getProviderReference());
+        $url = sprintf('https://vimeo.com/api/oembed.json?url=https://vimeo.com/%s', $media->getProviderReference());
 
         try {
             $metadata = $this->getMetadata($url);
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             $media->setEnabled(false);
             return;
         }
@@ -186,25 +173,24 @@ class VimeoProvider extends BaseVideoProvider
 
     /**
      * @param MediaInterface $media
-     * @param $format
-     * @param $mode
+     * @param string $format
+     * @param string $mode
      * @param array $headers
      * @return Response
      */
-    public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = []): Response
+    public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('http://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(sprintf('https://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
     }
 
     /**
      * @param MediaInterface $media
-     * @param $format
-     * @param $mode
+     * @param string $format
      * @param array $headers
      * @return Response
      */
-    public function getViewResponse(MediaInterface $media, $format, array $headers = []): Response
+    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('http://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(sprintf('https://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
     }
 }

@@ -3,7 +3,6 @@
 namespace NetBull\MediaBundle\DependencyInjection\Compiler;
 
 use NetBull\MediaBundle\DependencyInjection\Configuration;
-use NetBull\MediaBundle\DependencyInjection\NetBullMediaExtension;
 use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Reference;
@@ -15,12 +14,12 @@ class AddProviderCompilerPass implements CompilerPassInterface
     /**
      * @var array
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * @param ContainerBuilder $container
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $this->getConfiguration($container);
 
@@ -33,7 +32,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     /**
      * @param ContainerBuilder $container
      */
-    public function attachProviders(ContainerBuilder $container)
+    public function attachProviders(ContainerBuilder $container): void
     {
         $pool = $container->getDefinition(Pool::class);
         foreach ($container->findTaggedServiceIds('netbull_media.provider') as $id => $attributes) {
@@ -44,7 +43,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     /**
      * @param ContainerBuilder $container
      */
-    private function getConfiguration(ContainerBuilder $container)
+    private function getConfiguration(ContainerBuilder $container): void
     {
         $parameterBag = $container->getParameterBag();
         $processor = new Processor();
@@ -57,7 +56,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     /**
      * @param ContainerBuilder $container
      */
-    public function attachArguments(ContainerBuilder $container)
+    public function attachArguments(ContainerBuilder $container): void
     {
         if (!isset($this->config['providers'])) {
             return;
@@ -82,7 +81,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     /**
      * @param ContainerBuilder $container
      */
-    public function applyFormats(ContainerBuilder $container)
+    public function applyFormats(ContainerBuilder $container): void
     {
         if (!isset($this->config['contexts'])) {
             return;

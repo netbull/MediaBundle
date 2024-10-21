@@ -4,12 +4,8 @@ namespace NetBull\MediaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Exception;
-use NetBull\MediaBundle\Entity\Media;
+use NetBull\MediaBundle\Entity\MediaInterface;
 
-/**
- * Class MediaRepository
- * @package NetBull\MediaBundle\Repository
- */
 class MediaRepository extends EntityRepository
 {
     const MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption';
@@ -45,11 +41,11 @@ class MediaRepository extends EntityRepository
     }
 
     /**
-     * @param Media|int $media
+     * @param MediaInterface|array|int $media
      * @param bool $status
      * @return bool
      */
-    public function toggleMain($media, bool $status = false): bool
+    public function toggleMain(MediaInterface|array|int $media, bool $status = false): bool
     {
         $qb = $this->createQueryBuilder('m');
         $qb->update($this->getEntityName(), 'm')
@@ -67,7 +63,7 @@ class MediaRepository extends EntityRepository
         try {
             $qb->getQuery()->execute();
             return true;
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -75,12 +71,11 @@ class MediaRepository extends EntityRepository
     ################################################
     #               Helper Methods                 #
     ################################################
-
     /**
-     * @param $contexts
+     * @param array $contexts
      * @return array
      */
-    private function normalizeContexts($contexts): array
+    private function normalizeContexts(array $contexts): array
     {
         $tmp = ['all' => 'All'];
         foreach ($contexts as $context){

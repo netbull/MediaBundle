@@ -20,17 +20,14 @@ use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * Class BaseVideoProvider
- * @package NetBull\MediaBundle\Provider
- */
 abstract class BaseVideoProvider extends BaseProvider
 {
     /**
-     * @var HttpClient
+     * @var HttpClientInterface
      */
-    protected $httpClient;
+    protected HttpClientInterface $httpClient;
 
     /**
      * @var MetadataBuilderInterface|null
@@ -38,7 +35,6 @@ abstract class BaseVideoProvider extends BaseProvider
     protected ?MetadataBuilderInterface $metadata;
 
     /**
-     * BaseVideoProvider constructor.
      * @param string $name
      * @param Filesystem $filesystem
      * @param CdnInterface $cdn
@@ -56,7 +52,7 @@ abstract class BaseVideoProvider extends BaseProvider
     /**
      * {@inheritdoc}
      */
-    public function getReferenceImage($media)
+    public function getReferenceImage(array|MediaInterface $media): string
     {
         return $media->getMetadataValue('thumbnail_url');
     }
@@ -65,7 +61,7 @@ abstract class BaseVideoProvider extends BaseProvider
      * @param array|MediaInterface $media
      * @return File|null
      */
-    public function getReferenceFile($media)
+    public function getReferenceFile(array|MediaInterface $media): ?File
     {
         $key = $this->generatePrivateUrl($media, 'reference');
 
@@ -86,7 +82,7 @@ abstract class BaseVideoProvider extends BaseProvider
                     $this->httpClient->request('GET', $thumbnailUrl)->getContent(),
                     $metadata
                 );
-            } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
+            } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface) {
                 return null;
             }
         }
@@ -95,9 +91,11 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @param string $format
+     * @return string
      */
-    public function generatePublicUrl($media, $format)
+    public function generatePublicUrl(array|MediaInterface $media, string$format): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
@@ -109,14 +107,14 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * @param MediaInterface|array $media
+     * @param array|MediaInterface $media
      * @param string $format
      * @param string $identifier
      * @param int $expires
-     * 
+     *
      * @return string
      */
-    public function generateSecuredUrl($media, string $format, string $identifier, int $expires = 300): string
+    public function generateSecuredUrl(array|MediaInterface $media, string $format, string $identifier, int $expires = 300): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
@@ -128,9 +126,11 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param string $format
+     * @return string
      */
-    public function generatePrivateUrl(MediaInterface $media, $format)
+    public function generatePrivateUrl(MediaInterface $media, string $format): string
     {
         return sprintf('%s/thumb_%s_%s.jpg',
             $this->generatePath($media),
@@ -140,9 +140,11 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param FormBuilderInterface $formBuilder
+     * @param array $options
+     * @return void
      */
-    public function buildMediaType(FormBuilderInterface $formBuilder, array $options = [])
+    public function buildMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         $mainField = $options['main_field'];
         unset($options['main_field']);
@@ -197,7 +199,7 @@ abstract class BaseVideoProvider extends BaseProvider
      * @param FormBuilderInterface $formBuilder
      * @param array $options
      */
-    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = [])
+    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         $formBuilder->add('newBinaryContent', TextType::class, [
             'label' => 'YouTube URL',
@@ -210,17 +212,19 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    public function postUpdate(MediaInterface $media)
+    public function postUpdate(MediaInterface $media): void
     {
         $this->postPersist($media);
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    public function postPersist(MediaInterface $media)
+    public function postPersist(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
             return;
@@ -230,18 +234,17 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    public function postRemove(MediaInterface $media){ }
+    public function postRemove(MediaInterface $media): void
+    { }
 
     /**
-     * @throws RuntimeException
-     *
      * @param string $url
-     *
-     * @return mixed
+     * @return array
      */
-    protected function getMetadata($url)
+    protected function getMetadata(string $url): array
     {
         try {
             $response = $this->httpClient->request('GET', $url);
@@ -269,7 +272,7 @@ abstract class BaseVideoProvider extends BaseProvider
      *
      * @return Box
      */
-    protected function getBoxHelperProperties(MediaInterface $media, $format, $options = [])
+    protected function getBoxHelperProperties(MediaInterface $media, string $format, array $options = []): Box
     {
         if ('reference' === $format) {
             return $media->getBox();
@@ -277,8 +280,8 @@ abstract class BaseVideoProvider extends BaseProvider
 
         if (isset($options['width']) || isset($options['height'])) {
             $settings = [
-                'width' => isset($options['width']) ? $options['width'] : null,
-                'height' => isset($options['height']) ? $options['height'] : null,
+                'width' => $options['width'] ?? null,
+                'height' => $options['height'] ?? null,
             ];
         } else {
             $settings = $this->getFormat($format);
@@ -288,9 +291,10 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @return void
      */
-    public function postFlush(MediaInterface $media)
+    public function postFlush(MediaInterface $media): void
     {
         $this->generateThumbnails($media);
     }

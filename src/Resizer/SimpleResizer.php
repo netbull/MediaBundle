@@ -7,32 +7,29 @@ use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
 use Imagine\Exception\InvalidArgumentException;
+use Imagine\Image\ManipulatorInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use RuntimeException;
 
-/**
- * Class SimpleResizer
- * @package NetBull\MediaBundle\Resizer
- */
 class SimpleResizer implements ResizerInterface
 {
     /**
      * @var ImagineInterface
      */
-    protected $adapter;
+    protected ImagineInterface $adapter;
 
     /**
      * @var string
      */
-    protected $mode;
+    protected int $mode;
 
     /**
      * @var MetadataBuilderInterface
      */
-    protected $metadata;
+    protected MetadataBuilderInterface $metadata;
 
     /**
-     * SimpleResizer constructor.
      * @param ImagineInterface $adapter
      * @param string $mode
      * @param MetadataBuilderInterface $metadata
@@ -45,12 +42,17 @@ class SimpleResizer implements ResizerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param File $in
+     * @param File $out
+     * @param string $format
+     * @param array $settings
+     * @return void
      */
-    public function resize(MediaInterface $media, File $in, File $out, $format, array $settings)
+    public function resize(MediaInterface $media, File $in, File $out, string $format, array $settings): void
     {
         if (!isset($settings['width'])) {
-            throw new \RuntimeException(sprintf('Width parameter is missing in context "%s" for provider "%s"', $media->getContext(), $media->getProviderName()));
+            throw new RuntimeException(sprintf('Width parameter is missing in context "%s" for provider "%s"', $media->getContext(), $media->getProviderName()));
         }
 
         $image = $this->adapter->load($in->getContent());
@@ -83,14 +85,16 @@ class SimpleResizer implements ResizerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param MediaInterface $media
+     * @param array $settings
+     * @return Box
      */
     public function getBox(MediaInterface $media, array $settings): Box
     {
         $size = $media->getBox();
 
         if (null === $settings['width'] && null === $settings['height']) {
-            throw new \RuntimeException(sprintf('Width/Height parameter is missing in context "%s" for provider "%s". Please add at least one parameter.', $media->getContext(), $media->getProviderName()));
+            throw new RuntimeException(sprintf('Width/Height parameter is missing in context "%s" for provider "%s". Please add at least one parameter.', $media->getContext(), $media->getProviderName()));
         }
 
         if (null === $settings['height']) {
@@ -111,7 +115,7 @@ class SimpleResizer implements ResizerInterface
      */
     private function computeBox(MediaInterface $media, array $settings): Box
     {
-        if ($this->mode !== ImageInterface::THUMBNAIL_INSET && $this->mode !== ImageInterface::THUMBNAIL_OUTBOUND) {
+        if ($this->mode !== ManipulatorInterface::THUMBNAIL_INSET && $this->mode !== ManipulatorInterface::THUMBNAIL_OUTBOUND) {
             throw new InvalidArgumentException('Invalid mode specified');
         }
 
@@ -122,7 +126,7 @@ class SimpleResizer implements ResizerInterface
             $settings['height'] / $size->getHeight(),
         ];
 
-        if ($this->mode === ImageInterface::THUMBNAIL_INSET) {
+        if ($this->mode === ManipulatorInterface::THUMBNAIL_INSET) {
             $ratio = min($ratios);
         } else {
             $ratio = max($ratios);

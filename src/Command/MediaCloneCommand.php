@@ -15,16 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use NetBull\MediaBundle\Entity\Media;
 
-/**
- * Class MediaCloneCommand
- * @package NetBull\MediaBundle\Command
- */
 class MediaCloneCommand extends BaseCommand
 {
     /**
      * @var ParameterBag
      */
-    protected $parameterBag;
+    protected ParameterBag $parameterBag;
 
     /**
      * MediaCloneCommand constructor.
@@ -40,9 +36,9 @@ class MediaCloneCommand extends BaseCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setName('netbull:media:clone')
             ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
@@ -56,11 +52,10 @@ class MediaCloneCommand extends BaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $em = $this->getManager();
         $this->io = new SymfonyStyle($input, $output);
 
         /** @var MediaInterface|null $media */
-        $media = $em->getRepository(Media::class)->find($input->getArgument('mediaId'));
+        $media = $this->em->getRepository(Media::class)->find($input->getArgument('mediaId'));
 
         if (!$media) {
             $this->log('null');
@@ -84,8 +79,8 @@ class MediaCloneCommand extends BaseCommand
             $clone->setBinaryContent(new File($tmp));
 
             try {
-                $em->persist($clone);
-                $em->flush();
+                $this->em->persist($clone);
+                $this->em->flush();
             } catch (Exception $e) {
                 return Command::SUCCESS;
             }
