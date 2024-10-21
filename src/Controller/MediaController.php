@@ -61,7 +61,7 @@ class MediaController extends AbstractController
      * @param string $format
      * @return BinaryFileResponse|Response
      */
-    public function downloadAction($id, Request $request, string $format = 'reference')
+    public function downloadAction($id, Request $request, string $format = 'reference'): BinaryFileResponse|Response
     {
         /** @var MediaInterface|null $media */
         $media = $this->em->getRepository(Media::class)->find($id);
@@ -81,7 +81,7 @@ class MediaController extends AbstractController
 
         try {
             $response = $provider->getDownloadResponse($media, $provider->getFormatName($media, $format), $this->pool->getDownloadMode($media));
-        } catch (FileNotFound $e) {
+        } catch (FileNotFound) {
             throw $this->createNotFoundException();
         }
 

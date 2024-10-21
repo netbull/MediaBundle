@@ -20,7 +20,7 @@ class SimpleResizer implements ResizerInterface
     protected ImagineInterface $adapter;
 
     /**
-     * @var string
+     * @var int
      */
     protected int $mode;
 
@@ -31,10 +31,10 @@ class SimpleResizer implements ResizerInterface
 
     /**
      * @param ImagineInterface $adapter
-     * @param string $mode
+     * @param int $mode
      * @param MetadataBuilderInterface $metadata
      */
-    public function __construct(ImagineInterface $adapter, string $mode, MetadataBuilderInterface $metadata)
+    public function __construct(ImagineInterface $adapter, int $mode, MetadataBuilderInterface $metadata)
     {
         $this->adapter = $adapter;
         $this->mode = $mode;

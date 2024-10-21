@@ -3,6 +3,7 @@
 namespace NetBull\MediaBundle\DependencyInjection;
 
 use Exception;
+use Imagine\Image\ManipulatorInterface;
 use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
@@ -46,8 +47,8 @@ class NetBullMediaExtension extends Extension
         $pool = $container->getDefinition(Pool::class);
         $pool->replaceArgument(0, $this->config['default_context']);
 
-        $container->setParameter('netbull_media.resizer.simple.adapter.mode', $this->config['resizer']['simple']['mode']);
-        $container->setParameter('netbull_media.resizer.square.adapter.mode', $this->config['resizer']['square']['mode']);
+        $container->setParameter('netbull_media.resizer.simple.adapter.mode', $this->config['resizer']['simple']['mode'] === 'outbound' ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET);
+        $container->setParameter('netbull_media.resizer.square.adapter.mode', $this->config['resizer']['square']['mode'] === 'outbound' ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET);
 
         foreach (['netbull_media.resizer.simple', 'netbull_media.resizer.square'] as $resizerId) {
             if ($container->hasDefinition($resizerId)) {
