@@ -1,3 +1,10 @@
+## [6.4.1](https://github.com/netbull/MediaBundle/compare/v6.4.0...v6.4.1) (2024-10-21)
+
+
+### Bug Fixes
+
+* adjusted the deprecations ([d694043](https://github.com/netbull/MediaBundle/commit/d694043937b635314a1bc04320277327fd7e8903))
+
 # [6.4.0](https://github.com/netbull/MediaBundle/compare/v6.3.0...v6.4.0) (2024-10-21)
 
 
