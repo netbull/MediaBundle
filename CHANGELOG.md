@@ -1,3 +1,10 @@
+## [6.4.4](https://github.com/netbull/MediaBundle/compare/v6.4.3...v6.4.4) (2024-10-28)
+
+
+### Bug Fixes
+
+* decimal type ([761028c](https://github.com/netbull/MediaBundle/commit/761028c7a81ee02ec6be36e0d0031d87e58823c6))
+
 ## [6.4.3](https://github.com/netbull/MediaBundle/compare/v6.4.2...v6.4.3) (2024-10-21)
 
 
