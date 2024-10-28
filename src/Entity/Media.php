@@ -65,10 +65,10 @@ class Media implements MediaInterface
     private ?int $height = null;
 
     /**
-     * @var float|null
+     * @var string|null
      */
     #[ORM\Column(type: 'decimal', nullable: true)]
-    private ?float $length = null;
+    private ?string $length = null;
 
     /**
      * @var int|null
@@ -281,18 +281,18 @@ class Media implements MediaInterface
     }
 
     /**
-     * @return float|null
+     * @return string|null
      */
-    public function getLength(): ?float
+    public function getLength(): ?string
     {
         return $this->length;
     }
 
     /**
-     * @param float|null $length
+     * @param string|null $length
      * @return Media
      */
-    public function setLength(?float $length): Media
+    public function setLength(?string $length): Media
     {
         $this->length = $length;
 

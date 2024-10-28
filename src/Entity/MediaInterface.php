@@ -90,15 +90,15 @@ interface MediaInterface
     public function setHeight(?int $height): self;
 
     /**
-     * @return float|null
+     * @return string|null
      */
-    public function getLength(): ?float;
+    public function getLength(): ?string;
 
     /**
-     * @param float|null $length
+     * @param string|null $length
      * @return $this
      */
-    public function setLength(?float $length): self;
+    public function setLength(?string $length): self;
 
     /**
      * @return int|null
