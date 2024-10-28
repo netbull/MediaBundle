@@ -1,3 +1,10 @@
+## [6.4.3](https://github.com/netbull/MediaBundle/compare/v6.4.2...v6.4.3) (2024-10-21)
+
+
+### Bug Fixes
+
+* moved from annotations to attributes ([957c32e](https://github.com/netbull/MediaBundle/commit/957c32ea94ff7b94adca7ef0983d7d316337883c))
+
 ## [6.4.2](https://github.com/netbull/MediaBundle/compare/v6.4.1...v6.4.2) (2024-10-21)
 
 
