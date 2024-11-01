@@ -101,7 +101,7 @@ class NetBullMediaExtension extends Extension
                 ->replaceArgument(0, [
                     'version' => $this->config['filesystem']['s3']['defaults']['version'],
                     'region' => $this->config['filesystem']['s3']['defaults']['region'],
-                    'credentials' => $this->config['filesystem']['s3']['defaults']['credentials']
+                    'credentials' => $this->config['filesystem']['s3']['defaults']['credentials'] ?? null,
                 ]);
 
             $container->getDefinition('netbull_media.adapter.filesystem.s3')
