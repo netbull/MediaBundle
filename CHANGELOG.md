@@ -1,3 +1,10 @@
+## [6.4.7](https://github.com/netbull/MediaBundle/compare/v6.4.6...v6.4.7) (2024-11-01)
+
+
+### Bug Fixes
+
+* findMain return type ([deb9b76](https://github.com/netbull/MediaBundle/commit/deb9b763af2a29697d6b01b1cb4c0e1b552d81c8))
+
 ## [6.4.6](https://github.com/netbull/MediaBundle/compare/v6.4.5...v6.4.6) (2024-11-01)
 
 
