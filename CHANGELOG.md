@@ -1,3 +1,11 @@
+## [6.4.9](https://github.com/netbull/MediaBundle/compare/v6.4.8...v6.4.9) (2024-11-01)
+
+
+### Bug Fixes
+
+* MediaEventSubscriber -> MediaListener ([aebb140](https://github.com/netbull/MediaBundle/commit/aebb14008d7926bab932817df2b1050122fff33d))
+* wrong data type ([daac8ce](https://github.com/netbull/MediaBundle/commit/daac8ce7583c3193a7f12c7c9b3f40be08a67196))
+
 ## [6.4.8](https://github.com/netbull/MediaBundle/compare/v6.4.7...v6.4.8) (2024-11-01)
 
 
