@@ -1,3 +1,10 @@
+## [6.4.5](https://github.com/netbull/MediaBundle/compare/v6.4.4...v6.4.5) (2024-11-01)
+
+
+### Bug Fixes
+
+* removed credentials requirement ([4a14e98](https://github.com/netbull/MediaBundle/commit/4a14e98c96ce53d09e6ab585f415843dfa22aeee))
+
 ## [6.4.4](https://github.com/netbull/MediaBundle/compare/v6.4.3...v6.4.4) (2024-10-28)
 
 
