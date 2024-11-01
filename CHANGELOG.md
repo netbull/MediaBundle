@@ -1,3 +1,11 @@
+## [6.4.6](https://github.com/netbull/MediaBundle/compare/v6.4.5...v6.4.6) (2024-11-01)
+
+
+### Bug Fixes
+
+* findMain return type ([55ce765](https://github.com/netbull/MediaBundle/commit/55ce7654b763750fb91fd59319165f38c30d1a94))
+* removed credentials requirement ([dabefbb](https://github.com/netbull/MediaBundle/commit/dabefbb8fe50fb8c6d77d4b2f1706a5642be178c))
+
 ## [6.4.5](https://github.com/netbull/MediaBundle/compare/v6.4.4...v6.4.5) (2024-11-01)
 
 
