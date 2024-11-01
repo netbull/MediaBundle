@@ -134,7 +134,7 @@ class Configuration implements ConfigurationInterface
                                         ->scalarNode('directory')->defaultValue('')->end()
                                         ->scalarNode('version')->defaultValue('latest')->end()
                                         ->scalarNode('region')->defaultValue('eu-central-1')->end()
-                                        ->arrayNode('credentials')->isRequired()
+                                        ->arrayNode('credentials')
                                             ->children()
                                                 ->scalarNode('key')->isRequired()->end()
                                                 ->scalarNode('secret')->isRequired()->end()
