@@ -30,7 +30,6 @@ class NetBullMediaExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('provider.yaml');
-        $loader->load('listener.yaml');
         $loader->load('media.yaml');
         $loader->load('security.yaml');
         $loader->load('gaufrette.yaml');
