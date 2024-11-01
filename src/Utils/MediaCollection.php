@@ -14,9 +14,9 @@ class MediaCollection extends ArrayCollection
     private bool $isArrayCollection = true;
 
     /**
-     * @var MediaInterface|null
+     * @var array|MediaInterface|null
      */
-    private ?MediaInterface $main = null;
+    private array|MediaInterface|null $main = null;
 
     /**
      * @var array
@@ -77,9 +77,9 @@ class MediaCollection extends ArrayCollection
     }
 
     /**
-     * @return MediaInterface|null
+     * @return array|MediaInterface|null
      */
-    private function findMain(): ?MediaInterface
+    private function findMain(): array|MediaInterface|null
     {
         $isArrayCollection = $this->isArrayCollection;
         $filtered = $this->filterCustom(function ($media) use ($isArrayCollection) {
