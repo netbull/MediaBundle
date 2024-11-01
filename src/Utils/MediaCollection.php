@@ -91,6 +91,9 @@ class MediaCollection extends ArrayCollection
         }
 
         $main = $this->first();
+        if (!$main) {
+            return null;
+        }
 
         $rest = $this->filterCustom(function ($media) use ($isArrayCollection, $main) {
             $id = $isArrayCollection ? $media['id'] : $media->getId();
