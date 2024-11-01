@@ -1,3 +1,10 @@
+## [6.4.8](https://github.com/netbull/MediaBundle/compare/v6.4.7...v6.4.8) (2024-11-01)
+
+
+### Bug Fixes
+
+* subscriber ([fca2eb5](https://github.com/netbull/MediaBundle/commit/fca2eb535e946df89121e6c1da0e7f02a1fc8e52))
+
 ## [6.4.7](https://github.com/netbull/MediaBundle/compare/v6.4.6...v6.4.7) (2024-11-01)
 
 
