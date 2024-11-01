@@ -71,12 +71,16 @@ class MediaEventSubscriber implements EventSubscriber
 
     /**
      * @param LifecycleEventArgs $args
-     * @return MediaInterface
+     * @return MediaInterface|null
      */
-    protected function getMedia(LifecycleEventArgs $args): MediaInterface
+    protected function getMedia(LifecycleEventArgs $args): ?MediaInterface
     {
         /** @var MediaInterface $entity */
         $entity = $args->getObject();
+        if (!$entity instanceof MediaInterface) {
+            return null;
+        }
+
         if (!$this->medias->contains($entity)) {
             $this->medias->add($entity);
         }
