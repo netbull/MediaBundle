@@ -42,9 +42,9 @@ class MediaCollection extends ArrayCollection
     }
 
     /**
-     * @return MediaInterface|null
+     * @return array|MediaInterface|null
      */
-    public function main(): ?MediaInterface
+    public function main(): array|MediaInterface|null
     {
         if ($this->main) {
             return $this->main;
