@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\Pool;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpFoundation\File\File;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use NetBull\MediaBundle\Entity\Media;
 
+#[AsCommand(name: 'netbull:media:clone', description: 'Clone media')]
 class MediaCloneCommand extends BaseCommand
 {
     /**
@@ -23,11 +25,10 @@ class MediaCloneCommand extends BaseCommand
     protected ParameterBag $parameterBag;
 
     /**
-     * MediaCloneCommand constructor.
      * @param ParameterBag $parameterBag
      * @param EntityManagerInterface $em
      * @param Pool $pool
-     * @param null|string $name
+     * @param string|null $name
      */
     public function __construct(ParameterBag $parameterBag, EntityManagerInterface $em, Pool $pool, ?string $name = null)
     {
@@ -40,9 +41,7 @@ class MediaCloneCommand extends BaseCommand
      */
     public function configure(): void
     {
-        $this->setName('netbull:media:clone')
-            ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
-            ->setDescription('Clone Media');
+        $this->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID');
     }
 
     /**

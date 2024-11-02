@@ -4,6 +4,7 @@ namespace NetBull\MediaBundle\Command;
 
 use Exception;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,6 +12,7 @@ use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'netbull:media:create-thumbnail', description: 'Create Image thumbnail with new media formats')]
 class PhotoCreateThumbnailCommand extends BaseCommand
 {
     /**
@@ -18,10 +20,8 @@ class PhotoCreateThumbnailCommand extends BaseCommand
      */
     public function configure(): void
     {
-        $this->setName('netbull:media:create-thumbnail')
-            ->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
-            ->addArgument('format', InputArgument::OPTIONAL, 'The thumbnail format', 'normal')
-            ->setDescription('Create Image thumbnail with new media formats');
+        $this->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID')
+            ->addArgument('format', InputArgument::OPTIONAL, 'The thumbnail format', 'normal');
     }
 
     /**

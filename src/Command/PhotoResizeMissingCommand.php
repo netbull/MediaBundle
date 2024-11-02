@@ -4,6 +4,7 @@ namespace NetBull\MediaBundle\Command;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,6 +13,7 @@ use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'netbull:media:resize', description: 'Resize missing thumbnails')]
 class PhotoResizeMissingCommand extends BaseCommand
 {
     /**
@@ -19,9 +21,7 @@ class PhotoResizeMissingCommand extends BaseCommand
      */
     public function configure(): void
     {
-        $this->setName('media:resize')
-            ->addArgument('context', InputArgument::OPTIONAL, 'The context')
-            ->setDescription('Resize missing thumbnails');
+        $this->addArgument('context', InputArgument::OPTIONAL, 'The context');
     }
 
     /**
