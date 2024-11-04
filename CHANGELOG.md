@@ -1,3 +1,10 @@
+## [6.4.11](https://github.com/netbull/MediaBundle/compare/v6.4.10...v6.4.11) (2024-11-04)
+
+
+### Bug Fixes
+
+* event listener ([248ac53](https://github.com/netbull/MediaBundle/commit/248ac530a0edfb863c7add6d9c4b3c76659f7ae6))
+
 ## [6.4.10](https://github.com/netbull/MediaBundle/compare/v6.4.9...v6.4.10) (2024-11-02)
 
 
