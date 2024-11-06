@@ -1,3 +1,10 @@
+## [6.4.14](https://github.com/netbull/MediaBundle/compare/v6.4.13...v6.4.14) (2024-11-06)
+
+
+### Bug Fixes
+
+* forked process environment variables issue ([1c1f154](https://github.com/netbull/MediaBundle/commit/1c1f154188a4f09ec40a36d3212017a5ebb5792b))
+
 ## [6.4.13](https://github.com/netbull/MediaBundle/compare/v6.4.12...v6.4.13) (2024-11-05)
 
 
