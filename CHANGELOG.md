@@ -1,3 +1,10 @@
+## [6.4.13](https://github.com/netbull/MediaBundle/compare/v6.4.12...v6.4.13) (2024-11-05)
+
+
+### Bug Fixes
+
+* configuration ([a9d40fb](https://github.com/netbull/MediaBundle/commit/a9d40fbedb719029a250fe3ffe1bf4e21b4b647d))
+
 ## [6.4.12](https://github.com/netbull/MediaBundle/compare/v6.4.11...v6.4.12) (2024-11-04)
 
 
