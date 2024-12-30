@@ -36,7 +36,13 @@ class RolesSecurityStrategy implements SecurityStrategyInterface
      */
     public function isGranted(MediaInterface $media, Request $request): bool
     {
-        return $this->security->isGranted($this->roles);
+        foreach ($this->roles as $role) {
+            if ($this->security->isGranted($role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
