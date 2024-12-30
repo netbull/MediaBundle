@@ -1,3 +1,10 @@
+## [5.5.7](https://github.com/netbull/MediaBundle/compare/v5.5.6...v5.5.7) (2024-12-30)
+
+
+### Bug Fixes
+
+* RolesSecurityStrategy check ([72979c8](https://github.com/netbull/MediaBundle/commit/72979c8fc895ce16e15313ae3d13423c990588d4))
+
 ## [5.5.6](https://github.com/netbull/MediaBundle/compare/v5.5.5...v5.5.6) (2024-11-01)
 
 
