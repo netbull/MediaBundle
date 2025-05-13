@@ -96,12 +96,15 @@ class NetBullMediaExtension extends Extension
 
         // Add the default configuration for the S3 filesystem
         if ($container->hasDefinition('netbull_media.adapter.filesystem.s3') && isset($this->config['filesystem']['s3'])) {
+            $options = [
+                'version' => $this->config['filesystem']['s3']['defaults']['version'],
+                'region' => $this->config['filesystem']['s3']['defaults']['region'],
+            ];
+            if (!empty($this->config['filesystem']['s3']['defaults']['credentials'])) {
+                $options['credentials'] = $this->config['filesystem']['s3']['defaults']['credentials'];
+            }
             $container->getDefinition('netbull_media.wrapper.s3')
-                ->replaceArgument(0, [
-                    'version' => $this->config['filesystem']['s3']['defaults']['version'],
-                    'region' => $this->config['filesystem']['s3']['defaults']['region'],
-                    'credentials' => $this->config['filesystem']['s3']['defaults']['credentials']
-                ]);
+                ->replaceArgument(0, $options);
 
             $container->getDefinition('netbull_media.adapter.filesystem.s3')
                 ->replaceArgument(1, $this->config['filesystem']['s3']['options']['bucket'])
