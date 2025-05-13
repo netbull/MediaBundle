@@ -1,3 +1,10 @@
+## [5.5.8](https://github.com/netbull/MediaBundle/compare/v5.5.7...v5.5.8) (2025-05-13)
+
+
+### Bug Fixes
+
+* s3 options ([f2ceb00](https://github.com/netbull/MediaBundle/commit/f2ceb00464676afe754d5c04dc665f4102d0d66e))
+
 ## [5.5.7](https://github.com/netbull/MediaBundle/compare/v5.5.6...v5.5.7) (2024-12-30)
 
 
