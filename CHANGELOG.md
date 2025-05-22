@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/netbull/MediaBundle/compare/v7.0.0...v7.0.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* moved to netebull/doctrine-behaviours ([f37cb75](https://github.com/netbull/MediaBundle/commit/f37cb75ccd1a227e035677cb36a4ef3c41964ed3))
+
 # [7.0.0](https://github.com/netbull/MediaBundle/compare/v6.4.15...v7.0.0) (2025-05-22)
 
 
