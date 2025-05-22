@@ -1,6 +1,5 @@
 MediaBundle
 ==========
-
 Mod of [SonataMediaBundle](https://github.com/sonata-project/SonataMediaBundle)
 
 Installation
