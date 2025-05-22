@@ -20,7 +20,7 @@
     "symfony/form": "7.2.*",
     "symfony/process": "7.2.*",
     "symfony/mime": "7.2.*",
-    "knplabs/doctrine-behaviors": "^2.0"
+    "netbull/doctrine-behaviors": "^7.0"
   },
   "autoload" : {
     "psr-4" : {
