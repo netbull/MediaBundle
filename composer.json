@@ -16,10 +16,10 @@
     "aws/aws-sdk-php": "3.*",
     "imagine/imagine": "1.*",
     "knplabs/gaufrette": "0.9.*",
-    "symfony/http-client": "6.4.*",
-    "symfony/form": "6.4.*",
-    "symfony/process": "6.4.*",
-    "symfony/mime": "6.4.*",
+    "symfony/http-client": "7.2.*",
+    "symfony/form": "7.2.*",
+    "symfony/process": "7.2.*",
+    "symfony/mime": "7.2.*",
     "knplabs/doctrine-behaviors": "^2.0"
   },
   "autoload" : {
