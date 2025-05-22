@@ -1,3 +1,13 @@
+# [7.0.0](https://github.com/netbull/MediaBundle/compare/v6.4.15...v7.0.0) (2025-05-22)
+
+
+* Update README.md ([be4b371](https://github.com/netbull/MediaBundle/commit/be4b371a74b24df0d36e5f33605b4172792202a1))
+
+
+### BREAKING CHANGES
+
+* bump
+
 ## [6.4.15](https://github.com/netbull/MediaBundle/compare/v6.4.14...v6.4.15) (2024-12-30)
 
 
