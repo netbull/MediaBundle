@@ -1,3 +1,10 @@
+## [7.0.2](https://github.com/netbull/MediaBundle/compare/v7.0.1...v7.0.2) (2025-05-23)
+
+
+### Bug Fixes
+
+* dependency ([f0a16c2](https://github.com/netbull/MediaBundle/commit/f0a16c2b968d5df4147cffead9c169a120e76660))
+
 ## [7.0.1](https://github.com/netbull/MediaBundle/compare/v7.0.0...v7.0.1) (2025-05-22)
 
 
