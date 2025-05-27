@@ -1,3 +1,10 @@
+## [5.5.9](https://github.com/netbull/MediaBundle/compare/v5.5.8...v5.5.9) (2025-05-27)
+
+
+### Bug Fixes
+
+* forked process environment variables issue ([7500d93](https://github.com/netbull/MediaBundle/commit/7500d9384b071f9791a1a830274732282508df08))
+
 ## [5.5.8](https://github.com/netbull/MediaBundle/compare/v5.5.7...v5.5.8) (2025-05-13)
 
 
