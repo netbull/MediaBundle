@@ -61,8 +61,7 @@ class FormatThumbnail implements ThumbnailInterface
      */
     public function generatePrivateUrl(MediaProviderInterface $provider, MediaInterface $media, string $format)
     {
-        $id = $media instanceof MediaInterface ? $media->getId() : $media['id'];
-        return sprintf('%s/thumb_%s_%s.%s', $provider->generatePath($media), $id, $format, $this->getExtension($media));
+        return sprintf('%s/thumb_%s_%s.%s', $provider->generatePath($media), $media->getId(), $format, $this->getExtension($media));
     }
 
     /**
@@ -109,7 +108,16 @@ class FormatThumbnail implements ThumbnailInterface
             $media->getId(),
             $shortFormat
         ]);
-        $process->run();
+
+        // Pass the AWS environment variables as the forked process does not get them
+        // This is an issue for ECS
+        $envVars = [];
+        foreach (getenv() as $key => $value) {
+            if (false !== strpos($key, 'AWS_')) {
+                $envVars[$key] = $value;
+            }
+        }
+        $process->run(null, $envVars);
         if ($wait) {
             $process->wait();
         }
