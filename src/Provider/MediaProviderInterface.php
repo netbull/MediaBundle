@@ -206,9 +206,9 @@ interface MediaProviderInterface
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response;
 
     /**
-     * @return ResizerInterface
+     * @return ResizerInterface|null
      */
-    public function getResizer(): ResizerInterface;
+    public function getResizer(): ?ResizerInterface;
 
     /**
      * @return FilesystemInterface

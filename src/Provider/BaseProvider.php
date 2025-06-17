@@ -23,29 +23,9 @@ abstract class BaseProvider implements MediaProviderInterface
     protected array $templates = [];
 
     /**
-     * @var
+     * @var ResizerInterface|null
      */
-    protected mixed $resizer;
-
-    /**
-     * @var Filesystem
-     */
-    protected Filesystem $filesystem;
-
-    /**
-     * @var ThumbnailInterface
-     */
-    protected ThumbnailInterface $thumbnail;
-
-    /**
-     * @var string
-     */
-    protected string $name;
-
-    /**
-     * @var CdnInterface
-     */
-    protected CdnInterface $cdn;
+    protected ResizerInterface|null $resizer = null;
 
     /**
      * @param string $name
@@ -53,12 +33,12 @@ abstract class BaseProvider implements MediaProviderInterface
      * @param CdnInterface $cdn
      * @param ThumbnailInterface $thumbnail
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail)
-    {
-        $this->name = $name;
-        $this->filesystem = $filesystem;
-        $this->cdn = $cdn;
-        $this->thumbnail = $thumbnail;
+    public function __construct(
+        protected string $name,
+        protected Filesystem $filesystem,
+        protected CdnInterface $cdn,
+        protected ThumbnailInterface $thumbnail
+    ) {
     }
 
     /**
@@ -102,7 +82,7 @@ abstract class BaseProvider implements MediaProviderInterface
      */
     public function requireThumbnails(): bool
     {
-        return $this->getResizer() !== null;
+        return null !== $this->getResizer();
     }
 
     /**
@@ -219,9 +199,9 @@ abstract class BaseProvider implements MediaProviderInterface
     }
 
     /**
-     * @return ResizerInterface
+     * @return ResizerInterface|null
      */
-    public function getResizer(): ResizerInterface
+    public function getResizer(): ?ResizerInterface
     {
         return $this->resizer;
     }

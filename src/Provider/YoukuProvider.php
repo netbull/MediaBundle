@@ -21,7 +21,7 @@ class YoukuProvider extends BaseVideoProvider
      */
     public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
-        if($media instanceof MediaInterface){
+        if ($media instanceof MediaInterface){
             if ('reference' === $format) {
                 $box = $media->getBox();
             } else {
