@@ -1,3 +1,10 @@
+## [7.0.4](https://github.com/netbull/MediaBundle/compare/v7.0.3...v7.0.4) (2025-06-20)
+
+
+### Bug Fixes
+
+* fixFilename ([d06e59f](https://github.com/netbull/MediaBundle/commit/d06e59fd42f9fbdb71322f87597052f5a6e2cf93))
+
 ## [7.0.3](https://github.com/netbull/MediaBundle/compare/v7.0.2...v7.0.3) (2025-06-17)
 
 
