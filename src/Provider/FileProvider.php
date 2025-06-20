@@ -203,7 +203,7 @@ class FileProvider extends BaseProvider
         if ($media->getBinaryContent() instanceof UploadedFile) {
             $media->setName($media->getName() ?: $media->getBinaryContent()->getClientOriginalName());
             $media->setMetadataValue('filename', $media->getBinaryContent()->getClientOriginalName());
-        } elseif ($media->getBinaryContent() instanceof File) {
+        } elseif ($media->getBinaryContent() instanceof File || $media->getBinaryContent() instanceof SymfonyFile) {
             $media->setName($media->getName() ?: $media->getBinaryContent()->getBasename());
             $media->setMetadataValue('filename', $media->getBinaryContent()->getBasename());
         }
