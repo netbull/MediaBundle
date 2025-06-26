@@ -9,16 +9,6 @@ use Symfony\Contracts\EventDispatcher\Event;
 class HashedMediaViewEvent extends Event
 {
     /**
-     * @var string
-     */
-    private string $mediaId;
-
-    /**
-     * @var string
-     */
-    private string $identifier;
-
-    /**
      * @var DateTimeInterface
      */
     private DateTimeInterface $viewedAt;
@@ -27,10 +17,10 @@ class HashedMediaViewEvent extends Event
      * @param string $mediaId
      * @param string $identifier
      */
-    public function __construct(string $mediaId, string $identifier)
-    {
-        $this->mediaId = $mediaId;
-        $this->identifier = $identifier;
+    public function __construct(
+        private string $mediaId,
+        private string $identifier
+    ) {
         $this->viewedAt = new DateTime('now');
     }
 

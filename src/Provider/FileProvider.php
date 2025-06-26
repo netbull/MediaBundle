@@ -24,31 +24,6 @@ use Gaufrette\File;
 class FileProvider extends BaseProvider
 {
     /**
-     * @var RouterInterface
-     */
-    protected RouterInterface $router;
-
-    /**
-     * @var SimpleSignatureHasher
-     */
-    protected SimpleSignatureHasher $simpleSignatureHasher;
-
-    /**
-     * @var array
-     */
-    protected array $allowedExtensions;
-
-    /**
-     * @var array
-     */
-    protected array $allowedMimeTypes;
-
-    /**
-     * @var MetadataBuilderInterface|null
-     */
-    protected ?MetadataBuilderInterface $metadata;
-
-    /**
      * @param string $name
      * @param Filesystem $filesystem
      * @param CdnInterface $cdn
@@ -59,15 +34,18 @@ class FileProvider extends BaseProvider
      * @param array $allowedMimeTypes
      * @param MetadataBuilderInterface|null $metadata
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, RouterInterface $router, SimpleSignatureHasher $simpleSignatureHasher, array $allowedExtensions = [], array $allowedMimeTypes = [], MetadataBuilderInterface $metadata = null)
-    {
+    public function __construct(
+        string $name,
+        Filesystem $filesystem,
+        CdnInterface $cdn,
+        ThumbnailInterface $thumbnail,
+        protected RouterInterface $router,
+        protected SimpleSignatureHasher $simpleSignatureHasher,
+        protected array $allowedExtensions = [],
+        protected array $allowedMimeTypes = [],
+        protected ?MetadataBuilderInterface $metadata = null
+    ) {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
-
-        $this->router = $router;
-        $this->simpleSignatureHasher = $simpleSignatureHasher;
-        $this->allowedExtensions = $allowedExtensions;
-        $this->allowedMimeTypes = $allowedMimeTypes;
-        $this->metadata = $metadata;
     }
 
     /**

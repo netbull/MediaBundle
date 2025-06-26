@@ -2,31 +2,21 @@
 
 namespace NetBull\MediaBundle\Filesystem;
 
+use Gaufrette\File;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\AwsS3;
 
 class LocalServer extends Filesystem
 {
     /**
-     * @var Filesystem|Local
-     */
-    private Filesystem|Local $local;
-
-    /**
-     * @var AwsS3|Filesystem
-     */
-    private AwsS3|Filesystem $remote;
-
-    /**
      * @param Local $local
      * @param AwsS3 $remote
      */
-    public function __construct(Local $local, AwsS3 $remote)
-    {
+    public function __construct(
+        private Local $local,
+        private AwsS3 $remote
+    ) {
         parent::__construct($local);
-
-        $this->local = $local;
-        $this->remote = $remote;
 
         $this->adapter = $local;
     }
@@ -34,9 +24,9 @@ class LocalServer extends Filesystem
     /**
      * @param $key
      * @param bool $create
-     * @return \Gaufrette\File|mixed
+     * @return File|mixed
      */
-    public function get($key, $create = false)
+    public function get($key, $create = false): mixed
     {
         $this->has($key);
 

@@ -130,10 +130,14 @@ class NetBullMediaExtension extends Extension
 
         // If there is no local or s3 filesystem then remove the local.server service
         if (
-            !$container->hasDefinition('netbull_media.adapter.filesystem.local') &&
-            !$container->hasDefinition('netbull_media.adapter.filesystem.s3') &&
+            (!$container->hasDefinition('netbull_media.adapter.filesystem.local') || !$container->hasDefinition('netbull_media.adapter.filesystem.s3')) &&
             $container->hasDefinition('netbull_media.adapter.filesystem.local.server')
         ) {
+            $container->removeDefinition('netbull_media.adapter.filesystem.local.server');
+        }
+
+        // Remove the local.server definition if the S3 does not use credentials for authentication
+        if ($container->hasDefinition('netbull_media.adapter.filesystem.local.server') && empty($this->config['filesystem']['s3']['defaults']['credentials'])) {
             $container->removeDefinition('netbull_media.adapter.filesystem.local.server');
         }
     }

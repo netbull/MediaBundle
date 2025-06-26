@@ -15,23 +15,13 @@ class PathGenerator
     const SECOND_LEVEL = 1000;
 
     /**
-     * @var Pool
-     */
-    private $pool;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /**
      * @param Pool $pool
      * @param Environment|null $twig
      */
-    function __construct(Pool $pool, ?Environment $twig)
-    {
-        $this->pool = $pool;
-        $this->twig = $twig;
+    function __construct(
+        private Pool $pool,
+        private ?Environment $twig
+    ) {
     }
 
     /**

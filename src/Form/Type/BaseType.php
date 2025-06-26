@@ -12,16 +12,10 @@ use Symfony\Component\Form\FormView;
 abstract class BaseType extends AbstractType
 {
     /**
-     * @var Pool
-     */
-    protected Pool $pool;
-
-    /**
      * @param Pool $pool
      */
-    public function __construct(Pool $pool)
+    public function __construct(protected Pool $pool)
     {
-        $this->pool = $pool;
     }
 
     /**

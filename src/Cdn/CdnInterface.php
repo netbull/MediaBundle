@@ -2,10 +2,6 @@
 
 namespace NetBull\MediaBundle\Cdn;
 
-/**
- * Interface CdnInterface
- * @package NetBull\MediaBundle\Cdn
- */
 interface CdnInterface
 {
     /**
@@ -15,5 +11,5 @@ interface CdnInterface
      *
      * @return string
      */
-    public function getPath($relativePath);
+    public function getPath(string $relativePath): string;
 }

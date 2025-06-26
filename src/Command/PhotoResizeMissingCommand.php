@@ -31,7 +31,6 @@ class PhotoResizeMissingCommand extends BaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $em = $this->getManager();
         $this->io = new SymfonyStyle($input, $output);
 
         $context  = $input->getArgument('context');
@@ -42,7 +41,7 @@ class PhotoResizeMissingCommand extends BaseCommand
             $context = $helper->ask($input, $output, $question);
         }
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $medias = $qb->select('m.id')
             ->from(Media::class, 'm')
             ->where($qb->expr()->andX(

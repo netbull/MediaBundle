@@ -50,7 +50,8 @@ abstract class BaseVideoProvider extends BaseProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param array|MediaInterface $media
+     * @return string
      */
     public function getReferenceImage(array|MediaInterface $media): string
     {
@@ -197,9 +198,8 @@ abstract class BaseVideoProvider extends BaseProvider
 
     /**
      * @param FormBuilderInterface $formBuilder
-     * @param array $options
      */
-    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = []): void
+    public function buildShortMediaType(FormBuilderInterface $formBuilder): void
     {
         $formBuilder->add('newBinaryContent', TextType::class, [
             'label' => 'YouTube URL',

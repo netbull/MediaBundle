@@ -31,8 +31,6 @@ class PhotoResizeCommand extends BaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $em = $this->getManager();
-
         $context  = $input->getArgument('context');
         if (null === $context) {
             $contexts = array_keys($this->pool->getContexts());
@@ -44,7 +42,7 @@ class PhotoResizeCommand extends BaseCommand
         $this->debug = $input->getOption('quiet');
         $this->io = new SymfonyStyle($input, $output);
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $medias = $qb->select('m.id')
             ->from(Media::class, 'm')
             ->where($qb->expr()->andX(

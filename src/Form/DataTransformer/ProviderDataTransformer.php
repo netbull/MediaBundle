@@ -10,11 +10,6 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 class ProviderDataTransformer implements DataTransformerInterface
 {
     /**
-     * @var Pool
-     */
-    protected Pool $pool;
-
-    /**
      * @var array
      */
     protected array $options;
@@ -23,9 +18,10 @@ class ProviderDataTransformer implements DataTransformerInterface
      * @param Pool   $pool
      * @param array  $options
      */
-    public function __construct(Pool $pool, array $options = [])
-    {
-        $this->pool = $pool;
+    public function __construct(
+        protected Pool $pool,
+        array $options = []
+    ) {
         $this->options = $this->getOptions($options);
     }
 

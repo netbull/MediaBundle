@@ -17,11 +17,6 @@ use NetBull\MediaBundle\Provider\MediaProviderInterface;
 class MediaListener
 {
     /**
-     * @var Pool
-     */
-    private Pool $pool;
-
-    /**
      * @var ArrayCollection
      */
     private ArrayCollection $medias;
@@ -29,9 +24,8 @@ class MediaListener
     /**
      * @param Pool $pool
      */
-    public function __construct(Pool $pool)
+    public function __construct(private Pool $pool)
     {
-        $this->pool = $pool;
         $this->medias = new ArrayCollection();
     }
 

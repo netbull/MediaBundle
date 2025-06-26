@@ -9,30 +9,20 @@ namespace NetBull\MediaBundle\Cdn;
 class Server implements CdnInterface
 {
     /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * @var array
-     */
-    protected $paths;
-
-    /**
-     * Server constructor.
      * @param string $path
      * @param array $paths
      */
-    public function __construct(string $path, array $paths = [])
-    {
-        $this->path = $path;
-        $this->paths = $paths;
+    public function __construct(
+        protected string $path,
+        protected array $paths = []
+    ) {
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $relativePath
+     * @return string
      */
-    public function getPath($relativePath)
+    public function getPath(string $relativePath): string
     {
         // If we have provided array pick random one
         $theChosenOne = !empty($this->paths) ? $this->paths[array_rand($this->paths)] : $this->path;

@@ -22,27 +22,30 @@ use Symfony\Component\Routing\RouterInterface;
 class ImageProvider extends FileProvider
 {
     /**
-     * @var ImagineInterface
-     */
-    protected ImagineInterface $imagineAdapter;
-
-    /**
      * @param string $name
      * @param Filesystem $filesystem
      * @param CdnInterface $cdn
      * @param ThumbnailInterface $thumbnail
      * @param RouterInterface $router
      * @param SimpleSignatureHasher $simpleSignatureHasher
-     * @param ImagineInterface $adapter
+     * @param ImagineInterface $imagineAdapter
      * @param array $allowedExtensions
      * @param array $allowedMimeTypes
      * @param MetadataBuilderInterface|null $metadata
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, RouterInterface $router, SimpleSignatureHasher $simpleSignatureHasher, ImagineInterface $adapter, array $allowedExtensions = [], array $allowedMimeTypes = [], MetadataBuilderInterface $metadata = null)
-    {
+    public function __construct(
+        string $name,
+        Filesystem $filesystem,
+        CdnInterface $cdn,
+        ThumbnailInterface $thumbnail,
+        RouterInterface $router,
+        SimpleSignatureHasher $simpleSignatureHasher,
+        protected ImagineInterface $imagineAdapter,
+        array $allowedExtensions = [],
+        array $allowedMimeTypes = [],
+        MetadataBuilderInterface $metadata = null
+    ) {
         parent::__construct($name, $filesystem, $cdn, $thumbnail, $router, $simpleSignatureHasher, $allowedExtensions, $allowedMimeTypes, $metadata);
-
-        $this->imagineAdapter = $adapter;
     }
 
     /**
@@ -162,7 +165,7 @@ class ImageProvider extends FileProvider
             $filename = $binaryContent->getRealPath();
             try {
                 $exif = exif_read_data($filename);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return;
             }
 
@@ -208,7 +211,7 @@ class ImageProvider extends FileProvider
 
         try {
             $image = $this->imagineAdapter->open($media->getBinaryContent()->getPathname());
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             return;
         }
 
@@ -237,7 +240,7 @@ class ImageProvider extends FileProvider
             $media->setSize($fileObject->getSize());
             $media->setWidth($size->getWidth());
             $media->setHeight($size->getHeight());
-        } catch (LogicException $e) {
+        } catch (LogicException) {
             $media->setSize(0);
             $media->setWidth(0);
             $media->setHeight(0);

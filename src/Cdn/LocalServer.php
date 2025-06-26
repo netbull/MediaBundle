@@ -2,51 +2,27 @@
 
 namespace NetBull\MediaBundle\Cdn;
 
-/**
- * Class LocalServer
- * @package NetBull\MediaBundle\Cdn
- */
 class LocalServer implements CdnInterface
 {
     /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * @var array
-     */
-    protected $paths;
-
-    /**
-     * @var string
-     */
-    protected $devPath;
-
-    /**
-     * @var string
-     */
-    protected $localPath;
-
-    /**
-     * LocalServer constructor.
      * @param string $path
      * @param string $devPath
      * @param string $localPath
      * @param array $paths
      */
-    public function __construct(string $path, string $devPath, string $localPath, array $paths = [])
-    {
-        $this->path = $path;
-        $this->paths = $paths;
-        $this->localPath = $localPath;
-        $this->devPath = $devPath;
+    public function __construct(
+        protected string $path,
+        protected string $devPath,
+        protected string $localPath,
+        protected array $paths = []
+    ) {
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $relativePath
+     * @return string
      */
-    public function getPath($relativePath)
+    public function getPath(string $relativePath): string
     {
         // If we have provided array pick random one
         $theChosenOne = !empty($this->paths) ? $this->paths[array_rand($this->paths)] : $this->path;

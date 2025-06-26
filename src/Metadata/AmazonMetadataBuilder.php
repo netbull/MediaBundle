@@ -7,11 +7,6 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     /**
      * @var array
      */
-    protected array $settings;
-
-    /**
-     * @var array
-     */
     protected array $acl = [
         'private' => 'private',
         'public' => 'public-read',
@@ -206,9 +201,8 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     /**
      * @param array $settings
      */
-    public function __construct(array $settings = [])
+    public function __construct(protected array $settings = [])
     {
-        $this->settings = $settings;
     }
 
     /**

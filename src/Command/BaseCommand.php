@@ -21,27 +21,16 @@ abstract class BaseCommand extends Command
     protected ?SymfonyStyle $io = null;
 
     /**
-     * @var EntityManagerInterface $em
-     */
-    protected EntityManagerInterface $em;
-
-    /**
-     * @var Pool
-     */
-    protected Pool $pool;
-
-    /**
-     * BaseCommand constructor.
      * @param EntityManagerInterface $em
      * @param Pool $pool
-     * @param null|string $name
+     * @param string|null $name
      */
-    public function __construct(EntityManagerInterface $em, Pool $pool, ?string $name = null)
-    {
+    public function __construct(
+        protected EntityManagerInterface $em,
+        protected Pool $pool,
+        ?string $name = null
+    ) {
         parent::__construct($name);
-
-        $this->em = $em;
-        $this->pool = $pool;
     }
 
     /**

@@ -20,20 +20,18 @@ use NetBull\MediaBundle\Entity\Media;
 class MediaCloneCommand extends BaseCommand
 {
     /**
-     * @var ParameterBag
-     */
-    protected ParameterBag $parameterBag;
-
-    /**
      * @param ParameterBag $parameterBag
      * @param EntityManagerInterface $em
      * @param Pool $pool
      * @param string|null $name
      */
-    public function __construct(ParameterBag $parameterBag, EntityManagerInterface $em, Pool $pool, ?string $name = null)
-    {
+    public function __construct(
+        protected ParameterBag $parameterBag,
+        EntityManagerInterface $em,
+        Pool $pool,
+        ?string $name = null
+    ) {
         parent::__construct($em, $pool, $name);
-        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -80,7 +78,7 @@ class MediaCloneCommand extends BaseCommand
             try {
                 $this->em->persist($clone);
                 $this->em->flush();
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return Command::SUCCESS;
             }
 

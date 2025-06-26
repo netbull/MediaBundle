@@ -20,30 +20,15 @@ use NetBull\MediaBundle\Provider\MediaProviderInterface;
 class MediaController extends AbstractController
 {
     /**
-     * @var Pool
-     */
-    private Pool $pool;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $em;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private EventDispatcherInterface $dispatcher;
-
-    /**
      * @param Pool $pool
      * @param EntityManagerInterface $em
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Pool $pool, EntityManagerInterface $em, EventDispatcherInterface $dispatcher)
-    {
-        $this->pool = $pool;
-        $this->em = $em;
-        $this->dispatcher = $dispatcher;
+    public function __construct(
+        private Pool $pool,
+        private EntityManagerInterface $em,
+        private EventDispatcherInterface $dispatcher
+    ) {
     }
 
     /**
