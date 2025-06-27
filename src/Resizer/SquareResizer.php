@@ -69,7 +69,6 @@ class SquareResizer implements ResizerInterface
 
         switch ($media->getExtension()) {
             case 'gif':
-            case 'png':
                 $image->layers()->coalesce();
                 $formatSettings = [
                     'flatten' => false,
