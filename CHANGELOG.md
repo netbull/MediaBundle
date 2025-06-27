@@ -1,3 +1,10 @@
+## [7.0.6](https://github.com/netbull/MediaBundle/compare/v7.0.5...v7.0.6) (2025-06-27)
+
+
+### Bug Fixes
+
+* removed animation on PNGs ([eabe7ee](https://github.com/netbull/MediaBundle/commit/eabe7eecddd5bf08b03c24be2218150ab8fb41e8))
+
 ## [7.0.5](https://github.com/netbull/MediaBundle/compare/v7.0.4...v7.0.5) (2025-06-26)
 
 
