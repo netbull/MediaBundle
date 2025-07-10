@@ -64,8 +64,16 @@ class MediaController extends AbstractController
         }
         $provider = $this->getProvider($media);
 
+        $filename = $media->getMetadataValue('filename');
+        $headers = [
+            'x-filename' => $filename,
+        ];
+        if ($request->query->get('inline')) {
+            $headers['Content-Disposition'] = sprintf('inline; filename="%s"', $filename);
+        }
+
         try {
-            $response = $provider->getDownloadResponse($media, $provider->getFormatName($media, $format), $this->pool->getDownloadMode($media));
+            $response = $provider->getDownloadResponse($media, $provider->getFormatName($media, $format), $this->pool->getDownloadMode($media), $headers);
         } catch (FileNotFound) {
             throw $this->createNotFoundException();
         }
