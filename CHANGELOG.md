@@ -1,3 +1,10 @@
+## [7.0.8](https://github.com/netbull/MediaBundle/compare/v7.0.7...v7.0.8) (2025-11-21)
+
+
+### Bug Fixes
+
+* allow versions ([852700d](https://github.com/netbull/MediaBundle/commit/852700d444a1d17b4690df1cdd19504e2de33ef5))
+
 ## [7.0.7](https://github.com/netbull/MediaBundle/compare/v7.0.6...v7.0.7) (2025-07-10)
 
 
