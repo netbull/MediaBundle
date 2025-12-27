@@ -41,7 +41,7 @@ abstract class BaseVideoProvider extends BaseProvider
      * @param ThumbnailInterface $thumbnail
      * @param MetadataBuilderInterface|null $metadata
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, MetadataBuilderInterface $metadata = null)
+    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, ?MetadataBuilderInterface $metadata = null)
     {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
 

@@ -26,7 +26,7 @@ class YouTubeProvider extends BaseVideoProvider
      * @param MetadataBuilderInterface|null $metadata
      * @param bool $html5
      */
-    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, MetadataBuilderInterface $metadata = null, bool $html5 = false)
+    public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, ?MetadataBuilderInterface $metadata = null, bool $html5 = false)
     {
         parent::__construct($name, $filesystem, $cdn, $thumbnail, $metadata);
         $this->html5 = $html5;

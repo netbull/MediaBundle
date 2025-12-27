@@ -43,7 +43,7 @@ class ImageProvider extends FileProvider
         protected ImagineInterface $imagineAdapter,
         array $allowedExtensions = [],
         array $allowedMimeTypes = [],
-        MetadataBuilderInterface $metadata = null
+        ?MetadataBuilderInterface $metadata = null
     ) {
         parent::__construct($name, $filesystem, $cdn, $thumbnail, $router, $simpleSignatureHasher, $allowedExtensions, $allowedMimeTypes, $metadata);
     }
