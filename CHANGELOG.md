@@ -1,3 +1,10 @@
+## [7.0.9](https://github.com/netbull/MediaBundle/compare/v7.0.8...v7.0.9) (2025-12-27)
+
+
+### Bug Fixes
+
+* deprecations ([d4eab20](https://github.com/netbull/MediaBundle/commit/d4eab20bac93a229038ff76be26b87928afe26d6))
+
 ## [7.0.8](https://github.com/netbull/MediaBundle/compare/v7.0.7...v7.0.8) (2025-11-21)
 
 
