@@ -242,7 +242,7 @@ interface MediaInterface
     public function getBox(): Box;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPreviousProviderReference(): string;
+    public function getPreviousProviderReference(): ?string;
 }

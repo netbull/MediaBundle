@@ -556,9 +556,9 @@ class Media implements MediaInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPreviousProviderReference(): string
+    public function getPreviousProviderReference(): ?string
     {
         return $this->previousProviderReference;
     }
