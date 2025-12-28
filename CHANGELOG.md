@@ -1,3 +1,10 @@
+## [7.0.10](https://github.com/netbull/MediaBundle/compare/v7.0.9...v7.0.10) (2025-12-28)
+
+
+### Bug Fixes
+
+* allot nullable ([e972686](https://github.com/netbull/MediaBundle/commit/e972686832a59c1477aaa4a6bb1593b08fdcb0f5))
+
 ## [7.0.9](https://github.com/netbull/MediaBundle/compare/v7.0.8...v7.0.9) (2025-12-27)
 
 
