@@ -502,8 +502,8 @@ class Media implements MediaInterface
 
     /**
      * @param string $name
-     * @param mixed $default
-     * @return mixed|null
+     * @param mixed|null $default
+     * @return mixed
      */
     public function getMetadataValue(string $name, mixed $default = null): mixed
     {

@@ -26,7 +26,7 @@
 
                         {{ value|thumbnail('normal', attributes) }}
                     {% else %}
-                        <img width="100%" class="img-fluid image-holder" {% if type == 'image' %}src="__imageSrc__"{% endif %}>
+                        <img alt="image" width="100%" class="img-fluid image-holder" {% if type == 'image' %}src="__imageSrc__"{% endif %}>
                     {% endif %}
                 </div>
 
@@ -61,7 +61,7 @@
             {% if form.vars.data.id %}
                 {{ value|thumbnail('normal', {'class': 'img-fluid ' ~ type ~ '-holder', 'width': '100%', 'height': '' }) }}
             {% else %}
-                <img width="100%" class="img-fluid image-holder">
+                <img alt="image" width="100%" class="img-fluid image-holder" src="">
             {% endif %}
         </div>
 
@@ -105,7 +105,7 @@
                             {% if form.vars.data.id %}
                                 {{ value|thumbnail('thumb', {'class': 'img-fluid ' ~ type ~ '-holder', 'width': '100%', 'height': '' }) }}
                             {% else %}
-                                <img width="100%" class="img-fluid image-holder">
+                                <img alt="image" width="100%" class="img-fluid image-holder" src="">
                             {% endif %}
 
                             <div class="mt-overlay">
@@ -139,7 +139,7 @@
 
             {{ value|view('normal') }}
         {% else %}
-            <img width="100%" class="img-fluid image-holder" src="{{ asset('no-image.png', 'static') }}">
+            <img alt="image" width="100%" class="img-fluid image-holder" src="{{ asset('no-image.png', 'static') }}">
         {% endif %}
     {% endif %}
 {% endblock netbull_media_short_type_row %}

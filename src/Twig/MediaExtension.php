@@ -45,10 +45,10 @@ class MediaExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('path', [$this, 'generatePublicPath']),
-            new TwigFilter('secure_path', [$this, 'generateSecurePath']),
-            new TwigFilter('thumbnail', [$this, 'generateThumbnail'], ['is_safe' => ['html'], 'needs_environment' => true]),
-            new TwigFilter('view', [$this, 'generateView'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new TwigFilter('path', $this->generatePublicPath(...)),
+            new TwigFilter('secure_path', $this->generateSecurePath(...)),
+            new TwigFilter('thumbnail', $this->generateThumbnail(...), ['is_safe' => ['html'], 'needs_environment' => true]),
+            new TwigFilter('view', $this->generateView(...), ['is_safe' => ['html'], 'needs_environment' => true]),
         ];
     }
 
@@ -183,7 +183,7 @@ class MediaExtension extends AbstractExtension
         if (!isset($this->resources[$template])) {
             try {
                 $this->resources[$template] = $environment->load("@$template");
-            } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            } catch (LoaderError | RuntimeError | SyntaxError) {
                 return '';
             }
         }

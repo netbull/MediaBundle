@@ -2,13 +2,9 @@
 
 namespace NetBull\MediaBundle\Provider;
 
-use Gaufrette\Filesystem;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
-use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class YoukuProvider extends BaseVideoProvider
@@ -149,7 +145,7 @@ class YoukuProvider extends BaseVideoProvider
 
         try {
             $metadata = $this->getMetadata($url);
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             $media->setEnabled(false);
 
             return;

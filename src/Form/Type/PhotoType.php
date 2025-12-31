@@ -25,7 +25,7 @@ class PhotoType extends BaseType
 
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
             $base64 = $event->getForm()->get('base64');
-            if ($base64 && $base64->getData()) {
+            if ($base64->getData()) {
                 $path = $event->getForm()->get('binaryContent')->getData()->getPathname();
 
                 list(, $data) = explode(';', $base64->getData());

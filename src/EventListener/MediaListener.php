@@ -24,7 +24,7 @@ class MediaListener
     /**
      * @param Pool $pool
      */
-    public function __construct(private Pool $pool)
+    public function __construct(private readonly Pool $pool)
     {
         $this->medias = new ArrayCollection();
     }
@@ -111,10 +111,7 @@ class MediaListener
         $provider->postRemove($this->getMedia($args));
     }
 
-    /**
-     * @param PostFlushEventArgs $args
-     */
-    public function postFlush(PostFlushEventArgs $args): void
+    public function postFlush(): void
     {
         foreach ($this->medias as $media) {
             if (!$provider = $this->getProviderByMedia($media)) {

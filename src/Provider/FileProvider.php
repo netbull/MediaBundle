@@ -316,7 +316,7 @@ class FileProvider extends BaseProvider
      * @param MediaInterface $media
      * @param string|null $contents path to contents, defaults to MediaInterface BinaryContent
      */
-    protected function setFileContents(MediaInterface $media, string $contents = null): void
+    protected function setFileContents(MediaInterface $media, ?string $contents = null): void
     {
         $file = $this->getFilesystem()->get(sprintf('%s/%s', $this->generatePath($media), $media->getProviderReference()), true);
 

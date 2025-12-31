@@ -11,8 +11,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use NetBull\MediaBundle\Entity\Media;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
@@ -25,9 +23,9 @@ class MediaController extends AbstractController
      * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(
-        private Pool $pool,
-        private EntityManagerInterface $em,
-        private EventDispatcherInterface $dispatcher
+        private readonly Pool $pool,
+        private readonly EntityManagerInterface $em,
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 
@@ -52,11 +50,11 @@ class MediaController extends AbstractController
         $media = $this->em->getRepository(Media::class)->find($id);
 
         if (!$media) {
-            throw new NotFoundHttpException(sprintf('unable to find the media with the id : %s', $id));
+            throw $this->createNotFoundException(sprintf('unable to find the media with the id : %s', $id));
         }
 
         if (!$this->pool->getDownloadSecurity($media)->isGranted($media, $request)) {
-            throw new AccessDeniedException();
+            throw $this->createAccessDeniedException();
         }
 
         if ('netbull_media.provider.image' !== $media->getProviderName()) {
@@ -97,11 +95,11 @@ class MediaController extends AbstractController
         $media = $this->em->getRepository(Media::class)->find($id);
 
         if (!$media) {
-            throw new NotFoundHttpException(sprintf('unable to find the media with the id : %s', $id));
+            throw $this->createNotFoundException(sprintf('unable to find the media with the id : %s', $id));
         }
 
         if (!$this->pool->getViewSecurity($media)->isGranted($media, $request)) {
-            throw new AccessDeniedException();
+            throw $this->createAccessDeniedException();
         }
 
         $this->dispatcher->dispatch(new HashedMediaViewEvent($media->getId(), $request->query->get('u')));

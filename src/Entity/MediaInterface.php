@@ -214,9 +214,10 @@ interface MediaInterface
 
     /**
      * @param string $name
-     * @param null $default
+     * @param mixed|null $default
+     * @return mixed
      */
-    public function getMetadataValue(string $name, $default = null);
+    public function getMetadataValue(string $name, mixed $default = null): mixed;
 
     /**
      * @param string $name

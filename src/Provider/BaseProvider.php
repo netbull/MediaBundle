@@ -285,7 +285,7 @@ abstract class BaseProvider implements MediaProviderInterface
      * @param array $options
      * @return array
      */
-    public function getViewProperties(array|MediaInterface $media, string $format, array $options = [])
+    public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         return $this->getHelperProperties($media, $format, $options);
     }

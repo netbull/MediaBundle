@@ -8,7 +8,7 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 
 class MediaRepository extends EntityRepository
 {
-    const MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption';
+    const string MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption';
 
     /**
      * @param array $criteria

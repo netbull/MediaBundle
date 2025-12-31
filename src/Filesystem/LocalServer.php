@@ -13,8 +13,8 @@ class LocalServer extends Filesystem
      * @param AwsS3 $remote
      */
     public function __construct(
-        private Local $local,
-        private AwsS3 $remote
+        private readonly Local $local,
+        private readonly AwsS3 $remote
     ) {
         parent::__construct($local);
 

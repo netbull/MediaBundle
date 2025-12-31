@@ -190,12 +190,12 @@ class YouTubeProvider extends BaseVideoProvider
 
             // Values: 'allowfullscreen' or empty. Default is 'allowfullscreen'. Setting to empty value disables
             //  the fullscreen button.
-            'allowFullScreen' => $default_player_url_parameters['fs'] == '1' ? true : false,
+            'allowFullScreen' => $default_player_url_parameters['fs'] == '1',
 
             // The allowScriptAccess parameter in the code is needed to allow the player SWF to call
             // functions on the containing HTML page, since the player is hosted on a different domain
             // from the HTML page.
-            'allowScriptAccess' => isset($options['allowScriptAccess']) ? $options['allowScriptAccess'] : 'always',
+            'allowScriptAccess' => $options['allowScriptAccess'] ?? 'always',
 
             // Values: 'window' or 'opaque' or 'transparent'.
             // When wmode=window, the Flash movie is not rendered in the page.
@@ -265,7 +265,7 @@ class YouTubeProvider extends BaseVideoProvider
 
         try {
             $metadata = $this->getMetadata($url);
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             $media->setEnabled(false);
             return;
         }

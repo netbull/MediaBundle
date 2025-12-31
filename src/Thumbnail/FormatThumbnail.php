@@ -114,12 +114,7 @@ class FormatThumbnail implements ThumbnailInterface
 
         // Pass the AWS environment variables as the forked process does not get them
         // This is an issue for ECS
-        $envVars = [];
-        foreach (getenv() as $key => $value) {
-            if (str_starts_with($key, 'AWS_')) {
-                $envVars[$key] = $value;
-            }
-        }
+        $envVars = array_filter(getenv(), fn (string $key) => str_starts_with($key, 'AWS_'), ARRAY_FILTER_USE_KEY);
         $process->run(null, $envVars);
         if ($wait) {
             $process->wait();

@@ -4,7 +4,6 @@ namespace NetBull\MediaBundle\Resizer;
 
 use Gaufrette\File;
 use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
 use Imagine\Exception\InvalidArgumentException;
 use Imagine\Image\ManipulatorInterface;

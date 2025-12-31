@@ -2,8 +2,10 @@
 
 namespace NetBull\MediaBundle\Repository;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Parameter;
 use NetBull\MediaBundle\Entity\MediaInterface;
 
 class MediaTranslationRepository extends EntityRepository
@@ -19,10 +21,10 @@ class MediaTranslationRepository extends EntityRepository
         $qb = $this->createQueryBuilder('pt');
         $translation = $qb->where($qb->expr()->eq('pt.translatable', ':media'))
             ->andWhere($qb->expr()->eq('pt.locale', ':locale'))
-            ->setParameters([
-                'media'     => $media,
-                'locale'    => $locale
-            ])
+            ->setParameters(new ArrayCollection([
+                new Parameter('media', $media),
+                new Parameter('locale', $locale)
+            ]))
             ->getQuery()
             ->getOneOrNullResult();
 

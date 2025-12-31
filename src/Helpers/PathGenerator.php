@@ -11,8 +11,8 @@ use Twig\Error\SyntaxError;
 
 class PathGenerator
 {
-    const FIRST_LEVEL = 100000;
-    const SECOND_LEVEL = 1000;
+    const int FIRST_LEVEL = 100000;
+    const int SECOND_LEVEL = 1000;
 
     /**
      * @param Pool $pool

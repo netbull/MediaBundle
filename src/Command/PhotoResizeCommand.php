@@ -2,7 +2,9 @@
 
 namespace NetBull\MediaBundle\Command;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Parameter;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -49,10 +51,10 @@ class PhotoResizeCommand extends BaseCommand
                 $qb->expr()->eq('m.providerName', ':providerName'),
                 $qb->expr()->eq('m.context', ':context')
             ))
-            ->setParameters([
-                'providerName' => 'netbull_media.provider.image',
-                'context' => $context,
-            ])
+            ->setParameters(new ArrayCollection([
+                new Parameter('providerName', 'netbull_media.provider.image'),
+                new Parameter('context', $context)
+            ]))
             ->getQuery()
             ->getArrayResult();
 

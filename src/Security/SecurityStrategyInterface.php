@@ -7,7 +7,7 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 
 interface SecurityStrategyInterface
 {
-    const FORBIDDEN_DESCRIPTION = 'This strategy is forbidden';
+    const string FORBIDDEN_DESCRIPTION = 'This strategy is forbidden';
 
     /**
      * @abstract
