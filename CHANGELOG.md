@@ -1,3 +1,10 @@
+# [7.1.0](https://github.com/netbull/MediaBundle/compare/v7.0.10...v7.1.0) (2025-12-31)
+
+
+### Features
+
+* bump to php 8.4 ([08b0e9c](https://github.com/netbull/MediaBundle/commit/08b0e9c3d7f74b995006781deb0c9f238580fc4e))
+
 ## [7.0.10](https://github.com/netbull/MediaBundle/compare/v7.0.9...v7.0.10) (2025-12-28)
 
 
