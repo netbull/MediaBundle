@@ -1,3 +1,10 @@
+## [7.1.1](https://github.com/netbull/MediaBundle/compare/v7.1.0...v7.1.1) (2026-01-24)
+
+
+### Bug Fixes
+
+* added contentType to the repository methods ([f78f003](https://github.com/netbull/MediaBundle/commit/f78f00309ed92e5ac8b092d1d728ccf6b8936a8e))
+
 # [7.1.0](https://github.com/netbull/MediaBundle/compare/v7.0.10...v7.1.0) (2025-12-31)
 
 
