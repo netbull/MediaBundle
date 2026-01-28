@@ -15,14 +15,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 #[AsCommand(name: 'netbull:media:clone', description: 'Clone media')]
 class MediaCloneCommand extends BaseCommand
 {
     public function __construct(
-        protected ParameterBag $parameterBag,
+        protected ParameterBagInterface $parameterBag,
         EntityManagerInterface $em,
         Pool $pool,
         ?string $name = null,

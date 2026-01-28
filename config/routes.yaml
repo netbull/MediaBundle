@@ -1,0 +1,11 @@
+netbull_media_download:
+    path: /media/download/{id}/{format}
+    controller: NetBull\MediaBundle\Controller\MediaController::downloadAction
+    defaults:
+        format: reference
+
+netbull_media_view:
+    path: /media/view/{id}/{format}
+    controller: NetBull\MediaBundle\Controller\MediaController::viewAction
+    defaults:
+        format: reference
