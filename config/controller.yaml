@@ -1,6 +1,0 @@
-services:
-    NetBull\MediaBundle\Controller\MediaController:
-        calls:
-            - setContainer: [ '@service_container' ]
-        arguments: [ '@NetBull\MediaBundle\Provider\Pool', '@doctrine.orm.entity_manager', '@event_dispatcher' ]
-        public: true

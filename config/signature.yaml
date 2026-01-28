@@ -1,6 +1,0 @@
-services:
-    NetBull\MediaBundle\Signature\SimpleSignatureHasher:
-        arguments: [ '%kernel.secret%' ]
-
-    NetBull\MediaBundle\Signature\SignatureHasherInterface:
-        alias: NetBull\MediaBundle\Signature\SimpleSignatureHasher

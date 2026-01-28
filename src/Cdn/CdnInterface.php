@@ -1,15 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Cdn;
 
 interface CdnInterface
 {
     /**
      * Return the base path.
-     *
-     * @param string $relativePath
-     *
-     * @return string
      */
     public function getPath(string $relativePath): string;
 }

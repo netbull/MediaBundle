@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Helpers;
 
-use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Provider\Pool;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -11,23 +13,16 @@ use Twig\Error\SyntaxError;
 
 class PathGenerator
 {
-    const int FIRST_LEVEL = 100000;
-    const int SECOND_LEVEL = 1000;
+    public const int FIRST_LEVEL = 100000;
 
-    /**
-     * @param Pool $pool
-     * @param Environment|null $twig
-     */
-    function __construct(
+    public const int SECOND_LEVEL = 1000;
+
+    public function __construct(
         private Pool $pool,
-        private ?Environment $twig
+        private ?Environment $twig,
     ) {
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @return string
-     */
     public static function generatePath(array|MediaInterface $media): string
     {
         if ($media instanceof MediaInterface) {
@@ -40,41 +35,27 @@ class PathGenerator
         $rep_first_level = (int) ($id / self::FIRST_LEVEL);
         $rep_second_level = (int) (($id - ($rep_first_level * self::FIRST_LEVEL)) / self::SECOND_LEVEL);
 
-        return sprintf('%s/%04s/%02s', $context, $rep_first_level + 1, $rep_second_level + 1);
+        return \sprintf('%s/%04s/%02s', $context, $rep_first_level + 1, $rep_second_level + 1);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @return string
-     */
     public function generate(array|MediaInterface $media, string $format = 'normal'): string
     {
         $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
 
         $provider = $this->pool->getProvider($providerName);
+
         return $provider->generatePublicUrl($media, $provider->getFormatName($media, $format));
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $identifier
-     * @param string $format
-     * @return string
-     */
     public function generateSecure(array|MediaInterface $media, string $identifier, string $format = 'normal'): string
     {
         $providerName = $media instanceof MediaInterface ? $media->getProviderName() : $media['providerName'];
 
         $provider = $this->pool->getProvider($providerName);
+
         return $provider->generateSecuredUrl($media, $format, $identifier);
     }
 
-    /**
-     * @param $media
-     * @param string $format
-     * @return string|null
-     */
     public function view($media, string $format = 'normal'): ?string
     {
         if (!$this->twig) {
@@ -94,9 +75,10 @@ class PathGenerator
                 [
                     'media' => $media,
                     'options' => $options,
-                ]
+                ],
             );
-        } catch (LoaderError | RuntimeError | SyntaxError) {}
+        } catch (LoaderError|RuntimeError|SyntaxError) {
+        }
 
         return null;
     }

@@ -1,41 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Command;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Parameter;
 use Exception;
+use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'netbull:media:resize', description: 'Resize missing thumbnails')]
 class PhotoResizeMissingCommand extends BaseCommand
 {
-    /**
-     * @return void
-     */
     public function configure(): void
     {
         $this->addArgument('context', InputArgument::OPTIONAL, 'The context');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $context  = $input->getArgument('context');
+        $context = $input->getArgument('context');
         if (null === $context) {
             $contexts = array_keys($this->pool->getContexts());
             $helper = $this->getHelper('question');
@@ -48,16 +42,16 @@ class PhotoResizeMissingCommand extends BaseCommand
             ->from(Media::class, 'm')
             ->where($qb->expr()->andX(
                 $qb->expr()->eq('m.providerName', ':providerName'),
-                $qb->expr()->eq('m.context', ':context')
+                $qb->expr()->eq('m.context', ':context'),
             ))
             ->setParameters(new ArrayCollection([
                 new Parameter('providerName', 'netbull_media.provider.image'),
-                new Parameter('context', $context)
+                new Parameter('context', $context),
             ]))
             ->getQuery()
             ->getArrayResult();
 
-        $this->log(sprintf('Loaded %s medias for generating thumbs', count($medias)));
+        $this->log(\sprintf('Loaded %s medias for generating thumbs', \count($medias)));
 
         foreach ($medias as $media) {
             $this->_processMedia($media['id']);
@@ -68,13 +62,10 @@ class PhotoResizeMissingCommand extends BaseCommand
         return Command::SUCCESS;
     }
 
-    /**
-     * @param $id
-     * @return void
-     */
     protected function _processMedia($id): void
     {
         $qb = $this->em->createQueryBuilder();
+
         try {
             $media = $qb->select('m')
                 ->from(Media::class, 'm')
@@ -97,39 +88,37 @@ class PhotoResizeMissingCommand extends BaseCommand
             return;
         }
 
-        $this->log('Generating thumbs for '.$media->getName().' - '.$media->getId());
+        $this->log('Generating thumbs for ' . $media->getName() . ' - ' . $media->getId());
 
         try {
             $provider->removeThumbnails($media);
         } catch (Exception $e) {
-            $this->log(sprintf('<error>Unable to remove old thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
+            $this->log(\sprintf('<error>Unable to remove old thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
             $this->optimize();
+
             return;
         }
 
         try {
             $provider->generateThumbnails($media);
         } catch (Exception $e) {
-            $this->log(sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
+            $this->log(\sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
             $this->optimize();
+
             return;
         }
 
         $this->optimize();
     }
 
-    /**
-     * @param string $url
-     * @return bool
-     */
     private function hasThumbnails(string $url): bool
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, \CURLOPT_URL, $url);
         // don't download content
-        curl_setopt($ch, CURLOPT_NOBODY, 1);
-        curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, \CURLOPT_NOBODY, 1);
+        curl_setopt($ch, \CURLOPT_FAILONERROR, 1);
+        curl_setopt($ch, \CURLOPT_RETURNTRANSFER, 1);
 
         $result = curl_exec($ch);
         curl_close($ch);

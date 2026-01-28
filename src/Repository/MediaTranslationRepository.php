@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,9 +13,6 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 class MediaTranslationRepository extends EntityRepository
 {
     /**
-     * @param int|MediaInterface $media
-     * @param string $locale
-     * @return string
      * @throws NonUniqueResultException
      */
     public function getCaptionByLocale(int|MediaInterface $media, string $locale): string
@@ -23,7 +22,7 @@ class MediaTranslationRepository extends EntityRepository
             ->andWhere($qb->expr()->eq('pt.locale', ':locale'))
             ->setParameters(new ArrayCollection([
                 new Parameter('media', $media),
-                new Parameter('locale', $locale)
+                new Parameter('locale', $locale),
             ]))
             ->getQuery()
             ->getOneOrNullResult();

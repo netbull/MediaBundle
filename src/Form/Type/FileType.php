@@ -1,17 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Form\Type;
 
+use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use NetBull\MediaBundle\Entity\Media;
 
 class FileType extends BaseType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
@@ -19,14 +17,11 @@ class FileType extends BaseType
         $this->pool->getProvider($options['provider'])->buildShortMediaType($builder, [
             'label' => false,
             'attr' => [
-                'accept' => join(',', $options['allowed_types']),
+                'accept' => implode(',', $options['allowed_types']),
             ],
         ]);
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -39,9 +34,6 @@ class FileType extends BaseType
         ]);
     }
 
-    /**
-     * @return string
-     */
     public function getBlockPrefix(): string
     {
         return 'netbull_media_file_type';

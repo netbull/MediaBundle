@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle;
 
 use Exception;
@@ -35,7 +37,7 @@ class NetBullMediaBundle extends AbstractBundle
      */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $container->import('../config/*.yaml');
+        $container->import('../config/services.yaml');
 
         // Store processed config for compiler pass
         $builder->setParameter('netbull_media.config', $config);
@@ -46,13 +48,13 @@ class NetBullMediaBundle extends AbstractBundle
         $pool = $builder->getDefinition(Pool::class);
         $pool->replaceArgument(0, $config['default_context']);
 
-        $builder->setParameter('netbull_media.resizer.simple.adapter.mode', $config['resizer']['simple']['mode'] === 'outbound' ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET);
-        $builder->setParameter('netbull_media.resizer.square.adapter.mode', $config['resizer']['square']['mode'] === 'outbound' ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET);
+        $builder->setParameter('netbull_media.resizer.simple.adapter.mode', 'outbound' === $config['resizer']['simple']['mode'] ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET);
+        $builder->setParameter('netbull_media.resizer.square.adapter.mode', 'outbound' === $config['resizer']['square']['mode'] ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET);
 
         foreach (['netbull_media.resizer.simple', 'netbull_media.resizer.square'] as $resizerId) {
             if ($builder->hasDefinition($resizerId)) {
                 $builder->getDefinition($resizerId)
-                    ->replaceArgument(0, new Reference('netbull_media.adapter.image.'.$config['resizer']['adapter']));
+                    ->replaceArgument(0, new Reference('netbull_media.adapter.image.' . $config['resizer']['adapter']));
             }
         }
 
@@ -60,7 +62,7 @@ class NetBullMediaBundle extends AbstractBundle
         foreach ($config['contexts'] as $name => $settings) {
             $formats = [];
             foreach ($settings['formats'] as $format => $value) {
-                $formats[$name.'_'.$format] = $value;
+                $formats[$name . '_' . $format] = $value;
             }
 
             $downloadStrategies[] = $settings['download']['strategy'];
@@ -268,7 +270,7 @@ class NetBullMediaBundle extends AbstractBundle
                                         'application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.graphics', 'application/vnd.oasis.opendocument.presentation', 'application/vnd.oasis.opendocument.spreadsheet', 'application/vnd.oasis.opendocument.chart', 'application/vnd.oasis.opendocument.formula', 'application/vnd.oasis.opendocument.database', 'application/vnd.oasis.opendocument.image',
                                         'text/comma-separated-values',
                                         'text/xml', 'application/xml',
-                                        'application/zip'
+                                        'application/zip',
                                     ])
                                 ->end()
                             ->end()
@@ -399,7 +401,7 @@ class NetBullMediaBundle extends AbstractBundle
                 ->replaceArgument(2, [
                     'create' => $config['filesystem']['s3']['options']['create'],
                     'acl' => $config['filesystem']['s3']['options']['acl'],
-                    'directory' => $config['filesystem']['s3']['options']['directory']
+                    'directory' => $config['filesystem']['s3']['options']['directory'],
                 ]);
 
             $container->getDefinition('netbull_media.metadata.amazon')
@@ -408,7 +410,7 @@ class NetBullMediaBundle extends AbstractBundle
                     'storage' => $config['filesystem']['s3']['options']['storage'],
                     'encryption' => $config['filesystem']['s3']['options']['encryption'],
                     'meta' => $config['filesystem']['s3']['options']['meta'],
-                    'cache_control' => $config['filesystem']['s3']['options']['cache_control']
+                    'cache_control' => $config['filesystem']['s3']['options']['cache_control'],
                 ]);
         } else {
             $container->removeDefinition('netbull_media.adapter.filesystem.s3');
@@ -422,8 +424,8 @@ class NetBullMediaBundle extends AbstractBundle
 
         // If there is no local or s3 filesystem then remove the local.server service
         if (
-            (!$container->hasDefinition('netbull_media.adapter.filesystem.local') || !$container->hasDefinition('netbull_media.adapter.filesystem.s3')) &&
-            $container->hasDefinition('netbull_media.adapter.filesystem.local.server')
+            (!$container->hasDefinition('netbull_media.adapter.filesystem.local') || !$container->hasDefinition('netbull_media.adapter.filesystem.s3'))
+            && $container->hasDefinition('netbull_media.adapter.filesystem.local.server')
         ) {
             $container->removeDefinition('netbull_media.adapter.filesystem.local.server');
         }

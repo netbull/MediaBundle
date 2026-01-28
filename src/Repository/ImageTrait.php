@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Repository;
 
 use Doctrine\DBAL\ArrayParameterType;
@@ -8,18 +10,13 @@ use NetBull\MediaBundle\Entity\Media;
 
 trait ImageTrait
 {
-    /**
-     * @param string $type
-     * @param array $images
-     * @return void
-     */
     public function reorderImages(string $type, array $images): void
     {
         $sql = 'SET @i=0; SET @Count=0; UPDATE media SET `position` = @Count+(@i:=@i+1)-1 WHERE `id` IN (:images) AND `context` = :type ORDER BY FIELD(id,:images)';
 
         $params = [
             'images' => $images,
-            'type' => $type
+            'type' => $type,
         ];
 
         $types = [
@@ -30,11 +27,6 @@ trait ImageTrait
         $connection->executeUpdate($sql, $params, $types);
     }
 
-    /**
-     * @param mixed $object
-     * @param bool $orderById
-     * @return array|null
-     */
     public function getImages(mixed $object, bool $orderById = false): ?array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -50,13 +42,10 @@ trait ImageTrait
         }
 
         $result = $qb->getQuery()->getSingleResult(AbstractQuery::HYDRATE_ARRAY);
+
         return $result['photos'] ?? null;
     }
 
-    /**
-     * @param array $images
-     * @return array
-     */
     public function getImagesByIds(array $images): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -69,10 +58,6 @@ trait ImageTrait
         return $qb->getQuery()->getArrayResult();
     }
 
-    /**
-     * @param mixed $object
-     * @return int
-     */
     public function getImageIndex(mixed $object): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -86,7 +71,7 @@ trait ImageTrait
 
         $index = 0;
         if (!empty($result) && !empty($result[0][1])) {
-            $index = (int)$result[0][1];
+            $index = (int) $result[0][1];
         }
 
         return $index;

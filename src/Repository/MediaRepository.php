@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
@@ -8,12 +10,8 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 
 class MediaRepository extends EntityRepository
 {
-    const string MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption,contentType';
+    public const string MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption,contentType';
 
-    /**
-     * @param array $criteria
-     * @return array
-     */
     public function count(array $criteria): array
     {
         $qb = $this->createQueryBuilder('m');
@@ -25,9 +23,6 @@ class MediaRepository extends EntityRepository
         return $qb->getQuery()->getArrayResult();
     }
 
-    /**
-     * @return array
-     */
     public function getMediaContexts(): array
     {
         $qb = $this->createQueryBuilder('m');
@@ -40,11 +35,6 @@ class MediaRepository extends EntityRepository
         return $this->normalizeContexts($contexts);
     }
 
-    /**
-     * @param MediaInterface|array|int $media
-     * @param bool $status
-     * @return bool
-     */
     public function toggleMain(MediaInterface|array|int $media, bool $status = false): bool
     {
         $qb = $this->createQueryBuilder('m');
@@ -52,7 +42,7 @@ class MediaRepository extends EntityRepository
             ->set('m.main', ':status')
             ->setParameter('status', $status);
 
-        if (is_array($media)) {
+        if (\is_array($media)) {
             $qb->where($qb->expr()->in('m.id', ':media'));
         } else {
             $qb->where($qb->expr()->eq('m.id', ':media'));
@@ -62,23 +52,20 @@ class MediaRepository extends EntityRepository
 
         try {
             $qb->getQuery()->execute();
+
             return true;
         } catch (Exception) {
             return false;
         }
     }
 
-    ################################################
-    #               Helper Methods                 #
-    ################################################
-    /**
-     * @param array $contexts
-     * @return array
-     */
+    // ###############################################
+    //               Helper Methods                 #
+    // ###############################################
     private function normalizeContexts(array $contexts): array
     {
         $tmp = ['all' => 'All'];
-        foreach ($contexts as $context){
+        foreach ($contexts as $context) {
             $tmp[$context['context']] = ucwords(str_replace('_', ' ', $context['context']));
         }
 

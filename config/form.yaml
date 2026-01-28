@@ -1,7 +1,0 @@
-services:
-    NetBull\MediaBundle\Form\Type\:
-        resource: '../src/Form/Type/*'
-        exclude: '../src/Form/Type/BaseType.php'
-        tags:
-            - { name: form.type }
-        arguments: ['@NetBull\MediaBundle\Provider\Pool']

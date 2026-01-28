@@ -1,32 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Security;
 
 use Exception;
+use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use Symfony\Component\HttpFoundation\Request;
-use NetBull\MediaBundle\Entity\MediaInterface;
 
 class HashSecurityStrategy implements SecurityStrategyInterface
 {
-    /**
-     * @var SimpleSignatureHasher
-     */
     protected SimpleSignatureHasher $simpleSignatureHasher;
 
-    /**
-     * @param SimpleSignatureHasher $simpleSignatureHasher
-     */
     public function __construct(SimpleSignatureHasher $simpleSignatureHasher)
     {
         $this->simpleSignatureHasher = $simpleSignatureHasher;
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param Request $request
-     * @return bool
-     */
     public function isGranted(MediaInterface $media, Request $request): bool
     {
         if (!$userIdentifier = $request->get('u')) {
@@ -35,7 +26,7 @@ class HashSecurityStrategy implements SecurityStrategyInterface
         if (!$hash = $request->get('h')) {
             return false;
         }
-        if (!$expires = (int)$request->get('e')) {
+        if (!$expires = (int) $request->get('e')) {
             return false;
         }
 
@@ -49,9 +40,6 @@ class HashSecurityStrategy implements SecurityStrategyInterface
         return true;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return self::FORBIDDEN_DESCRIPTION;

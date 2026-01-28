@@ -1,12 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Metadata;
 
 class AmazonMetadataBuilder implements MetadataBuilderInterface
 {
-    /**
-     * @var array
-     */
     protected array $acl = [
         'private' => 'private',
         'public' => 'public-read',
@@ -19,7 +18,7 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     /**
      * Map of the extension-to-mime-types that we support.
      */
-    public static array $mime_types = array(
+    public static array $mime_types = [
         '3gp' => 'video/3gpp',
         'ai' => 'application/postscript',
         'aif' => 'audio/x-aiff',
@@ -196,45 +195,39 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
         'xwd' => 'image/x-xwindowdump',
         'xyz' => 'chemical/x-xyz',
         'zip' => 'application/zip',
-    );
+    ];
 
-    /**
-     * @param array $settings
-     */
     public function __construct(protected array $settings = [])
     {
     }
 
-    /**
-     * @return array
-     */
     protected function getDefaultMetadata(): array
     {
-        //merge acl
+        // merge acl
         $output = [];
         if (isset($this->settings['acl']) && !empty($this->settings['acl'])) {
-            if(in_array($this->settings['acl'], $this->acl)){
+            if (\in_array($this->settings['acl'], $this->acl, true)) {
                 $output['ACL'] = $this->settings['acl'];
-            }else{
+            } else {
                 $output['ACL'] = $this->acl[$this->settings['acl']];
             }
         }
 
-        //merge storage
+        // merge storage
         if (isset($this->settings['storage'])) {
-            if ($this->settings['storage'] == 'standard') {
+            if ('standard' === $this->settings['storage']) {
                 $output['StorageClass'] = 'STANDARD';
-            } elseif ($this->settings['storage'] == 'reduced') {
+            } elseif ('reduced' === $this->settings['storage']) {
                 $output['StorageClass'] = 'REDUCED_REDUNDANCY';
             }
         }
 
-        //merge meta
+        // merge meta
         if (isset($this->settings['meta']) && !empty($this->settings['meta'])) {
             $output['Metadata'] = $this->settings['meta'];
         }
 
-        //merge cache control header
+        // merge cache control header
         if (isset($this->settings['cache_control']) && !empty($this->settings['cache_control'])) {
             $output['CacheControl'] = $this->settings['cache_control'];
         }
@@ -243,38 +236,35 @@ class AmazonMetadataBuilder implements MetadataBuilderInterface
     }
 
     /**
-     * @param string $filename
      * @return string[]
      */
     protected function getContentType(string $filename): array
     {
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $extension = pathinfo($filename, \PATHINFO_EXTENSION);
         $contentType = self::getMimeType($extension);
 
         return ['contentType' => $contentType];
     }
 
-    /**
-     * @param string $filename
-     * @return array
-     */
     public function get(string $filename): array
     {
         return array_replace_recursive(
             $this->getDefaultMetadata(),
-            $this->getContentType($filename)
+            $this->getContentType($filename),
         );
     }
 
     /**
      * Attempt to match the file extension to a known mime-type.
      *
-     * @param string $ext (Required) The file extension to attempt to map.
-     * @return string The mime-type to use for the file extension.
+     * @param string $ext (Required) The file extension to attempt to map
+     *
+     * @return string the mime-type to use for the file extension
      */
     public static function getMimeType(string $ext): string
     {
         $ext = strtolower($ext);  // Make sure the passed in extension is lowercase
+
         return self::$mime_types[$ext] ?? 'application/octet-stream';
     }
 }

@@ -1,29 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Form\Type;
 
+use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use NetBull\MediaBundle\Entity\Media;
 
 class MediaShortType extends BaseType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
         $this->pool->getProvider($options['provider'])->buildShortMediaType($builder, [
-            'label' => false
+            'label' => false,
         ]);
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -35,9 +30,6 @@ class MediaShortType extends BaseType
         ]);
     }
 
-    /**
-     * @return string
-     */
     public function getBlockPrefix(): string
     {
         return 'netbull_media_short_type';

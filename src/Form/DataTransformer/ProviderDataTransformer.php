@@ -1,34 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Form\DataTransformer;
 
-use Symfony\Component\Form\DataTransformerInterface;
 use NetBull\MediaBundle\Entity\Media;
-use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Provider\Pool;
+use Symfony\Component\Form\DataTransformerInterface;
 
 class ProviderDataTransformer implements DataTransformerInterface
 {
-    /**
-     * @var array
-     */
     protected array $options;
 
-    /**
-     * @param Pool   $pool
-     * @param array  $options
-     */
     public function __construct(
         protected Pool $pool,
-        array $options = []
+        array $options = [],
     ) {
         $this->options = $this->getOptions($options);
     }
 
-    /**
-     * @param array $options
-     * @return array
-     */
     protected function getOptions(array $options): array
     {
         return array_merge([
@@ -39,24 +30,16 @@ class ProviderDataTransformer implements DataTransformerInterface
         ], $options);
     }
 
-    /**
-     * @param $value
-     * @return MediaInterface
-     */
     public function transform($value): MediaInterface
     {
-        if ($value === null) {
+        if (null === $value) {
             return new Media();
         }
 
         return $value;
     }
 
-    /**
-     * @param $value
-     * @return MediaInterface|null
-     */
-    public function reverseTransform($value): MediaInterface|null
+    public function reverseTransform($value): ?MediaInterface
     {
         if (!$value instanceof MediaInterface) {
             return $value;
@@ -77,7 +60,7 @@ class ProviderDataTransformer implements DataTransformerInterface
         }
 
         // no update, but the media exists ...
-        if (empty($binaryContent) && $value->getId() !== null) {
+        if (empty($binaryContent) && null !== $value->getId()) {
             return $value;
         }
 

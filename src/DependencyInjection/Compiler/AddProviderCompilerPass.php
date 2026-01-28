@@ -1,22 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\DependencyInjection\Compiler;
 
 use NetBull\MediaBundle\Provider\Pool;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class AddProviderCompilerPass implements CompilerPassInterface
 {
-    /**
-     * @var array
-     */
     private array $config = [];
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container): void
     {
         $this->config = $container->getParameter('netbull_media.config');
@@ -30,9 +26,6 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $container->getParameterBag()->remove('netbull_media.config');
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function attachProviders(ContainerBuilder $container): void
     {
         $pool = $container->getDefinition(Pool::class);
@@ -41,9 +34,6 @@ class AddProviderCompilerPass implements CompilerPassInterface
         }
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function attachArguments(ContainerBuilder $container): void
     {
         if (!isset($this->config['providers'])) {
@@ -72,9 +62,6 @@ class AddProviderCompilerPass implements CompilerPassInterface
         }
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function applyFormats(ContainerBuilder $container): void
     {
         if (!isset($this->config['contexts'])) {
@@ -92,7 +79,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
                     $config['height'] = $config['height'] ?? null;
                     $config['constraint'] = $config['constraint'] ?? true;
 
-                    $formatName = sprintf('%s_%s', $name, $format);
+                    $formatName = \sprintf('%s_%s', $name, $format);
                     $definition->addMethodCall('addFormat', [$formatName, $config]);
                 }
             }

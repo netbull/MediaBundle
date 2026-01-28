@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Signature;
 
 use Symfony\Component\Security\Core\Signature\Exception\ExpiredSignatureException;
@@ -12,9 +14,8 @@ interface SignatureHasherInterface
      *
      * This method must be called before the user object is loaded from a provider.
      *
-     * @param string $userIdentifier
-     * @param int    $expires The expiry time as a unix timestamp
-     * @param string $hash    The plaintext hash provided by the request
+     * @param int $expires The expiry time as a unix timestamp
+     * @param string $hash The plaintext hash provided by the request
      *
      * @throws InvalidSignatureException If the signature does not match the provided parameters
      * @throws ExpiredSignatureException If the signature is no longer valid
@@ -24,9 +25,8 @@ interface SignatureHasherInterface
     /**
      * Verifies the hash using the provided user and expire time.
      *
-     * @param string $userIdentifier
-     * @param int    $expires The expiry time as a unix timestamp
-     * @param string $hash    The plaintext hash provided by the request
+     * @param int $expires The expiry time as a unix timestamp
+     * @param string $hash The plaintext hash provided by the request
      *
      * @throws InvalidSignatureException If the signature does not match the provided parameters
      * @throws ExpiredSignatureException If the signature is no longer valid
@@ -36,9 +36,7 @@ interface SignatureHasherInterface
     /**
      * Computes the secure hash for the provided user and expire time.
      *
-     * @param string $userIdentifier
      * @param int $expires The expiry time as a unix timestamp
-     * @return string
      */
     public function computeSignatureHash(string $userIdentifier, int $expires): string;
 }

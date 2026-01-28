@@ -1,25 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Provider;
 
+use NetBull\MediaBundle\Entity\MediaInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use NetBull\MediaBundle\Entity\MediaInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class VimeoProvider extends BaseVideoProvider
 {
-    /**
-     * @var bool
-     */
     protected bool $html5;
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         if ($media instanceof MediaInterface) {
@@ -27,8 +20,8 @@ class VimeoProvider extends BaseVideoProvider
                 $box = $media->getBox();
             } else {
                 $resizerFormat = $this->getFormat($format);
-                if ($resizerFormat === false) {
-                    throw new RuntimeException(sprintf('The image format "%s" is not defined.
+                if (false === $resizerFormat) {
+                    throw new RuntimeException(\sprintf('The image format "%s" is not defined.
                         Is the format registered in your ``media`` configuration?', $format));
                 }
 
@@ -54,16 +47,10 @@ class VimeoProvider extends BaseVideoProvider
         return array_merge($data, $options);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         // documentation : http://vimeo.com/api/docs/moogaloop
-        $defaults = array(
+        $defaults = [
             // (optional) Flash Player version of app. Defaults to 9 .NEW!
             // 10 - New Moogaloop. 9 - Old Moogaloop without the newest features.
             'fp_version' => 10,
@@ -94,7 +81,7 @@ class VimeoProvider extends BaseVideoProvider
 
             // Unique id that is passed into all player events as the ending parameter.
             'js_swf_id' => uniqid('vimeo_player_'),
-        );
+        ];
 
         $player_parameters = array_merge($defaults, $options['player_parameters'] ?? []);
 
@@ -107,10 +94,6 @@ class VimeoProvider extends BaseVideoProvider
         ];
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function fixBinaryContent(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
@@ -122,10 +105,6 @@ class VimeoProvider extends BaseVideoProvider
         }
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function doTransform(MediaInterface $media): void
     {
         $this->fixBinaryContent($media);
@@ -141,19 +120,15 @@ class VimeoProvider extends BaseVideoProvider
         $this->updateMetadata($media, true);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param bool $force
-     * @return void
-     */
     public function updateMetadata(MediaInterface $media, bool $force = false): void
     {
-        $url = sprintf('https://vimeo.com/api/oembed.json?url=https://vimeo.com/%s', $media->getProviderReference());
+        $url = \sprintf('https://vimeo.com/api/oembed.json?url=https://vimeo.com/%s', $media->getProviderReference());
 
         try {
             $metadata = $this->getMetadata($url);
         } catch (RuntimeException) {
             $media->setEnabled(false);
+
             return;
         }
 
@@ -171,26 +146,13 @@ class VimeoProvider extends BaseVideoProvider
         $media->setContentType('video/x-flv');
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param string $mode
-     * @param array $headers
-     * @return Response
-     */
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('https://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(\sprintf('https://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param array $headers
-     * @return Response
-     */
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('https://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(\sprintf('https://vimeo.com/%s', $media->getProviderReference()), 302, $headers);
     }
 }

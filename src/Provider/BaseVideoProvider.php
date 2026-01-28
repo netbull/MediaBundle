@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Provider;
 
 use Gaufrette\File;
-use Imagine\Image\Box;
 use Gaufrette\Filesystem;
-use RuntimeException;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\RadioType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Imagine\Image\Box;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
+use RuntimeException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\RadioType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -24,23 +26,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class BaseVideoProvider extends BaseProvider
 {
-    /**
-     * @var HttpClientInterface
-     */
     protected HttpClientInterface $httpClient;
 
-    /**
-     * @var MetadataBuilderInterface|null
-     */
     protected ?MetadataBuilderInterface $metadata;
 
-    /**
-     * @param string $name
-     * @param Filesystem $filesystem
-     * @param CdnInterface $cdn
-     * @param ThumbnailInterface $thumbnail
-     * @param MetadataBuilderInterface|null $metadata
-     */
     public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, ?MetadataBuilderInterface $metadata = null)
     {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
@@ -49,19 +38,11 @@ abstract class BaseVideoProvider extends BaseProvider
         $this->metadata = $metadata;
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @return string
-     */
     public function getReferenceImage(array|MediaInterface $media): string
     {
         return $media->getMetadataValue('thumbnail_url');
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @return File|null
-     */
     public function getReferenceFile(array|MediaInterface $media): ?File
     {
         $key = $this->generatePrivateUrl($media, 'reference');
@@ -81,9 +62,9 @@ abstract class BaseVideoProvider extends BaseProvider
             try {
                 $referenceFile->setContent(
                     $this->httpClient->request('GET', $thumbnailUrl)->getContent(),
-                    $metadata
+                    $metadata,
                 );
-            } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface) {
+            } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface) {
                 return null;
             }
         }
@@ -91,12 +72,7 @@ abstract class BaseVideoProvider extends BaseProvider
         return $referenceFile;
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @return string
-     */
-    public function generatePublicUrl(array|MediaInterface $media, string$format): string
+    public function generatePublicUrl(array|MediaInterface $media, string $format): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
@@ -107,14 +83,6 @@ abstract class BaseVideoProvider extends BaseProvider
         return $this->getCdn()->getPath($path);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param string $identifier
-     * @param int $expires
-     *
-     * @return string
-     */
     public function generateSecuredUrl(array|MediaInterface $media, string $format, string $identifier, int $expires = 300): string
     {
         if ('reference' === $format) {
@@ -126,25 +94,15 @@ abstract class BaseVideoProvider extends BaseProvider
         return $this->getCdn()->getPath($path);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @return string
-     */
     public function generatePrivateUrl(MediaInterface $media, string $format): string
     {
-        return sprintf('%s/thumb_%s_%s.jpg',
+        return \sprintf('%s/thumb_%s_%s.jpg',
             $this->generatePath($media),
             $media->getId(),
-            $format
+            $format,
         );
     }
 
-    /**
-     * @param FormBuilderInterface $formBuilder
-     * @param array $options
-     * @return void
-     */
     public function buildMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         $mainField = $options['main_field'];
@@ -164,7 +122,7 @@ abstract class BaseVideoProvider extends BaseProvider
                     'Youku' => 'netbull_media.provider.youku',
                 ],
                 'label_attr' => [
-                    'class' => 'text-default radio-inline'
+                    'class' => 'text-default radio-inline',
                 ],
                 'expanded' => true,
                 'multiple' => false,
@@ -175,12 +133,12 @@ abstract class BaseVideoProvider extends BaseProvider
                 'attr' => [
                     'placeholder' => 'e.g. https://www.youtube.com/watch?v=7sXMUJROuS8',
                     'class' => 'videoUrl',
-                ]
+                ],
             ]))
             ->add('caption', TextType::class, [
                 'label' => false,
                 'attr' => [
-                    'placeholder' => 'Caption'
+                    'placeholder' => 'Caption',
                 ],
                 'required' => false,
             ]);
@@ -189,16 +147,13 @@ abstract class BaseVideoProvider extends BaseProvider
             $formBuilder->add('main', RadioType::class, [
                 'label' => 'Main',
                 'attr' => [
-                    'class' => 'video-main'
+                    'class' => 'video-main',
                 ],
-                'required'  => false,
+                'required' => false,
             ]);
         }
     }
 
-    /**
-     * @param FormBuilderInterface $formBuilder
-     */
     public function buildShortMediaType(FormBuilderInterface $formBuilder): void
     {
         $formBuilder->add('newBinaryContent', TextType::class, [
@@ -207,23 +162,15 @@ abstract class BaseVideoProvider extends BaseProvider
             'attr' => [
                 'placeholder' => 'e.g. https://www.youtube.com/watch?v=7sXMUJROuS8',
                 'class' => 'videoUrl',
-            ]
+            ],
         ]);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postUpdate(MediaInterface $media): void
     {
         $this->postPersist($media);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postPersist(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
@@ -233,45 +180,31 @@ abstract class BaseVideoProvider extends BaseProvider
         $media->resetBinaryContent();
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postRemove(MediaInterface $media): void
-    { }
+    {
+    }
 
-    /**
-     * @param string $url
-     * @return array
-     */
     protected function getMetadata(string $url): array
     {
         try {
             $response = $this->httpClient->request('GET', $url);
         } catch (TransportExceptionInterface $e) {
-            throw new RuntimeException('Unable to retrieve the video information for :'.$url, null, $e);
+            throw new RuntimeException('Unable to retrieve the video information for :' . $url, 0, $e);
         }
 
         try {
             $metadata = $response->toArray();
-        } catch (ClientExceptionInterface | DecodingExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
-            throw new RuntimeException('Unable to retrieve the video information for :'.$url, null, $e);
+        } catch (ClientExceptionInterface|DecodingExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+            throw new RuntimeException('Unable to retrieve the video information for :' . $url, 0, $e);
         }
 
         if (!$metadata) {
-            throw new RuntimeException('Unable to decode the video information for :'.$url);
+            throw new RuntimeException('Unable to decode the video information for :' . $url);
         }
 
         return $metadata;
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param array $options
-     *
-     * @return Box
-     */
     protected function getBoxHelperProperties(MediaInterface $media, string $format, array $options = []): Box
     {
         if ('reference' === $format) {
@@ -290,10 +223,6 @@ abstract class BaseVideoProvider extends BaseProvider
         return $this->resizer->getBox($media, $settings);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postFlush(MediaInterface $media): void
     {
         $this->generateThumbnails($media);

@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\EventListener;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
+use NetBull\MediaBundle\Provider\Pool;
 
 #[AsDoctrineListener(event: Events::prePersist)]
 #[AsDoctrineListener(event: Events::preUpdate)]
@@ -25,23 +26,13 @@ use NetBull\MediaBundle\Provider\MediaProviderInterface;
 #[AsDoctrineListener(event: Events::postFlush)]
 class MediaListener
 {
-    /**
-     * @var ArrayCollection
-     */
     private ArrayCollection $medias;
 
-    /**
-     * @param Pool $pool
-     */
     public function __construct(private readonly Pool $pool)
     {
         $this->medias = new ArrayCollection();
     }
 
-    /**
-     * @param PrePersistEventArgs $args
-     * @return void
-     */
     public function prePersist(PrePersistEventArgs $args): void
     {
         if (!$provider = $this->getProvider($args)) {
@@ -52,9 +43,6 @@ class MediaListener
         $provider->prePersist($this->getMedia($args));
     }
 
-    /**
-     * @param PreUpdateEventArgs $args
-     */
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         if (!$provider = $this->getProvider($args)) {
@@ -67,14 +55,11 @@ class MediaListener
         $em = $args->getObjectManager();
 
         $em->getUnitOfWork()->recomputeSingleEntityChangeSet(
-            $em->getClassMetadata(get_class($args->getObject())),
-            $args->getObject()
+            $em->getClassMetadata(\get_class($args->getObject())),
+            $args->getObject(),
         );
     }
 
-    /**
-     * @param PreRemoveEventArgs $args
-     */
     public function preRemove(PreRemoveEventArgs $args): void
     {
         if (!$provider = $this->getProvider($args)) {
@@ -84,9 +69,6 @@ class MediaListener
         $provider->preRemove($this->getMedia($args));
     }
 
-    /**
-     * @param PostPersistEventArgs $args
-     */
     public function postPersist(PostPersistEventArgs $args): void
     {
         if (!$provider = $this->getProvider($args)) {
@@ -96,9 +78,6 @@ class MediaListener
         $provider->postPersist($this->getMedia($args));
     }
 
-    /**
-     * @param PostUpdateEventArgs $args
-     */
     public function postUpdate(PostUpdateEventArgs $args): void
     {
         if (!$provider = $this->getProvider($args)) {
@@ -108,9 +87,6 @@ class MediaListener
         $provider->postUpdate($this->getMedia($args));
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postRemove(LifecycleEventArgs $args): void
     {
         if (!$provider = $this->getProvider($args)) {
@@ -131,10 +107,6 @@ class MediaListener
         $this->medias->clear();
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     * @return MediaInterface|null
-     */
     protected function getMedia(LifecycleEventArgs $args): ?MediaInterface
     {
         /** @var MediaInterface $entity */
@@ -150,10 +122,6 @@ class MediaListener
         return $entity;
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     * @return MediaProviderInterface|null
-     */
     protected function getProvider(LifecycleEventArgs $args): ?MediaProviderInterface
     {
         $media = $this->getMedia($args);
@@ -161,10 +129,6 @@ class MediaListener
         return $this->getProviderByMedia($media);
     }
 
-    /**
-     * @param $media
-     * @return MediaProviderInterface|null
-     */
     protected function getProviderByMedia($media): ?MediaProviderInterface
     {
         if (!$media instanceof MediaInterface) {

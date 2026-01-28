@@ -1,43 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Provider;
 
 use Gaufrette\Filesystem;
+use NetBull\MediaBundle\Cdn\CdnInterface;
+use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
+use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use NetBull\MediaBundle\Cdn\CdnInterface;
-use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
-use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class YouTubeProvider extends BaseVideoProvider
 {
-    /**
-     * @var bool
-     */
     protected bool $html5;
 
-    /**
-     * @param string $name
-     * @param Filesystem $filesystem
-     * @param CdnInterface $cdn
-     * @param ThumbnailInterface $thumbnail
-     * @param MetadataBuilderInterface|null $metadata
-     * @param bool $html5
-     */
     public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, ?MetadataBuilderInterface $metadata = null, bool $html5 = false)
     {
         parent::__construct($name, $filesystem, $cdn, $thumbnail, $metadata);
         $this->html5 = $html5;
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         if ($media instanceof MediaInterface) {
@@ -46,7 +31,7 @@ class YouTubeProvider extends BaseVideoProvider
             } else {
                 $resizerFormat = $this->getFormat($format);
                 if (false === $resizerFormat) {
-                    throw new RuntimeException(sprintf('The image format "%s" is not defined.
+                    throw new RuntimeException(\sprintf('The image format "%s" is not defined.
                         Is the format registered in your ``media`` configuration?', $format));
                 }
 
@@ -72,12 +57,6 @@ class YouTubeProvider extends BaseVideoProvider
         return array_merge($data, $options);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         // Override html5 value if $options['html5'] is a boolean
@@ -87,8 +66,7 @@ class YouTubeProvider extends BaseVideoProvider
 
         // documentation : http://code.google.com/apis/youtube/player_parameters.html
         $default_player_url_parameters = [
-
-            //Values: 0 or 1. Default is 1. Sets whether the player should load related
+            // Values: 0 or 1. Default is 1. Sets whether the player should load related
             // videos once playback of the initial video starts. Related videos are
             // displayed in the "genie menu" when the menu button is pressed. The player
             // search functionality will be disabled if rel is set to 0.
@@ -178,11 +156,9 @@ class YouTubeProvider extends BaseVideoProvider
             // When wmode=opaque, the Flash movie is rendered as part of the page.
             // When wmode=transparent, the Flash movie is rendered as part of the page.
             'wmode' => 'window',
-
         ];
 
         $default_player_parameters = [
-
             // Values: 0 or 1. Default is 0. Setting to 1 enables a border around the entire video
             // player. The border's primary color can be set via the color1 parameter, and a
             // secondary color can be set by the color2 parameter.
@@ -190,7 +166,7 @@ class YouTubeProvider extends BaseVideoProvider
 
             // Values: 'allowfullscreen' or empty. Default is 'allowfullscreen'. Setting to empty value disables
             //  the fullscreen button.
-            'allowFullScreen' => $default_player_url_parameters['fs'] == '1',
+            'allowFullScreen' => '1' === $default_player_url_parameters['fs'],
 
             // The allowScriptAccess parameter in the code is needed to allow the player SWF to call
             // functions on the containing HTML page, since the player is hosted on a different domain
@@ -202,7 +178,6 @@ class YouTubeProvider extends BaseVideoProvider
             // When wmode=opaque, the Flash movie is rendered as part of the page.
             // When wmode=transparent, the Flash movie is rendered as part of the page.
             'wmode' => $default_player_url_parameters['wmode'],
-
         ];
 
         $playerUrlParameters = array_merge($default_player_url_parameters, $options['player_url_parameters'] ?? []);
@@ -217,17 +192,13 @@ class YouTubeProvider extends BaseVideoProvider
         ];
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function fixBinaryContent(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
             return;
         }
 
-        if (strlen($media->getBinaryContent()) === 11) {
+        if (11 === \strlen($media->getBinaryContent())) {
             return;
         }
 
@@ -236,10 +207,6 @@ class YouTubeProvider extends BaseVideoProvider
         }
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function doTransform(MediaInterface $media): void
     {
         $this->fixBinaryContent($media);
@@ -254,19 +221,15 @@ class YouTubeProvider extends BaseVideoProvider
         $this->updateMetadata($media, true);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param bool $force
-     * @return void
-     */
     public function updateMetadata(MediaInterface $media, bool $force = false): void
     {
-        $url = sprintf('https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%s&format=json', $media->getProviderReference());
+        $url = \sprintf('https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%s&format=json', $media->getProviderReference());
 
         try {
             $metadata = $this->getMetadata($url);
         } catch (RuntimeException) {
             $media->setEnabled(false);
+
             return;
         }
 
@@ -281,26 +244,13 @@ class YouTubeProvider extends BaseVideoProvider
         $media->setContentType('video/x-flv');
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param string $mode
-     * @param array $headers
-     * @return Response
-     */
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(\sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param array $headers
-     * @return Response
-     */
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(\sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }
 }

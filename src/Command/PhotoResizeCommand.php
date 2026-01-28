@@ -1,39 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Command;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Parameter;
 use Exception;
+use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use NetBull\MediaBundle\Entity\Media;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'netbull:media:sync-thumbnails', description: 'Sync uploaded image thumbs with new media formats')]
 class PhotoResizeCommand extends BaseCommand
 {
-    /**
-     * @return void
-     */
     public function configure(): void
     {
         $this->addArgument('context', InputArgument::OPTIONAL, 'The context');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $context  = $input->getArgument('context');
+        $context = $input->getArgument('context');
         if (null === $context) {
             $contexts = array_keys($this->pool->getContexts());
             $helper = $this->getHelper('question');
@@ -49,33 +43,31 @@ class PhotoResizeCommand extends BaseCommand
             ->from(Media::class, 'm')
             ->where($qb->expr()->andX(
                 $qb->expr()->eq('m.providerName', ':providerName'),
-                $qb->expr()->eq('m.context', ':context')
+                $qb->expr()->eq('m.context', ':context'),
             ))
             ->setParameters(new ArrayCollection([
                 new Parameter('providerName', 'netbull_media.provider.image'),
-                new Parameter('context', $context)
+                new Parameter('context', $context),
             ]))
             ->getQuery()
             ->getArrayResult();
 
-        $this->log(sprintf('Loaded %s medias from context: %s for generating thumbs', count($medias), $context));
+        $this->log(\sprintf('Loaded %s medias from context: %s for generating thumbs', \count($medias), $context));
 
-        foreach ( $medias as $media ) {
+        foreach ($medias as $media) {
             $this->_processMedia($media['id']);
             $this->optimize();
         }
 
         $this->log('Done.');
+
         return Command::SUCCESS;
     }
 
-    /**
-     * @param $id
-     * @return void
-     */
     protected function _processMedia($id): void
     {
         $qb = $this->em->createQueryBuilder();
+
         try {
             $media = $qb->select('m')
                 ->from(Media::class, 'm')
@@ -93,19 +85,21 @@ class PhotoResizeCommand extends BaseCommand
 
         $provider = $this->pool->getProvider($media->getProviderName());
 
-        $this->log('Generating thumbs for '.$media->getName().' - '.$media->getId());
+        $this->log('Generating thumbs for ' . $media->getName() . ' - ' . $media->getId());
 
         try {
             $provider->removeThumbnails($media);
         } catch (Exception $e) {
-            $this->log(sprintf('<error>Unable to remove old thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
+            $this->log(\sprintf('<error>Unable to remove old thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
+
             return;
         }
 
         try {
             $provider->generateThumbnails($media);
         } catch (Exception $e) {
-            $this->log(sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
+            $this->log(\sprintf('<error>Unable to generated new thumbnails, media: %s - %s </error>', $media->getId(), $e->getMessage()));
+
             return;
         }
     }

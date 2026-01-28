@@ -1,47 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Security;
 
+use NetBull\MediaBundle\Entity\MediaInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use NetBull\MediaBundle\Entity\MediaInterface;
 
 class RolesSecurityStrategy implements SecurityStrategyInterface
 {
-    /**
-     * @var array
-     */
     protected array $roles;
 
-    /**
-     * @var AuthorizationChecker
-     */
     protected AuthorizationChecker $security;
 
-    /**
-     * @param AuthorizationChecker $security
-     * @param array $roles
-     */
     public function __construct(AuthorizationChecker $security, array $roles = [])
     {
         $this->roles = $roles;
         $this->security = $security;
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param Request $request
-     *
-     * @return bool
-     */
     public function isGranted(MediaInterface $media, Request $request): bool
     {
-        return array_any($this->roles, fn($role) => $this->security->isGranted($role));
+        return array_any($this->roles, fn ($role) => $this->security->isGranted($role));
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return self::FORBIDDEN_DESCRIPTION;

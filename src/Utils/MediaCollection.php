@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Utils;
 
 use Closure;
@@ -8,24 +10,12 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 
 class MediaCollection extends ArrayCollection
 {
-    /**
-     * @var bool
-     */
     private bool $isArrayCollection = true;
 
-    /**
-     * @var array|MediaInterface|null
-     */
     private array|MediaInterface|null $main = null;
 
-    /**
-     * @var array
-     */
     private array $rest = [];
 
-    /**
-     * @param array $elements
-     */
     public function __construct(array $elements = [])
     {
         parent::__construct($elements);
@@ -41,9 +31,6 @@ class MediaCollection extends ArrayCollection
         }
     }
 
-    /**
-     * @return array|MediaInterface|null
-     */
     public function main(): array|MediaInterface|null
     {
         if ($this->main) {
@@ -53,9 +40,6 @@ class MediaCollection extends ArrayCollection
         return $this->findMain();
     }
 
-    /**
-     * @return array
-     */
     public function rest(): array
     {
         if (!empty($this->rest)) {
@@ -67,22 +51,15 @@ class MediaCollection extends ArrayCollection
         return $this->rest;
     }
 
-    /**
-     * @param Closure $p
-     * @return ArrayCollection
-     */
     public function filterCustom(Closure $p): ArrayCollection
     {
         return new ArrayCollection(array_filter($this->toArray(), $p));
     }
 
-    /**
-     * @return array|MediaInterface|null
-     */
     private function findMain(): array|MediaInterface|null
     {
         $isArrayCollection = $this->isArrayCollection;
-        $filtered = $this->filterCustom(function ($media) use ($isArrayCollection) {
+        $filtered = $this->filterCustom(static function ($media) use ($isArrayCollection) {
             return $isArrayCollection ? $media['main'] : $media->isMain();
         });
 
@@ -95,7 +72,7 @@ class MediaCollection extends ArrayCollection
             return null;
         }
 
-        $rest = $this->filterCustom(function ($media) use ($isArrayCollection, $main) {
+        $rest = $this->filterCustom(static function ($media) use ($isArrayCollection, $main) {
             $id = $isArrayCollection ? $media['id'] : $media->getId();
             $mainId = $isArrayCollection ? $main['id'] : $main->getId();
 

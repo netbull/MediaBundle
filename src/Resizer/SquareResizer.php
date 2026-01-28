@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Resizer;
 
 use Gaufrette\File;
@@ -19,30 +21,15 @@ use RuntimeException;
  * @author Edwin Ibarra <edwines@feniaz.com>
  *
  * Class SquareResizer
- * @package NetBull\MediaBundle\Resizer
  */
 class SquareResizer implements ResizerInterface
 {
-    /**
-     * @var ImagineInterface
-     */
     protected ImagineInterface $adapter;
 
-    /**
-     * @var int
-     */
     protected int $mode;
 
-    /**
-     * @var MetadataBuilderInterface
-     */
     protected MetadataBuilderInterface $metadata;
 
-    /**
-     * @param ImagineInterface $adapter
-     * @param int $mode
-     * @param MetadataBuilderInterface $metadata
-     */
     public function __construct(ImagineInterface $adapter, int $mode, MetadataBuilderInterface $metadata)
     {
         $this->adapter = $adapter;
@@ -50,22 +37,14 @@ class SquareResizer implements ResizerInterface
         $this->metadata = $metadata;
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param File $in
-     * @param File $out
-     * @param string $format
-     * @param array $settings
-     * @return void
-     */
     public function resize(MediaInterface $media, File $in, File $out, string $format, array $settings): void
     {
         if (!isset($settings['width'])) {
-            throw new RuntimeException(sprintf('Width parameter is missing in context "%s" for provider "%s"', $media->getContext(), $media->getProviderName()));
+            throw new RuntimeException(\sprintf('Width parameter is missing in context "%s" for provider "%s"', $media->getContext(), $media->getProviderName()));
         }
 
         $image = $this->adapter->load($in->getContent());
-        $size  = $media->getBox();
+        $size = $media->getBox();
 
         switch ($media->getExtension()) {
             case 'gif':
@@ -74,19 +53,22 @@ class SquareResizer implements ResizerInterface
                     'flatten' => false,
                     'animated' => true,
                 ];
+
                 break;
             case 'jpeg':
             case 'jpg':
                 $formatSettings = [
                     'jpeg_quality' => $settings['quality'],
                 ];
+
                 break;
             default:
                 $formatSettings = [];
+
                 break;
         }
 
-        if (null != $settings['height']) {
+        if (null !== $settings['height']) {
             if ($size->getHeight() > $size->getWidth()) {
                 $higher = $size->getHeight();
                 $lower = $size->getWidth();
@@ -104,7 +86,7 @@ class SquareResizer implements ResizerInterface
             }
         }
 
-        $settings['height'] = (int)($settings['width'] * $size->getHeight() / $size->getWidth());
+        $settings['height'] = (int) ($settings['width'] * $size->getHeight() / $size->getWidth());
 
         if ($settings['height'] < $size->getHeight() && $settings['width'] < $size->getWidth()) {
             $content = $image
@@ -117,22 +99,17 @@ class SquareResizer implements ResizerInterface
         $out->setContent($content, $this->metadata->get($out->getName()));
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param array $settings
-     * @return Box
-     */
     public function getBox(MediaInterface $media, array $settings): Box
     {
         $size = $media->getBox();
 
-        if (null != $settings['height']) {
+        if (null !== $settings['height']) {
             if ($size->getHeight() > $size->getWidth()) {
                 $higher = $size->getHeight();
-                $lower  = $size->getWidth();
+                $lower = $size->getWidth();
             } else {
                 $higher = $size->getWidth();
-                $lower  = $size->getHeight();
+                $lower = $size->getHeight();
             }
 
             if ($higher - $lower > 0) {

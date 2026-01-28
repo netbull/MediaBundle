@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Provider\Pool;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -14,34 +16,18 @@ use Twig\TwigFilter;
 
 class MediaExtension extends AbstractExtension
 {
-    /**
-     * @var Pool
-     */
     private Pool $pool;
 
-    /**
-     * @var EntityManagerInterface
-     */
     private EntityManagerInterface $em;
 
-    /**
-     * @var array
-     */
     protected array $resources = [];
 
-    /**
-     * @param Pool $pool
-     * @param EntityManagerInterface $em
-     */
     public function __construct(Pool $pool, EntityManagerInterface $em)
     {
         $this->pool = $pool;
         $this->em = $em;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getFilters(): array
     {
         return [
@@ -52,11 +38,6 @@ class MediaExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @return string
-     */
     public function generatePublicPath(array|MediaInterface $media, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
@@ -74,12 +55,6 @@ class MediaExtension extends AbstractExtension
         return $provider->generatePublicUrl($media, $provider->getFormatName($media, $format));
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $identifier
-     * @param string $format
-     * @return string
-     */
     public function generateSecurePath(array|MediaInterface $media, string $identifier, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
@@ -97,38 +72,16 @@ class MediaExtension extends AbstractExtension
         return $provider->generateSecuredUrl($media, $provider->getFormatName($media, $format), $identifier);
     }
 
-    /**
-     * @param Environment $environment
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return string
-     */
     public function generateThumbnail(Environment $environment, array|MediaInterface $media, string $format, array $options = []): string
     {
         return $this->generateTemplate($environment, $media, $format, 'thumbnail', $options);
     }
 
-    /**
-     * @param Environment $environment
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return string
-     */
     public function generateView(Environment $environment, array|MediaInterface $media, string $format, array $options = []): string
     {
         return $this->generateTemplate($environment, $media, $format, 'view', $options);
     }
 
-    /**
-     * @param Environment $environment
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param string $template
-     * @param array $options
-     * @return string
-     */
     private function generateTemplate(Environment $environment, array|MediaInterface $media, string $format, string $template, array $options = []): string
     {
         if ($media instanceof MediaInterface) {
@@ -164,26 +117,20 @@ class MediaExtension extends AbstractExtension
 
         return $this->render(
             $environment,
-            $provider->getTemplate('helper_'.$template),
+            $provider->getTemplate('helper_' . $template),
             [
                 'media' => $media,
                 'options' => $options,
-            ]
+            ],
         );
     }
 
-    /**
-     * @param Environment $environment
-     * @param string $template
-     * @param array $parameters
-     * @return string
-     */
     public function render(Environment $environment, string $template, array $parameters = []): string
     {
         if (!isset($this->resources[$template])) {
             try {
                 $this->resources[$template] = $environment->load("@$template");
-            } catch (LoaderError | RuntimeError | SyntaxError) {
+            } catch (LoaderError|RuntimeError|SyntaxError) {
                 return '';
             }
         }
@@ -191,9 +138,6 @@ class MediaExtension extends AbstractExtension
         return $this->resources[$template]->render($parameters);
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return 'netbull_media.extension';

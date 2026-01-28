@@ -1,52 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use NetBull\MediaBundle\Entity\Media;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
-use NetBull\MediaBundle\Entity\Media;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[AsCommand(name: 'netbull:media:clone', description: 'Clone media')]
 class MediaCloneCommand extends BaseCommand
 {
-    /**
-     * @param ParameterBag $parameterBag
-     * @param EntityManagerInterface $em
-     * @param Pool $pool
-     * @param string|null $name
-     */
     public function __construct(
         protected ParameterBag $parameterBag,
         EntityManagerInterface $em,
         Pool $pool,
-        ?string $name = null
+        ?string $name = null,
     ) {
         parent::__construct($em, $pool, $name);
     }
 
-    /**
-     * @return void
-     */
     public function configure(): void
     {
         $this->addArgument('mediaId', InputArgument::REQUIRED, 'The Media ID');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);

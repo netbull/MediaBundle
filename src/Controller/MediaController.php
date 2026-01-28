@@ -1,56 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Gaufrette\Exception\FileNotFound;
+use NetBull\MediaBundle\Entity\Media;
+use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\EventListener\HashedMediaViewEvent;
+use NetBull\MediaBundle\Provider\MediaProviderInterface;
 use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use NetBull\MediaBundle\Entity\Media;
-use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Provider\MediaProviderInterface;
 
 class MediaController extends AbstractController
 {
-    /**
-     * @param Pool $pool
-     * @param EntityManagerInterface $em
-     * @param EventDispatcherInterface $dispatcher
-     */
     public function __construct(
         private readonly Pool $pool,
         private readonly EntityManagerInterface $em,
-        private readonly EventDispatcherInterface $dispatcher
+        private readonly EventDispatcherInterface $dispatcher,
     ) {
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return MediaProviderInterface
-     */
     public function getProvider(MediaInterface $media): MediaProviderInterface
     {
         return $this->pool->getProvider($media->getProviderName());
     }
 
-    /**
-     * @param $id
-     * @param Request $request
-     * @param string $format
-     * @return BinaryFileResponse|Response
-     */
     public function downloadAction($id, Request $request, string $format = 'reference'): BinaryFileResponse|Response
     {
         /** @var MediaInterface|null $media */
         $media = $this->em->getRepository(Media::class)->find($id);
 
         if (!$media) {
-            throw $this->createNotFoundException(sprintf('unable to find the media with the id : %s', $id));
+            throw $this->createNotFoundException(\sprintf('unable to find the media with the id : %s', $id));
         }
 
         if (!$this->pool->getDownloadSecurity($media)->isGranted($media, $request)) {
@@ -67,7 +54,7 @@ class MediaController extends AbstractController
             'x-filename' => $filename,
         ];
         if ($request->query->get('inline')) {
-            $headers['Content-Disposition'] = sprintf('inline; filename="%s"', $filename);
+            $headers['Content-Disposition'] = \sprintf('inline; filename="%s"', $filename);
         }
 
         try {
@@ -83,26 +70,20 @@ class MediaController extends AbstractController
         return $response;
     }
 
-    /**
-     * @param $id
-     * @param Request $request
-     * @param string $format
-     * @return BinaryFileResponse|Response
-     */
     public function viewAction($id, Request $request, string $format = 'reference'): BinaryFileResponse|Response
     {
         /** @var MediaInterface|null $media */
         $media = $this->em->getRepository(Media::class)->find($id);
 
         if (!$media) {
-            throw $this->createNotFoundException(sprintf('unable to find the media with the id : %s', $id));
+            throw $this->createNotFoundException(\sprintf('unable to find the media with the id : %s', $id));
         }
 
         if (!$this->pool->getViewSecurity($media)->isGranted($media, $request)) {
             throw $this->createAccessDeniedException();
         }
 
-        $this->dispatcher->dispatch(new HashedMediaViewEvent($media->getId(), $request->query->get('u')));
+        $this->dispatcher->dispatch(new HashedMediaViewEvent((string) $media->getId(), $request->query->get('u')));
         if ('netbull_media.provider.image' !== $media->getProviderName()) {
             $format = 'reference';
         }

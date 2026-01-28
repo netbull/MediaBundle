@@ -1,29 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Provider;
 
+use NetBull\MediaBundle\Entity\MediaInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use NetBull\MediaBundle\Entity\MediaInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class YoukuProvider extends BaseVideoProvider
 {
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
-        if ($media instanceof MediaInterface){
+        if ($media instanceof MediaInterface) {
             if ('reference' === $format) {
                 $box = $media->getBox();
             } else {
                 $resizerFormat = $this->getFormat($format);
                 if (false === $resizerFormat) {
-                    throw new RuntimeException(sprintf('The image format "%s" is not defined.
+                    throw new RuntimeException(\sprintf('The image format "%s" is not defined.
                         Is the format registered in your ``media`` configuration?', $format));
                 }
 
@@ -36,7 +32,7 @@ class YoukuProvider extends BaseVideoProvider
                 'width' => $box->getWidth(),
                 'height' => $box->getHeight(),
             ];
-        }else{
+        } else {
             $data = [
                 'alt' => $media['name'] ?? $media['caption'],
                 'title' => $media['name'] ?? $media['caption'],
@@ -49,12 +45,6 @@ class YoukuProvider extends BaseVideoProvider
         return array_merge($data, $options);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         $defaults = [
@@ -100,10 +90,6 @@ class YoukuProvider extends BaseVideoProvider
         ];
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function fixBinaryContent(MediaInterface $media): void
     {
         if (!$media->getBinaryContent()) {
@@ -115,10 +101,6 @@ class YoukuProvider extends BaseVideoProvider
         }
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function doTransform(MediaInterface $media): void
     {
         $this->fixBinaryContent($media);
@@ -134,14 +116,9 @@ class YoukuProvider extends BaseVideoProvider
         $this->updateMetadata($media, true);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param bool $force
-     * @return void
-     */
     public function updateMetadata(MediaInterface $media, bool $force = false): void
     {
-        $url = sprintf('https://api.youku.com/videos/show.json?client_id=a9b2f9d6525aafb6&video_id=%s', $media->getProviderReference());
+        $url = \sprintf('https://api.youku.com/videos/show.json?client_id=a9b2f9d6525aafb6&video_id=%s', $media->getProviderReference());
 
         try {
             $metadata = $this->getMetadata($url);
@@ -161,37 +138,20 @@ class YoukuProvider extends BaseVideoProvider
 
         $media->setHeight(400);
         $media->setWidth(480);
-        $media->setLength((int)$metadata['duration']);
+        $media->setLength((string) $metadata['duration']);
         $media->setContentType('video/x-flv');
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param $format
-     * @param $mode
-     * @param array $headers
-     * @return Response
-     */
     public function getDownloadResponse(MediaInterface $media, $format, $mode, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('http://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(\sprintf('http://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param array $headers
-     * @return Response
-     */
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
     {
-        return new RedirectResponse(sprintf('https://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
+        return new RedirectResponse(\sprintf('https://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @return string
-     */
     public function getReferenceImage(array|MediaInterface $media): string
     {
         return $media->getMetadataValue('bigThumbnail');

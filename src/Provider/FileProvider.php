@@ -1,39 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Provider;
 
+use Gaufrette\File;
 use Gaufrette\Filesystem;
+use NetBull\MediaBundle\Cdn\CdnInterface;
+use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
+use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use RuntimeException;
 use SplFileInfo;
 use SplFileObject;
-use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use NetBull\MediaBundle\Cdn\CdnInterface;
-use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
-use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Gaufrette\File;
 
 class FileProvider extends BaseProvider
 {
-    /**
-     * @param string $name
-     * @param Filesystem $filesystem
-     * @param CdnInterface $cdn
-     * @param ThumbnailInterface $thumbnail
-     * @param RouterInterface $router
-     * @param SimpleSignatureHasher $simpleSignatureHasher
-     * @param array $allowedExtensions
-     * @param array $allowedMimeTypes
-     * @param MetadataBuilderInterface|null $metadata
-     */
     public function __construct(
         string $name,
         Filesystem $filesystem,
@@ -43,37 +34,24 @@ class FileProvider extends BaseProvider
         protected SimpleSignatureHasher $simpleSignatureHasher,
         protected array $allowedExtensions = [],
         protected array $allowedMimeTypes = [],
-        protected ?MetadataBuilderInterface $metadata = null
+        protected ?MetadataBuilderInterface $metadata = null,
     ) {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @return string
-     */
     public function getReferenceImage(array|MediaInterface $media): string
     {
-        return sprintf('%s/%s',
+        return \sprintf('%s/%s',
             $this->generatePath($media),
-            $media instanceof MediaInterface ? $media->getProviderReference() : $media['providerReference']
+            $media instanceof MediaInterface ? $media->getProviderReference() : $media['providerReference'],
         );
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @return File|null
-     */
     public function getReferenceFile(array|MediaInterface $media): ?File
     {
         return $this->getFilesystem()->get($this->getReferenceImage($media), true);
     }
 
-    /**
-     * @param FormBuilderInterface $formBuilder
-     * @param array $options
-     * @return void
-     */
     public function buildMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         if (isset($options['main_field'])) {
@@ -82,10 +60,6 @@ class FileProvider extends BaseProvider
         $formBuilder->add('binaryContent', FileType::class, $options);
     }
 
-    /**
-     * @param FormBuilderInterface $formBuilder
-     * @param array $options
-     */
     public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
         $formBuilder
@@ -97,13 +71,9 @@ class FileProvider extends BaseProvider
         ;
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postPersist(MediaInterface $media): void
     {
-        if ($media->getBinaryContent() === null) {
+        if (null === $media->getBinaryContent()) {
             return;
         }
 
@@ -111,10 +81,6 @@ class FileProvider extends BaseProvider
         $media->resetBinaryContent();
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postUpdate(MediaInterface $media): void
     {
         if (!$media->getBinaryContent() instanceof SplFileInfo) {
@@ -139,10 +105,6 @@ class FileProvider extends BaseProvider
         $media->resetBinaryContent();
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     public function postFlush(MediaInterface $media): void
     {
         $this->generateThumbnails($media);
@@ -150,19 +112,17 @@ class FileProvider extends BaseProvider
 
     /**
      * @throws RuntimeException
-     *
-     * @param MediaInterface $media
      */
     protected function fixBinaryContent(MediaInterface $media): void
     {
-        if ($media->getBinaryContent() === null) {
+        if (null === $media->getBinaryContent()) {
             return;
         }
 
         // if the binary content is a filename => convert to a valid File
         if (!$media->getBinaryContent() instanceof SymfonyFile) {
             if (!is_file($media->getBinaryContent())) {
-                throw new RuntimeException('The file does not exist : '.$media->getBinaryContent());
+                throw new RuntimeException('The file does not exist : ' . $media->getBinaryContent());
             }
 
             $binaryContent = new SymfonyFile($media->getBinaryContent());
@@ -173,8 +133,6 @@ class FileProvider extends BaseProvider
 
     /**
      * @throws RuntimeException
-     *
-     * @param MediaInterface $media
      */
     protected function fixFilename(MediaInterface $media): void
     {
@@ -192,10 +150,6 @@ class FileProvider extends BaseProvider
         }
     }
 
-    /**
-     * @param MediaInterface $media
-     * @return void
-     */
     protected function doTransform(MediaInterface $media): void
     {
         $this->fixBinaryContent($media);
@@ -212,11 +166,6 @@ class FileProvider extends BaseProvider
         }
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param bool $force
-     * @return void
-     */
     public function updateMetadata(MediaInterface $media, bool $force = true): void
     {
         // this is now optimized at all!!!
@@ -227,17 +176,12 @@ class FileProvider extends BaseProvider
         $media->setSize($fileObject->getSize());
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @return string
-     */
     public function generatePublicUrl(array|MediaInterface $media, string $format): string
     {
         if ('reference' === $format) {
             $path = $this->getReferenceImage($media);
         } else {
-            $path = sprintf('../files/%s/file.png', $format);
+            $path = \sprintf('../files/%s/file.png', $format);
         }
 
         return $this->getCdn()->getPath($path);
@@ -245,19 +189,12 @@ class FileProvider extends BaseProvider
 
     /**
      * Generate the secured url.
-     *
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param string $identifier
-     * @param int $expires
-     *
-     * @return string
      */
     public function generateSecuredUrl(array|MediaInterface $media, string $format, string $identifier, int $expires = 300): string
     {
         $id = $media instanceof MediaInterface ? $media->getId() : $media['id'];
 
-        $time = time()+$expires;
+        $time = time() + $expires;
 
         $hash = $this->simpleSignatureHasher->computeSignatureHash($identifier, $time);
         $params = [
@@ -271,12 +208,6 @@ class FileProvider extends BaseProvider
         return $this->router->generate('netbull_media_view', $params, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    /**
-     * @param array|MediaInterface $media
-     * @param string $format
-     * @param array $options
-     * @return array
-     */
     public function getHelperProperties(array|MediaInterface $media, string $format, array $options = []): array
     {
         if ($media instanceof MediaInterface) {
@@ -296,29 +227,23 @@ class FileProvider extends BaseProvider
         return array_merge($data, $options);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @return string
-     */
     public function generatePrivateUrl(MediaInterface $media, string $format): string
     {
         if ('reference' === $format) {
             return $this->getReferenceImage($media);
         }
 
-        return false;
+        return '';
     }
 
     /**
      * Set the file contents for an image.
      *
-     * @param MediaInterface $media
      * @param string|null $contents path to contents, defaults to MediaInterface BinaryContent
      */
     protected function setFileContents(MediaInterface $media, ?string $contents = null): void
     {
-        $file = $this->getFilesystem()->get(sprintf('%s/%s', $this->generatePath($media), $media->getProviderReference()), true);
+        $file = $this->getFilesystem()->get(\sprintf('%s/%s', $this->generatePath($media), $media->getProviderReference()), true);
 
         if (!$contents) {
             $contents = $media->getBinaryContent()->getRealPath();
@@ -328,42 +253,25 @@ class FileProvider extends BaseProvider
         $file->setContent(file_get_contents($contents), $metadata);
     }
 
-    /**
-     * @param MediaInterface $media
-     *
-     * @return string
-     */
     protected function generateReferenceName(MediaInterface $media): string
     {
-        return $this->generateMediaUniqId($media).'.'.$media->getBinaryContent()->guessExtension();
+        return $this->generateMediaUniqId($media) . '.' . $media->getBinaryContent()->guessExtension();
     }
 
-    /**
-     * @param MediaInterface $media
-     *
-     * @return string
-     */
     protected function generateMediaUniqId(MediaInterface $media): string
     {
-        return sha1($media->getName().uniqid().rand(11111, 99999));
+        return sha1($media->getName() . uniqid() . rand(11111, 99999));
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param string $mode
-     * @param array $headers
-     * @return Response
-     */
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
         // build the default headers
         $headers = array_merge([
             'Content-Type' => $media->getContentType(),
-            'Content-Disposition' => sprintf('attachment; filename="%s"', $media->getMetadataValue('filename')),
+            'Content-Disposition' => \sprintf('attachment; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        if (!in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'])) {
+        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'], true)) {
             throw new RuntimeException('Invalid mode provided');
         }
 
@@ -373,23 +281,17 @@ class FileProvider extends BaseProvider
             $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
         }
 
-        return new StreamedResponse(function () use ($file) {
+        return new StreamedResponse(static function () use ($file) {
             echo $file->getContent();
         }, 200, $headers);
     }
 
-    /**
-     * @param MediaInterface $media
-     * @param string $format
-     * @param array $headers
-     * @return Response
-     */
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
     {
         // build the default headers
         $headers = array_merge([
             'Content-Type' => $media->getContentType(),
-            'Content-Disposition' => sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
+            'Content-Disposition' => \sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
         if ('reference' === $format) {
@@ -398,7 +300,7 @@ class FileProvider extends BaseProvider
             $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
         }
 
-        return new StreamedResponse(function () use ($file) {
+        return new StreamedResponse(static function () use ($file) {
             echo $file->getContent();
         }, 200, $headers);
     }

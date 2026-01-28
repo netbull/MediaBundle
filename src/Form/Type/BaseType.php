@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NetBull\MediaBundle\Form\Type;
 
 use NetBull\MediaBundle\Form\DataTransformer\ProviderDataTransformer;
@@ -11,17 +13,10 @@ use Symfony\Component\Form\FormView;
 
 abstract class BaseType extends AbstractType
 {
-    /**
-     * @param Pool $pool
-     */
     public function __construct(protected Pool $pool)
     {
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new ProviderDataTransformer($this->pool, [
@@ -32,11 +27,6 @@ abstract class BaseType extends AbstractType
         ]));
     }
 
-    /**
-     * @param FormView $view
-     * @param FormInterface $form
-     * @param array $options
-     */
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['context'] = $options['context'];
