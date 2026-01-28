@@ -67,7 +67,13 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 if ($config['service'] === $id) {
                     $definition = $container->getDefinition($id);
 
-                    $definition->replaceArgument(1, new Reference($config['filesystem']))
+                    // Fall back to local filesystem if the configured one doesn't exist
+                    $filesystem = $config['filesystem'];
+                    if (!$container->hasDefinition($filesystem) && $container->hasDefinition('netbull_media.filesystem.local')) {
+                        $filesystem = 'netbull_media.filesystem.local';
+                    }
+
+                    $definition->replaceArgument(1, new Reference($filesystem))
                         ->replaceArgument(2, new Reference($config['cdn']));
 
                     if ($config['resizer']) {

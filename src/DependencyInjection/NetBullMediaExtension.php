@@ -126,6 +126,11 @@ class NetBullMediaExtension extends Extension
         } else {
             $container->removeDefinition('netbull_media.adapter.filesystem.s3');
             $container->removeDefinition('netbull_media.filesystem.s3');
+
+            // Update the Gaufrette\Filesystem alias to point to local when S3 is not configured
+            if ($container->hasAlias('Gaufrette\Filesystem') && $container->hasDefinition('netbull_media.filesystem.local')) {
+                $container->setAlias('Gaufrette\Filesystem', 'netbull_media.filesystem.local');
+            }
         }
 
         // If there is no local or s3 filesystem then remove the local.server service
