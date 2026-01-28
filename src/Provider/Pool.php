@@ -6,7 +6,7 @@ use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Security\SecurityStrategyInterface;
 use RuntimeException;
 
-class Pool
+class Pool implements PoolInterface
 {
     /**
      * @var array

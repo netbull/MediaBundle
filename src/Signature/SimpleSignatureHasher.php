@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Signature\Exception\InvalidSignatureExceptio
 /**
  * Taken from Symfony\Component\Security\Core\Signature
  */
-class SimpleSignatureHasher
+class SimpleSignatureHasher implements SignatureHasherInterface
 {
 	/**
 	 * @var string

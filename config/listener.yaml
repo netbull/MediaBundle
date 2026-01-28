@@ -1,0 +1,3 @@
+services:
+    NetBull\MediaBundle\EventListener\MediaListener:
+        arguments: [ '@NetBull\MediaBundle\Provider\Pool' ]

@@ -2,9 +2,7 @@
 
 namespace NetBull\MediaBundle\DependencyInjection\Compiler;
 
-use NetBull\MediaBundle\DependencyInjection\Configuration;
 use NetBull\MediaBundle\Provider\Pool;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -21,12 +19,15 @@ class AddProviderCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        $this->getConfiguration($container);
+        $this->config = $container->getParameter('netbull_media.config');
 
         // define configuration per provider
         $this->applyFormats($container);
         $this->attachArguments($container);
         $this->attachProviders($container);
+
+        // Remove the config parameter as it's no longer needed
+        $container->getParameterBag()->remove('netbull_media.config');
     }
 
     /**
@@ -38,19 +39,6 @@ class AddProviderCompilerPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('netbull_media.provider') as $id => $attributes) {
             $pool->addMethodCall('addProvider', [$id, new Reference($id)]);
         }
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     */
-    private function getConfiguration(ContainerBuilder $container): void
-    {
-        $parameterBag = $container->getParameterBag();
-        $processor = new Processor();
-        $configuration = new Configuration();
-        $resolvedConfig = $parameterBag->resolveValue($container->getExtensionConfig('netbull_media'));
-
-        $this->config = $processor->processConfiguration($configuration, $resolvedConfig);
     }
 
     /**
