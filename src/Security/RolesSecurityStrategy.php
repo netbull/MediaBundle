@@ -22,7 +22,7 @@ class RolesSecurityStrategy implements SecurityStrategyInterface
 
     public function isGranted(MediaInterface $media, Request $request): bool
     {
-        return array_any($this->roles, fn ($role) => $this->security->isGranted($role));
+        return [] !== array_filter($this->roles, fn ($role) => $this->security->isGranted($role));
     }
 
     public function getDescription(): string
