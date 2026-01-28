@@ -1,3 +1,10 @@
+## [7.2.6](https://github.com/netbull/MediaBundle/compare/v7.2.5...v7.2.6) (2026-01-28)
+
+
+### Bug Fixes
+
+* added config examples ([22f2140](https://github.com/netbull/MediaBundle/commit/22f2140b2aa6f7d5b3e26d354d2cf6112a5f2841))
+
 ## [7.2.5](https://github.com/netbull/MediaBundle/compare/v7.2.4...v7.2.5) (2026-01-28)
 
 
