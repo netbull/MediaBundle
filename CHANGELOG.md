@@ -1,3 +1,10 @@
+## [7.1.2](https://github.com/netbull/MediaBundle/compare/v7.1.1...v7.1.2) (2026-01-28)
+
+
+### Bug Fixes
+
+* s3 fallback to local storage if not configured ([23366c6](https://github.com/netbull/MediaBundle/commit/23366c6d7b4d3527a898e4e58ee023e7acd6bc0a))
+
 ## [7.1.1](https://github.com/netbull/MediaBundle/compare/v7.1.0...v7.1.1) (2026-01-24)
 
 
