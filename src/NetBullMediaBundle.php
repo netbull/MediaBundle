@@ -16,6 +16,8 @@ use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class NetBullMediaBundle extends AbstractBundle
 {
+    protected string $extensionAlias = 'netbull_media';
+
     public function configure(DefinitionConfigurator $definition): void
     {
         $rootNode = $definition->rootNode();
