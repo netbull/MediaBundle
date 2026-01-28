@@ -1,3 +1,10 @@
+## [7.2.2](https://github.com/netbull/MediaBundle/compare/v7.2.1...v7.2.2) (2026-01-28)
+
+
+### Bug Fixes
+
+* added extension alias ([9a22b74](https://github.com/netbull/MediaBundle/commit/9a22b74d298f2382de40b1e5dc66219a413884b2))
+
 ## [7.2.1](https://github.com/netbull/MediaBundle/compare/v7.2.0...v7.2.1) (2026-01-28)
 
 
