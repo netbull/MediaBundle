@@ -1,3 +1,10 @@
+## [7.2.1](https://github.com/netbull/MediaBundle/compare/v7.2.0...v7.2.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* added PHP-CS-Fixer ([8ebfec7](https://github.com/netbull/MediaBundle/commit/8ebfec744eae5a72466ee9e11810eccae43c69e1))
+
 # [7.2.0](https://github.com/netbull/MediaBundle/compare/v7.1.2...v7.2.0) (2026-01-28)
 
 
