@@ -1,3 +1,10 @@
+## [7.2.3](https://github.com/netbull/MediaBundle/compare/v7.2.2...v7.2.3) (2026-01-28)
+
+
+### Bug Fixes
+
+* services ([e61a719](https://github.com/netbull/MediaBundle/commit/e61a719516ed5b83b1fdcddf19a4354b6a0b6706))
+
 ## [7.2.2](https://github.com/netbull/MediaBundle/compare/v7.2.1...v7.2.2) (2026-01-28)
 
 
