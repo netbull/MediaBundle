@@ -384,6 +384,7 @@ class NetBullMediaBundle extends AbstractBundle
                 ->addArgument($config['filesystem']['local']['create']);
         } else {
             $container->removeDefinition('netbull_media.adapter.filesystem.local');
+            $container->removeDefinition('netbull_media.filesystem.local');
         }
 
         // Add the default configuration for the S3 filesystem
@@ -414,27 +415,28 @@ class NetBullMediaBundle extends AbstractBundle
                     'meta' => $config['filesystem']['s3']['options']['meta'],
                     'cache_control' => $config['filesystem']['s3']['options']['cache_control'],
                 ]);
+
+            // Create local.server service only when both local and S3 with credentials are configured
+            if (
+                $container->hasDefinition('netbull_media.adapter.filesystem.local')
+                && !empty($config['filesystem']['s3']['defaults']['credentials'])
+            ) {
+                $container->register('netbull_media.filesystem.local.server', 'NetBull\MediaBundle\Filesystem\LocalServer')
+                    ->setArguments([
+                        new Reference('netbull_media.adapter.filesystem.local'),
+                        new Reference('netbull_media.adapter.filesystem.s3'),
+                    ])
+                    ->setPublic(true);
+            }
         } else {
             $container->removeDefinition('netbull_media.adapter.filesystem.s3');
             $container->removeDefinition('netbull_media.filesystem.s3');
+            $container->removeDefinition('netbull_media.wrapper.s3');
 
             // Update the Gaufrette\Filesystem alias to point to local when S3 is not configured
             if ($container->hasAlias('Gaufrette\Filesystem') && $container->hasDefinition('netbull_media.filesystem.local')) {
                 $container->setAlias('Gaufrette\Filesystem', 'netbull_media.filesystem.local');
             }
-        }
-
-        // If there is no local or s3 filesystem then remove the local.server service
-        if (
-            (!$container->hasDefinition('netbull_media.adapter.filesystem.local') || !$container->hasDefinition('netbull_media.adapter.filesystem.s3'))
-            && $container->hasDefinition('netbull_media.adapter.filesystem.local.server')
-        ) {
-            $container->removeDefinition('netbull_media.adapter.filesystem.local.server');
-        }
-
-        // Remove the local.server definition if the S3 does not use credentials for authentication
-        if ($container->hasDefinition('netbull_media.adapter.filesystem.local.server') && empty($config['filesystem']['s3']['defaults']['credentials'])) {
-            $container->removeDefinition('netbull_media.adapter.filesystem.local.server');
         }
     }
 

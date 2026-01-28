@@ -41,7 +41,7 @@ services:
             - []  # allowed_mime_types - set by extension
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
-            - setTemplates: [{ helper_thumbnail: '@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@NetBullMedia/Provider/view_image.html.twig' }]
+            - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_image.html.twig' }]
 
     netbull_media.provider.file:
         class: NetBull\MediaBundle\Provider\FileProvider
@@ -59,7 +59,7 @@ services:
             - []  # allowed_mime_types
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
-            - setTemplates: [{ helper_thumbnail: '@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@NetBullMedia/Provider/view_file.html.twig' }]
+            - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_file.html.twig' }]
 
     netbull_media.provider.youtube:
         class: NetBull\MediaBundle\Provider\YouTubeProvider
@@ -74,7 +74,7 @@ services:
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
             - true  # html5
         calls:
-            - setTemplates: [{ helper_thumbnail: '@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@NetBullMedia/Provider/view_youtube.html.twig' }]
+            - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_youtube.html.twig' }]
 
     netbull_media.provider.vimeo:
         class: NetBull\MediaBundle\Provider\VimeoProvider
@@ -88,7 +88,7 @@ services:
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
-            - setTemplates: [{ helper_thumbnail: '@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@NetBullMedia/Provider/view_vimeo.html.twig' }]
+            - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_vimeo.html.twig' }]
 
     netbull_media.provider.youku:
         class: NetBull\MediaBundle\Provider\YoukuProvider
@@ -102,7 +102,7 @@ services:
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
-            - setTemplates: [{ helper_thumbnail: '@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@NetBullMedia/Provider/view_youku.html.twig' }]
+            - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_youku.html.twig' }]
 
     # Event Listener
     NetBull\MediaBundle\EventListener\MediaListener: ~
@@ -218,13 +218,7 @@ services:
     Gaufrette\Filesystem:
         alias: netbull_media.filesystem.s3
 
-    netbull_media.filesystem.local.server:
-        class: NetBull\MediaBundle\Filesystem\LocalServer
-        autowire: false
-        arguments:
-            - '@netbull_media.adapter.filesystem.local'
-            - '@netbull_media.adapter.filesystem.s3'
-        public: true
+    # netbull_media.filesystem.local.server is created dynamically when S3 is configured
 
     # Metadata
     NetBull\MediaBundle\Metadata\AmazonMetadataBuilder:
