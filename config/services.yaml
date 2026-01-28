@@ -6,7 +6,7 @@ services:
     # Pool
     NetBull\MediaBundle\Provider\Pool:
         arguments:
-            $context: ''
+            - ''  # context - set by extension
         public: true
 
     NetBull\MediaBundle\Provider\PoolInterface:
@@ -31,12 +31,12 @@ services:
             - { name: netbull_media.provider }
         arguments:
             - 'netbull_media.provider.image'
-            - ''  # filesystem - set by compiler pass
-            - ''  # cdn - set by compiler pass
+            - ~  # filesystem - set by compiler pass
+            - ~  # cdn - set by compiler pass
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@router'
             - '@NetBull\MediaBundle\Signature\SimpleSignatureHasher'
-            - ''  # adapter - set by extension
+            - ~  # adapter - set by extension
             - []  # allowed_extensions - set by extension
             - []  # allowed_mime_types - set by extension
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
@@ -50,8 +50,8 @@ services:
             - { name: netbull_media.provider }
         arguments:
             - 'netbull_media.provider.file'
-            - ''  # filesystem
-            - ''  # cdn
+            - ~  # filesystem
+            - ~  # cdn
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@router'
             - '@NetBull\MediaBundle\Signature\SimpleSignatureHasher'
@@ -68,8 +68,8 @@ services:
             - { name: netbull_media.provider }
         arguments:
             - 'netbull_media.provider.youtube'
-            - ''  # filesystem
-            - ''  # cdn
+            - ~  # filesystem
+            - ~  # cdn
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
             - true  # html5
@@ -83,8 +83,8 @@ services:
             - { name: netbull_media.provider }
         arguments:
             - 'netbull_media.provider.vimeo'
-            - ''  # filesystem
-            - ''  # cdn
+            - ~  # filesystem
+            - ~  # cdn
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
@@ -97,8 +97,8 @@ services:
             - { name: netbull_media.provider }
         arguments:
             - 'netbull_media.provider.youku'
-            - ''  # filesystem
-            - ''  # cdn
+            - ~  # filesystem
+            - ~  # cdn
             - '@NetBull\MediaBundle\Thumbnail\FormatThumbnail'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
@@ -110,16 +110,18 @@ services:
     # Image Adapters
     netbull_media.adapter.image.imagick:
         class: Imagine\Imagick\Imagine
+        autowire: false
 
     netbull_media.adapter.image.gd:
         class: Imagine\Gd\Imagine
+        autowire: false
 
     # Resizers
     netbull_media.resizer.simple:
         class: NetBull\MediaBundle\Resizer\SimpleResizer
         autowire: false
         arguments:
-            - ''  # adapter - set by extension
+            - ~  # adapter - set by extension
             - '%netbull_media.resizer.simple.adapter.mode%'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
 
@@ -127,7 +129,7 @@ services:
         class: NetBull\MediaBundle\Resizer\SquareResizer
         autowire: false
         arguments:
-            - ''  # adapter - set by extension
+            - ~  # adapter - set by extension
             - '%netbull_media.resizer.square.adapter.mode%'
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
 
@@ -150,26 +152,31 @@ services:
 
     # Security Strategies
     NetBull\MediaBundle\Security\PublicSecurityStrategy: ~
+
     netbull_media.security.public_strategy:
         alias: NetBull\MediaBundle\Security\PublicSecurityStrategy
 
     NetBull\MediaBundle\Security\ForbiddenSecurityStrategy: ~
+
     netbull_media.security.forbidden_strategy:
         alias: NetBull\MediaBundle\Security\ForbiddenSecurityStrategy
 
     netbull_media.security.superadmin_strategy:
         class: NetBull\MediaBundle\Security\RolesSecurityStrategy
+        autowire: false
         arguments:
-            $authorizationChecker: '@security.authorization_checker'
-            $roles: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']
+            - '@security.authorization_checker'
+            - ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']
 
     netbull_media.security.connected_strategy:
         class: NetBull\MediaBundle\Security\RolesSecurityStrategy
+        autowire: false
         arguments:
-            $authorizationChecker: '@security.authorization_checker'
-            $roles: ['IS_AUTHENTICATED_FULLY', 'IS_AUTHENTICATED_REMEMBERED']
+            - '@security.authorization_checker'
+            - ['IS_AUTHENTICATED_FULLY', 'IS_AUTHENTICATED_REMEMBERED']
 
     NetBull\MediaBundle\Security\HashSecurityStrategy: ~
+
     netbull_media.security.hash_strategy:
         alias: NetBull\MediaBundle\Security\HashSecurityStrategy
 
@@ -196,12 +203,14 @@ services:
 
     netbull_media.filesystem.local:
         class: Gaufrette\Filesystem
+        autowire: false
         arguments:
             - '@netbull_media.adapter.filesystem.local'
         public: true
 
     netbull_media.filesystem.s3:
         class: Gaufrette\Filesystem
+        autowire: false
         arguments:
             - '@netbull_media.adapter.filesystem.s3'
         public: true
@@ -211,6 +220,7 @@ services:
 
     netbull_media.filesystem.local.server:
         class: NetBull\MediaBundle\Filesystem\LocalServer
+        autowire: false
         arguments:
             - '@netbull_media.adapter.filesystem.local'
             - '@netbull_media.adapter.filesystem.s3'
