@@ -1,0 +1,242 @@
+# =============================================================================
+# NetBull MediaBundle - Example Configuration
+# =============================================================================
+# Copy relevant parts to your project's config/packages/netbull_media.yaml
+#
+# Available filesystem services:
+#   - netbull_media.filesystem.local     (local filesystem)
+#   - netbull_media.filesystem.s3        (Amazon S3, requires s3 config)
+#
+# Available CDN services:
+#   - netbull_media.cdn.server           (production CDN)
+#   - netbull_media.cdn.local.server     (local development server)
+#
+# Available providers:
+#   - netbull_media.provider.image       (images: jpg, png, etc.)
+#   - netbull_media.provider.file        (documents: pdf, doc, etc.)
+#   - netbull_media.provider.youtube     (YouTube videos)
+#   - netbull_media.provider.vimeo       (Vimeo videos)
+#   - netbull_media.provider.youku       (Youku videos)
+#
+# Available security strategies:
+#   - netbull_media.security.public_strategy      (allow all)
+#   - netbull_media.security.forbidden_strategy   (deny all)
+#   - netbull_media.security.superadmin_strategy  (ROLE_SUPER_ADMIN, ROLE_ADMIN)
+#   - netbull_media.security.connected_strategy   (authenticated users)
+#   - netbull_media.security.hash_strategy        (signed URLs)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# EXAMPLE 1: Minimal Configuration (Local Development)
+# -----------------------------------------------------------------------------
+# netbull_media:
+#     default_context: 'default'
+#     filesystem:
+#         local:
+#             directory: '%kernel.project_dir%/public/uploads/media'
+#             create: true
+#     contexts:
+#         default:
+#             providers:
+#                 - netbull_media.provider.image
+#             formats:
+#                 thumb: { width: 100, height: 100 }
+#                 normal: { width: 600 }
+
+# -----------------------------------------------------------------------------
+# EXAMPLE 2: Full Configuration with Multiple Contexts
+# -----------------------------------------------------------------------------
+netbull_media:
+    default_context: 'default'
+
+    # Provider configuration
+    providers:
+        image:
+            filesystem: netbull_media.filesystem.local
+            cdn: netbull_media.cdn.local.server
+            allowed_extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+            allowed_mime_types:
+                - 'image/jpeg'
+                - 'image/png'
+                - 'image/gif'
+                - 'image/webp'
+        file:
+            filesystem: netbull_media.filesystem.local
+            cdn: netbull_media.cdn.local.server
+            allowed_extensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'csv']
+            allowed_mime_types:
+                - 'application/pdf'
+                - 'application/msword'
+                - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                - 'application/vnd.ms-excel'
+                - 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                - 'text/plain'
+                - 'text/csv'
+        youtube:
+            html5: true
+
+    # CDN configuration
+    cdn:
+        server:
+            path: '/uploads/media'
+            paths: []  # Additional CDN paths for production
+        dev:
+            path: 'http://localhost:8000'
+
+    # Filesystem configuration
+    filesystem:
+        local:
+            directory: '%kernel.project_dir%/public/uploads/media'
+            create: true
+
+    # Resizer configuration
+    resizer:
+        adapter: 'imagick'  # or 'gd'
+        simple:
+            mode: 'inset'   # or 'outbound'
+        square:
+            mode: 'outbound'
+
+    # Context definitions
+    contexts:
+        # Default context for general images
+        default:
+            providers:
+                - netbull_media.provider.image
+            formats:
+                tiny: { width: 50, height: 50, quality: 70 }
+                thumb: { width: 150, height: 150, quality: 80 }
+                normal: { width: 600, quality: 85 }
+                large: { width: 1200, quality: 90 }
+
+        # User avatars
+        avatar:
+            providers:
+                - netbull_media.provider.image
+            formats:
+                small: { width: 32, height: 32 }
+                medium: { width: 64, height: 64 }
+                large: { width: 128, height: 128 }
+
+        # Product images for e-commerce
+        product:
+            providers:
+                - netbull_media.provider.image
+            formats:
+                thumb: { width: 150, height: 150 }
+                catalog: { width: 300, height: 300 }
+                detail: { width: 800 }
+                zoom: { width: 1600 }
+
+        # Document uploads
+        document:
+            providers:
+                - netbull_media.provider.file
+            formats:
+                reference: {}
+
+        # Blog posts with images and videos
+        blog:
+            providers:
+                - netbull_media.provider.image
+                - netbull_media.provider.youtube
+                - netbull_media.provider.vimeo
+            formats:
+                thumb: { width: 300, height: 200 }
+                featured: { width: 1200, height: 630 }
+
+        # Private documents (requires authentication)
+        private_files:
+            download:
+                strategy: netbull_media.security.connected_strategy
+            view:
+                strategy: netbull_media.security.connected_strategy
+            providers:
+                - netbull_media.provider.file
+            formats:
+                reference: {}
+
+        # Secure media with signed URLs
+        secure_media:
+            download:
+                strategy: netbull_media.security.hash_strategy
+            view:
+                strategy: netbull_media.security.hash_strategy
+            providers:
+                - netbull_media.provider.image
+                - netbull_media.provider.file
+            formats:
+                thumb: { width: 200 }
+                normal: { width: 800 }
+
+# -----------------------------------------------------------------------------
+# EXAMPLE 3: Production Configuration with S3
+# -----------------------------------------------------------------------------
+# Use environment-specific configuration with when@prod
+#
+# when@prod:
+#     netbull_media:
+#         cdn:
+#             server:
+#                 path: '/media'
+#                 paths:
+#                     - 'https://your-cdn.cloudfront.net'
+#         filesystem:
+#             s3:
+#                 defaults:
+#                     version: 'latest'
+#                     region: '%env(AWS_REGION)%'
+#                     # For EC2/ECS with IAM roles, omit credentials
+#                     # For explicit credentials:
+#                     # credentials:
+#                     #     key: '%env(AWS_ACCESS_KEY_ID)%'
+#                     #     secret: '%env(AWS_SECRET_ACCESS_KEY)%'
+#                 options:
+#                     bucket: '%env(AWS_S3_BUCKET)%'
+#                     directory: 'media'
+#                     acl: 'private'
+#                     storage: 'standard'
+#                     cache_control: '604800'
+#                     meta:
+#                         Cache-Control: 'max-age=604800'
+#         providers:
+#             image:
+#                 filesystem: netbull_media.filesystem.s3
+#                 cdn: netbull_media.cdn.server
+#             file:
+#                 filesystem: netbull_media.filesystem.s3
+#                 cdn: netbull_media.cdn.server
+
+# -----------------------------------------------------------------------------
+# EXAMPLE 4: Custom Security Strategy Service
+# -----------------------------------------------------------------------------
+# Define custom security strategies in your services.yaml:
+#
+# services:
+#     app.media.security.premium_strategy:
+#         class: NetBull\MediaBundle\Security\RolesSecurityStrategy
+#         arguments:
+#             - '@security.authorization_checker'
+#             - ['ROLE_PREMIUM', 'ROLE_ADMIN']
+#
+# Then use in your context:
+#
+# netbull_media:
+#     contexts:
+#         premium_content:
+#             download:
+#                 strategy: app.media.security.premium_strategy
+#             view:
+#                 strategy: app.media.security.premium_strategy
+#             providers:
+#                 - netbull_media.provider.image
+#             formats:
+#                 normal: { width: 800 }
+
+# -----------------------------------------------------------------------------
+# ROUTING CONFIGURATION
+# -----------------------------------------------------------------------------
+# Add to your config/routes.yaml:
+#
+# netbull_media:
+#     resource: '@NetBullMediaBundle/config/routes.yaml'
