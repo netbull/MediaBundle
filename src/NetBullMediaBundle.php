@@ -407,7 +407,7 @@ class NetBullMediaBundle extends AbstractBundle
                     'directory' => $config['filesystem']['s3']['options']['directory'],
                 ]);
 
-            $container->getDefinition('netbull_media.metadata.amazon')
+            $container->findDefinition('netbull_media.metadata.amazon')
                 ->addArgument([
                     'acl' => $config['filesystem']['s3']['options']['acl'],
                     'storage' => $config['filesystem']['s3']['options']['storage'],
