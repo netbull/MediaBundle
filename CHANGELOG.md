@@ -1,3 +1,10 @@
+## [7.2.8](https://github.com/netbull/MediaBundle/compare/v7.2.7...v7.2.8) (2026-06-04)
+
+
+### Bug Fixes
+
+* added fork option defaults to TRUE ([de23515](https://github.com/netbull/MediaBundle/commit/de2351586a1bd7fec5b4cbef2002d40590fa5ec4))
+
 ## [7.2.7](https://github.com/netbull/MediaBundle/compare/v7.2.6...v7.2.7) (2026-01-28)
 
 
