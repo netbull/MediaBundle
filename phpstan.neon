@@ -1,0 +1,11 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    # The baseline is generated against the highest dependency set; tolerate it not matching
+    # exactly when CI resolves a different (e.g. --prefer-lowest) Symfony/Doctrine line.
+    reportUnmatchedIgnoredErrors: false

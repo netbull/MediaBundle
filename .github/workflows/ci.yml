@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Static analysis & coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, exif, gd, fileinfo, intl, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer update --no-progress --prefer-dist
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Coding standards (php-cs-fixer)
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
+      - name: Static analysis (PHPStan)
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+  tests:
+    name: PHP ${{ matrix.php }} · Symfony ${{ matrix.symfony }} ${{ matrix.deps }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+        symfony: ['7.2.*', '7.3.*', '7.4.*']
+        deps: ['']
+        include:
+          # lowest-dependency cell to catch lower-bound breakage
+          - php: '8.3'
+            symfony: '7.2.*'
+            deps: '--prefer-lowest'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, exif, gd, fileinfo, intl, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Pin Symfony version
+        run: |
+          composer global config --no-plugins allow-plugins.symfony/flex true
+          composer global require --no-progress --no-scripts symfony/flex
+          composer config extra.symfony.require "${{ matrix.symfony }}"
+
+      - name: Install dependencies
+        run: composer update --no-progress --prefer-dist ${{ matrix.deps }}
+
+      - name: Tests (PHPUnit)
+        run: vendor/bin/phpunit

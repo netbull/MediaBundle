@@ -43,36 +43,54 @@ class MediaCloneCommand extends BaseCommand
         $media = $this->em->getRepository(Media::class)->find($input->getArgument('mediaId'));
 
         if (!$media) {
-            $this->log('null');
-        } else {
-            $provider = $this->pool->getProvider($media->getProviderName());
+            $this->log(\sprintf('<error>Unable to find media %s</error>', $input->getArgument('mediaId')));
 
-            $clone = clone $media;
+            return Command::FAILURE;
+        }
 
-            $remote = $provider->getCdnPath($provider->getReferenceImage($media));
-            $tmp = $this->parameterBag->get('kernel.project_dir') . '/tmp/' . $media->getProviderReference();
-            $content = file_get_contents($remote);
+        $provider = $this->pool->getProvider($media->getProviderName());
 
-            if (!$content) {
-                return Command::SUCCESS;
-            }
+        $clone = clone $media;
 
-            if (!file_put_contents($tmp, $content)) {
-                return Command::SUCCESS;
+        $remote = $provider->getCdnPath($provider->getReferenceImage($media));
+
+        $tmpDir = $this->parameterBag->get('kernel.project_dir') . '/tmp';
+        if (!is_dir($tmpDir) && !mkdir($tmpDir, 0o775, true) && !is_dir($tmpDir)) {
+            $this->log(\sprintf('<error>Unable to create the temporary directory "%s"</error>', $tmpDir));
+
+            return Command::FAILURE;
+        }
+        $tmp = $tmpDir . '/' . $media->getProviderReference();
+
+        $content = @file_get_contents($remote);
+        if (false === $content) {
+            $this->log(\sprintf('<error>Unable to download the source media from "%s"</error>', $remote));
+
+            return Command::FAILURE;
+        }
+
+        try {
+            if (false === file_put_contents($tmp, $content)) {
+                $this->log(\sprintf('<error>Unable to write the temporary file "%s"</error>', $tmp));
+
+                return Command::FAILURE;
             }
 
             $clone->setBinaryContent(new File($tmp));
 
-            try {
-                $this->em->persist($clone);
-                $this->em->flush();
-            } catch (Exception) {
-                return Command::SUCCESS;
-            }
+            $this->em->persist($clone);
+            $this->em->flush();
+        } catch (Exception $e) {
+            $this->log(\sprintf('<error>Unable to clone media %s: %s</error>', $media->getId(), $e->getMessage()));
 
-            unlink($tmp);
-            $this->log($clone->getId());
+            return Command::FAILURE;
+        } finally {
+            if (is_file($tmp)) {
+                unlink($tmp);
+            }
         }
+
+        $this->log((string) $clone->getId());
 
         return Command::SUCCESS;
     }

@@ -43,10 +43,12 @@
     "symfony/security-bundle": "7.2.*|7.3.*|7.4.*",
     "symfony/security-core": "7.2.*|7.3.*|7.4.*",
     "symfony/twig-bundle": "7.2.*|7.3.*|7.4.*",
+    "symfony/yaml": "7.2.*|7.3.*|7.4.*",
     "twig/twig": "^3.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.64",
+    "phpstan/phpstan": "^2.0",
     "phpunit/phpunit": "^11.0"
   },
   "autoload": {
@@ -62,7 +64,13 @@
   "scripts": {
     "cs-fix": "vendor/bin/php-cs-fixer fix",
     "cs-check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
-    "test": "vendor/bin/phpunit"
+    "phpstan": "phpstan analyse --memory-limit=1G",
+    "test": "vendor/bin/phpunit",
+    "check": [
+      "@cs-check",
+      "@phpstan",
+      "@test"
+    ]
   },
   "config": {
     "sort-packages": true,
