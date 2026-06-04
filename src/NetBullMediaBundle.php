@@ -8,6 +8,7 @@ use Exception;
 use Imagine\Image\ManipulatorInterface;
 use NetBull\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
 use NetBull\MediaBundle\Provider\Pool;
+use NetBull\MediaBundle\Thumbnail\FormatThumbnail;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -32,6 +33,7 @@ class NetBullMediaBundle extends AbstractBundle
         $this->addFilesystemSection($rootNode);
         $this->addProvidersSection($rootNode);
         $this->addResizerSection($rootNode);
+        $this->addThumbnailSection($rootNode);
     }
 
     /**
@@ -59,6 +61,10 @@ class NetBullMediaBundle extends AbstractBundle
                     ->replaceArgument(0, new Reference('netbull_media.adapter.image.' . $config['resizer']['adapter']));
             }
         }
+
+        // Thumbnail generation strategy: fork a subprocess per format (default, memory-isolated)
+        // or resize in-process (faster for bulk/CLI work that already isolates memory per item).
+        $builder->getDefinition(FormatThumbnail::class)->setArgument('$fork', $config['thumbnail']['fork']);
 
         $downloadStrategies = $viewStrategies = [];
         foreach ($config['contexts'] as $name => $settings) {
@@ -339,6 +345,21 @@ class NetBullMediaBundle extends AbstractBundle
                             ->end()
                         ->end()
 
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addThumbnailSection($node): void
+    {
+        $node
+            ->children()
+                ->arrayNode('thumbnail')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        // true (default): fork a `netbull:media:create-thumbnail` subprocess per
+                        // format (memory isolation). false: resize in-process (faster bulk/CLI).
+                        ->booleanNode('fork')->defaultTrue()->end()
                     ->end()
                 ->end()
             ->end();
