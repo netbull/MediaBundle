@@ -11,11 +11,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class BaseCommand extends Command
 {
-    /**
-     * Debug switch
-     */
-    protected bool $debug = false;
-
     protected ?SymfonyStyle $io = null;
 
     public function __construct(
@@ -35,14 +30,11 @@ abstract class BaseCommand extends Command
     }
 
     /**
-     * Output used for nice debug
+     * Write a progress/diagnostic line. Output honours the command's verbosity natively
+     * (e.g. suppressed with --quiet), so no extra gating is needed.
      */
-    protected function log($text): void
+    protected function log(string $text): void
     {
-        if (!$this->debug) {
-            return;
-        }
-
-        $this->io->writeln($text);
+        $this->io?->writeln($text);
     }
 }

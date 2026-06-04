@@ -55,36 +55,6 @@ parameters:
 			path: src/Form/DataTransformer/ProviderDataTransformer.php
 
 		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:buildShortMediaType\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Form/Type/FileType.php
-
-		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:buildShortMediaType\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Form/Type/MediaShortType.php
-
-		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:buildShortMediaType\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Form/Type/PhotoType.php
-
-		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:getTemplate\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Helpers/PathGenerator.php
-
-		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:getViewProperties\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Helpers/PathGenerator.php
-
-		-
 			message: '#^Call to an undefined method NetBull\\MediaBundle\\Entity\\MediaInterface\:\:resetBinaryContent\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -121,28 +91,10 @@ parameters:
 			path: src/Repository/MediaRepository.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/Security/SessionSecurityStrategy.php
-
-		-
 			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Thumbnail/FormatThumbnail.php
-
-		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:getTemplate\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Twig/MediaExtension.php
-
-		-
-			message: '#^Call to an undefined method NetBull\\MediaBundle\\Provider\\MediaProviderInterface\:\:getViewProperties\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Twig/MediaExtension.php
 
 		-
 			message: '#^Property NetBull\\MediaBundle\\Twig\\MediaExtension\:\:\$em is never read, only written\.$#'

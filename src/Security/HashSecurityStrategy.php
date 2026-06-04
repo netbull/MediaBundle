@@ -20,13 +20,13 @@ class HashSecurityStrategy implements SecurityStrategyInterface
 
     public function isGranted(MediaInterface $media, Request $request): bool
     {
-        if (!$userIdentifier = $request->get('u')) {
+        if (!$userIdentifier = $request->query->get('u')) {
             return false;
         }
-        if (!$hash = $request->get('h')) {
+        if (!$hash = $request->query->get('h')) {
             return false;
         }
-        if (!$expires = (int) $request->get('e')) {
+        if (!$expires = (int) $request->query->get('e')) {
             return false;
         }
 

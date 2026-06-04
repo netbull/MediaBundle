@@ -7,6 +7,7 @@ namespace NetBull\MediaBundle\Provider;
 use Gaufrette\Filesystem;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Exception\VideoMetadataException;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use RuntimeException;
@@ -227,7 +228,12 @@ class YouTubeProvider extends BaseVideoProvider
 
         try {
             $metadata = $this->getMetadata($url);
-        } catch (RuntimeException) {
+        } catch (VideoMetadataException $e) {
+            $this->logger->warning('[netbull_media] Disabling media {id}: unable to fetch {provider} metadata: {error}', [
+                'id' => $media->getId(),
+                'provider' => $this->name,
+                'error' => $e->getMessage(),
+            ]);
             $media->setEnabled(false);
 
             return;

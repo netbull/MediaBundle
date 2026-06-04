@@ -9,9 +9,12 @@ use Gaufrette\Filesystem;
 use Imagine\Image\Box;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Exception\VideoMetadataException;
+use NetBull\MediaBundle\Http\UrlSecurityChecker;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
-use RuntimeException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -30,12 +33,35 @@ abstract class BaseVideoProvider extends BaseProvider
 
     protected ?MetadataBuilderInterface $metadata;
 
+    protected LoggerInterface $logger;
+
+    protected UrlSecurityChecker $urlSecurityChecker;
+
     public function __construct(string $name, Filesystem $filesystem, CdnInterface $cdn, ThumbnailInterface $thumbnail, ?MetadataBuilderInterface $metadata = null)
     {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
 
         $this->httpClient = HttpClient::create();
         $this->metadata = $metadata;
+        $this->logger = new NullLogger();
+        $this->urlSecurityChecker = new UrlSecurityChecker();
+    }
+
+    public function setLogger(?LoggerInterface $logger): void
+    {
+        $this->logger = $logger ?? new NullLogger();
+    }
+
+    /**
+     * Let the host application inject a configured (e.g. scoped / proxied) HTTP client so outgoing
+     * requests to video providers pass through its egress controls. Falls back to the default
+     * client when no service is wired.
+     */
+    public function setHttpClient(?HttpClientInterface $httpClient): void
+    {
+        if (null !== $httpClient) {
+            $this->httpClient = $httpClient;
+        }
     }
 
     public function getReferenceImage(array|MediaInterface $media): string
@@ -56,15 +82,37 @@ abstract class BaseVideoProvider extends BaseProvider
             $thumbnailUrl = $this->getReferenceImage($media);
 
             if (!$thumbnailUrl) {
+                $this->logger->info('[netbull_media] No reference thumbnail URL for media {id}', [
+                    'id' => $media instanceof MediaInterface ? $media->getId() : null,
+                ]);
+
+                return null;
+            }
+
+            // SSRF guard: the thumbnail URL comes from provider metadata (attacker-influenceable),
+            // so refuse anything that is not http(s) to a public host.
+            if (!$this->urlSecurityChecker->isAllowed($thumbnailUrl)) {
+                $this->logger->warning('[netbull_media] Refusing to fetch reference thumbnail for media {id}: URL {url} is not allowed (SSRF protection)', [
+                    'id' => $media instanceof MediaInterface ? $media->getId() : null,
+                    'url' => $thumbnailUrl,
+                ]);
+
                 return null;
             }
 
             try {
                 $referenceFile->setContent(
-                    $this->httpClient->request('GET', $thumbnailUrl)->getContent(),
+                    // max_redirects: 0 — do not follow a redirect that could target an internal host.
+                    $this->httpClient->request('GET', $thumbnailUrl, ['max_redirects' => 0])->getContent(),
                     $metadata,
                 );
-            } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface) {
+            } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+                $this->logger->warning('[netbull_media] Failed to fetch reference thumbnail for media {id} from {url}: {error}', [
+                    'id' => $media instanceof MediaInterface ? $media->getId() : null,
+                    'url' => $thumbnailUrl,
+                    'error' => $e->getMessage(),
+                ]);
+
                 return null;
             }
         }
@@ -154,16 +202,16 @@ abstract class BaseVideoProvider extends BaseProvider
         }
     }
 
-    public function buildShortMediaType(FormBuilderInterface $formBuilder): void
+    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = []): void
     {
-        $formBuilder->add('newBinaryContent', TextType::class, [
+        $formBuilder->add('newBinaryContent', TextType::class, array_merge([
             'label' => 'YouTube URL',
             'required' => false,
             'attr' => [
                 'placeholder' => 'e.g. https://www.youtube.com/watch?v=7sXMUJROuS8',
                 'class' => 'videoUrl',
             ],
-        ]);
+        ], $options));
     }
 
     public function postUpdate(MediaInterface $media): void
@@ -189,17 +237,17 @@ abstract class BaseVideoProvider extends BaseProvider
         try {
             $response = $this->httpClient->request('GET', $url);
         } catch (TransportExceptionInterface $e) {
-            throw new RuntimeException('Unable to retrieve the video information for :' . $url, 0, $e);
+            throw new VideoMetadataException('Unable to retrieve the video information for :' . $url, 0, $e);
         }
 
         try {
             $metadata = $response->toArray();
         } catch (ClientExceptionInterface|DecodingExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
-            throw new RuntimeException('Unable to retrieve the video information for :' . $url, 0, $e);
+            throw new VideoMetadataException('Unable to retrieve the video information for :' . $url, 0, $e);
         }
 
         if (!$metadata) {
-            throw new RuntimeException('Unable to decode the video information for :' . $url);
+            throw new VideoMetadataException('Unable to decode the video information for :' . $url);
         }
 
         return $metadata;

@@ -10,6 +10,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\StreamMode;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Filesystem\S3Presigner;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
@@ -20,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -27,6 +29,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 class FileProvider extends BaseProvider
 {
+    protected ?S3Presigner $presigner = null;
+
     public function __construct(
         string $name,
         Filesystem $filesystem,
@@ -39,6 +43,15 @@ class FileProvider extends BaseProvider
         protected ?MetadataBuilderInterface $metadata = null,
     ) {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
+    }
+
+    /**
+     * Injected by the bundle for S3-backed providers so secured downloads redirect to a pre-signed
+     * URL instead of proxying the bytes through PHP. Null for local storage (which streams).
+     */
+    public function setPresigner(?S3Presigner $presigner): void
+    {
+        $this->presigner = $presigner;
     }
 
     public function getReferenceImage(array|MediaInterface $media): string
@@ -311,17 +324,17 @@ class FileProvider extends BaseProvider
 
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
+        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'], true)) {
+            throw new RuntimeException('Invalid mode provided');
+        }
+
         // build the default headers
         $headers = array_merge([
             'Content-Type' => $media->getContentType(),
             'Content-Disposition' => \sprintf('attachment; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'], true)) {
-            throw new RuntimeException('Invalid mode provided');
-        }
-
-        return $this->streamResponse($this->resolveStorageKey($media, $format), $headers);
+        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers);
     }
 
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
@@ -332,7 +345,28 @@ class FileProvider extends BaseProvider
             'Content-Disposition' => \sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        return $this->streamResponse($this->resolveStorageKey($media, $format), $headers);
+        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers);
+    }
+
+    /**
+     * S3-backed providers redirect to a short-lived pre-signed URL (bytes stream S3 -> client,
+     * never through PHP); local storage streams the file in chunks.
+     */
+    private function buildFileResponse(string $key, array $headers): Response
+    {
+        if (null !== $this->presigner) {
+            $overrides = [];
+            if (isset($headers['Content-Type'])) {
+                $overrides['ResponseContentType'] = $headers['Content-Type'];
+            }
+            if (isset($headers['Content-Disposition'])) {
+                $overrides['ResponseContentDisposition'] = $headers['Content-Disposition'];
+            }
+
+            return new RedirectResponse($this->presigner->createPresignedUrl($key, 300, $overrides), 302);
+        }
+
+        return $this->streamResponse($key, $headers);
     }
 
     /**

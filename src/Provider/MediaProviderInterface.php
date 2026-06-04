@@ -113,5 +113,11 @@ interface MediaProviderInterface
 
     public function buildMediaType(FormBuilderInterface $formBuilder, array $options = []): void;
 
+    public function buildShortMediaType(FormBuilderInterface $formBuilder, array $options = []): void;
+
+    public function getViewProperties(array|MediaInterface $media, string $format, array $options = []): array;
+
+    public function getTemplate(string $name): mixed;
+
     public function updateMetadata(MediaInterface $media, bool $force = false): void;
 }

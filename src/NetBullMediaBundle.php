@@ -7,6 +7,7 @@ namespace NetBull\MediaBundle;
 use Exception;
 use Imagine\Image\ManipulatorInterface;
 use NetBull\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
+use NetBull\MediaBundle\Filesystem\S3Presigner;
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Thumbnail\FormatThumbnail;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -218,7 +219,10 @@ class NetBullMediaBundle extends AbstractBundle
                                         ->end()
                                         ->scalarNode('cache_control')->defaultValue('604800')->end()
                                         ->scalarNode('acl')
-                                            ->defaultValue('public')
+                                            // private by default so the bundle's own download/view
+                                            // security strategies stay authoritative ('public' was
+                                            // also not a valid value, breaking container compilation).
+                                            ->defaultValue('private')
                                             ->validate()
                                                 ->ifNotInArray(['private', 'public-read', 'open', 'auth_read', 'owner_read', 'owner_full_control'])
                                                 ->thenInvalid('Invalid acl permission - "%s"')
@@ -436,6 +440,15 @@ class NetBullMediaBundle extends AbstractBundle
                     'encryption' => $config['filesystem']['s3']['options']['encryption'],
                     'meta' => $config['filesystem']['s3']['options']['meta'],
                     'cache_control' => $config['filesystem']['s3']['options']['cache_control'],
+                ]);
+
+            // Presigner for secured downloads — lets S3-backed providers redirect to a short-lived
+            // pre-signed URL instead of proxying bytes through PHP.
+            $container->register('netbull_media.s3.presigner', S3Presigner::class)
+                ->setArguments([
+                    new Reference('netbull_media.wrapper.s3'),
+                    $config['filesystem']['s3']['options']['bucket'],
+                    $config['filesystem']['s3']['options']['directory'],
                 ]);
 
             // Create local.server service only when both local and S3 with credentials are configured

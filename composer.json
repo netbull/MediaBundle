@@ -25,7 +25,6 @@
     "doctrine/persistence": "^3.1|^4.0",
     "imagine/imagine": "1.*",
     "knplabs/gaufrette": "0.9.*",
-    "netbull/doctrine-behaviors": "^7.0",
     "psr/log": "^3.0",
     "symfony/config": "7.2.*|7.3.*|7.4.*",
     "symfony/console": "7.2.*|7.3.*|7.4.*",

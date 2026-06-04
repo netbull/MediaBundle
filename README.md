@@ -83,6 +83,17 @@ for a full, annotated example (multiple contexts, S3, signed URLs, custom strate
 > **S3 ACL** — default to `acl: private` and serve public assets through the CDN; a `public-read`
 > ACL makes objects world-readable and bypasses the bundle's download/view security strategies.
 
+> **Secured downloads** — for contexts behind a download/view security strategy, S3-backed media is
+> served by redirecting to a short-lived (300s) **pre-signed S3 URL**, so the file streams S3 →
+> client and never passes through PHP. Local storage streams the file in chunks. Either way the
+> access-control check runs in the controller before the response is issued.
+
+> **Video providers (SSRF)** — video providers fetch oEmbed metadata and remote thumbnails over
+> HTTP. Thumbnail URLs are validated before fetching (http/https to public hosts only; private,
+> loopback and cloud-metadata addresses are refused) and redirects are disabled. To route this
+> egress through your own controls, enable `framework.http_client` and the bundle will use the
+> configured client.
+
 ### Thumbnail generation (sync or async)
 
 By default thumbnails are generated **in-process** when the media is flushed. To offload resizing
