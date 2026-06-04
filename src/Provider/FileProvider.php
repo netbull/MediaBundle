@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace NetBull\MediaBundle\Provider;
 
+use Gaufrette\Exception\FileNotFound;
 use Gaufrette\File;
 use Gaufrette\Filesystem;
+use Gaufrette\StreamMode;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
@@ -319,15 +321,7 @@ class FileProvider extends BaseProvider
             throw new RuntimeException('Invalid mode provided');
         }
 
-        if ('reference' === $format) {
-            $file = $this->getReferenceFile($media);
-        } else {
-            $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
-        }
-
-        return new StreamedResponse(static function () use ($file) {
-            echo $file->getContent();
-        }, 200, $headers);
+        return $this->streamResponse($this->resolveStorageKey($media, $format), $headers);
     }
 
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
@@ -338,14 +332,50 @@ class FileProvider extends BaseProvider
             'Content-Disposition' => \sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        if ('reference' === $format) {
-            $file = $this->getReferenceFile($media);
-        } else {
-            $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
+        return $this->streamResponse($this->resolveStorageKey($media, $format), $headers);
+    }
+
+    /**
+     * Resolve the filesystem key for the requested format and ensure it exists, so a missing file
+     * surfaces as a FileNotFound (-> 404) before the streamed response starts and headers are sent.
+     *
+     * @throws FileNotFound
+     */
+    private function resolveStorageKey(MediaInterface $media, string $format): string
+    {
+        $key = 'reference' === $format
+            ? $this->getReferenceImage($media)
+            : $this->generatePrivateUrl($media, $format);
+
+        if (!$this->getFilesystem()->has($key)) {
+            throw new FileNotFound($key);
         }
 
-        return new StreamedResponse(static function () use ($file) {
-            echo $file->getContent();
-        }, 200, $headers);
+        return $key;
+    }
+
+    /**
+     * Stream the file in fixed-size chunks instead of buffering the whole payload into a PHP string,
+     * which would otherwise hold the entire file in memory (and OOM the worker on large files).
+     *
+     * NOTE: the Gaufrette 0.9 AwsS3 adapter does not implement StreamFactory, so for S3-backed
+     * storage Gaufrette still buffers the object in memory. Large private files on S3 are better
+     * served through the CDN or a pre-signed URL than proxied through PHP.
+     */
+    private function streamResponse(string $key, array $headers): StreamedResponse
+    {
+        $filesystem = $this->getFilesystem();
+
+        return new StreamedResponse(static function () use ($filesystem, $key): void {
+            $stream = $filesystem->createStream($key);
+            $stream->open(new StreamMode('rb'));
+
+            while (!$stream->eof()) {
+                echo $stream->read(8192);
+                flush();
+            }
+
+            $stream->close();
+        }, Response::HTTP_OK, $headers);
     }
 }

@@ -97,6 +97,14 @@ netbull_media:
         square:
             mode: 'outbound'
 
+    # Thumbnail generation
+    thumbnail:
+        # false (default): resize in-process on flush.
+        # true: dispatch a GenerateThumbnailMessage per format to the Messenger bus — route
+        #       NetBull\MediaBundle\Message\GenerateThumbnailMessage to an async transport to
+        #       offload resizing to a worker.
+        async: false
+
     # Context definitions
     contexts:
         # Default context for general images

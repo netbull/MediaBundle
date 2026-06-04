@@ -83,15 +83,15 @@ abstract class BaseVideoProvider extends BaseProvider
         return $this->getCdn()->getPath($path);
     }
 
+    /**
+     * Video thumbnails are served publicly from the CDN, and the view controller redirects video
+     * media to the external provider (YouTube/Vimeo/Youku) instead of serving bytes — so there is
+     * no access-controlled endpoint to sign. This intentionally returns the public URL ($identifier
+     * and $expires are not applicable); use an image/file provider when true signed access is needed.
+     */
     public function generateSecuredUrl(array|MediaInterface $media, string $format, string $identifier, int $expires = 300): string
     {
-        if ('reference' === $format) {
-            $path = $this->getReferenceImage($media);
-        } else {
-            $path = $this->thumbnail->generatePublicUrl($this, $media, $format);
-        }
-
-        return $this->getCdn()->getPath($path);
+        return $this->generatePublicUrl($media, $format);
     }
 
     public function generatePrivateUrl(MediaInterface $media, string $format): string

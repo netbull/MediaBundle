@@ -58,14 +58,17 @@ class MyService
 }
 ```
 
-### Twig Functions
+### Twig Filters
 
 ```twig
-{# Generate thumbnail #}
+{# Generate thumbnail markup #}
 {{ media|thumbnail('thumb') }}
 
 {# Generate path #}
 {{ media|path('normal') }}
+
+{# Signed (access-controlled) URL #}
+{{ media|secure_path(user_identifier, 'normal') }}
 
 {# Render view #}
 {{ media|view('normal') }}

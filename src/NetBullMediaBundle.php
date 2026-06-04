@@ -62,9 +62,9 @@ class NetBullMediaBundle extends AbstractBundle
             }
         }
 
-        // Thumbnail generation strategy: fork a subprocess per format (default, memory-isolated)
-        // or resize in-process (faster for bulk/CLI work that already isolates memory per item).
-        $builder->getDefinition(FormatThumbnail::class)->setArgument('$fork', $config['thumbnail']['fork']);
+        // Thumbnail generation strategy: dispatch a GenerateThumbnailMessage per format to the
+        // message bus (async, when a transport is configured) or resize in-process (default).
+        $builder->getDefinition(FormatThumbnail::class)->setArgument('$async', $config['thumbnail']['async']);
 
         $downloadStrategies = $viewStrategies = [];
         foreach ($config['contexts'] as $name => $settings) {
@@ -357,9 +357,10 @@ class NetBullMediaBundle extends AbstractBundle
                 ->arrayNode('thumbnail')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        // true (default): fork a `netbull:media:create-thumbnail` subprocess per
-                        // format (memory isolation). false: resize in-process (faster bulk/CLI).
-                        ->booleanNode('fork')->defaultTrue()->end()
+                        // false (default): resize in-process during the request/command.
+                        // true: dispatch a GenerateThumbnailMessage per format to the message bus
+                        // (offloaded to a worker when routed to an async transport).
+                        ->booleanNode('async')->defaultFalse()->end()
                     ->end()
                 ->end()
             ->end();

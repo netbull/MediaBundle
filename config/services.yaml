@@ -107,6 +107,9 @@ services:
     # Event Listener
     NetBull\MediaBundle\EventListener\MediaListener: ~
 
+    # Message Handlers (async thumbnail generation when netbull_media.thumbnail.async is true)
+    NetBull\MediaBundle\MessageHandler\GenerateThumbnailMessageHandler: ~
+
     # Image Adapters
     netbull_media.adapter.image.imagick:
         class: Imagine\Imagick\Imagine
