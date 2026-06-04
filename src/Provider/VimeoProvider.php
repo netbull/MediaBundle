@@ -142,7 +142,7 @@ class VimeoProvider extends BaseVideoProvider
 
         $media->setHeight($metadata['height']);
         $media->setWidth($metadata['width']);
-        $media->setLength($metadata['duration']);
+        $media->setLength((string) $metadata['duration']);
         $media->setContentType('video/x-flv');
     }
 

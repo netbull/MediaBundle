@@ -30,9 +30,11 @@ class HashSecurityStrategy implements SecurityStrategyInterface
             return false;
         }
 
+        $mediaId = (string) $media->getId();
+
         try {
-            $this->simpleSignatureHasher->acceptSignatureHash($userIdentifier, $expires, $hash);
-            $this->simpleSignatureHasher->verifySignatureHash($userIdentifier, $expires, $hash);
+            $this->simpleSignatureHasher->acceptSignatureHash($userIdentifier, $expires, $mediaId, $hash);
+            $this->simpleSignatureHasher->verifySignatureHash($userIdentifier, $expires, $mediaId, $hash);
         } catch (Exception) {
             return false;
         }

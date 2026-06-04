@@ -154,6 +154,7 @@ class FileProvider extends BaseProvider
     {
         $this->fixBinaryContent($media);
         $this->fixFilename($media);
+        $this->validateBinaryContent($media);
 
         // this is the name used to store the file
         if (!$media->getProviderReference()) {
@@ -163,6 +164,49 @@ class FileProvider extends BaseProvider
         if ($media->getBinaryContent()) {
             $media->setContentType($media->getBinaryContent()->getMimeType());
             $media->setSize($media->getBinaryContent()->getSize());
+        }
+    }
+
+    /**
+     * Enforce the configured allowed_extensions / allowed_mime_types on the uploaded file.
+     *
+     * The mime type and extension are derived from the file's content (File::getMimeType()
+     * / File::guessExtension() sniff the file, they do NOT trust the client-supplied
+     * Content-Type or filename), so this is a genuine upload restriction. A file is accepted
+     * only when it positively matches at least one configured allow-list; anything that
+     * matches neither (e.g. .php, .svg, .html disguised as an image, executables) is rejected.
+     *
+     * @throws RuntimeException when the file matches none of the configured allow-lists
+     */
+    protected function validateBinaryContent(MediaInterface $media): void
+    {
+        $binaryContent = $media->getBinaryContent();
+        if (!$binaryContent instanceof SymfonyFile) {
+            return;
+        }
+
+        // Nothing configured to enforce.
+        if ([] === $this->allowedMimeTypes && [] === $this->allowedExtensions) {
+            return;
+        }
+
+        $mimeType = $binaryContent->getMimeType();
+        $extension = $binaryContent->guessExtension();
+
+        $mimeAllowed = [] !== $this->allowedMimeTypes
+            && null !== $mimeType
+            && \in_array($mimeType, $this->allowedMimeTypes, true);
+
+        $extensionAllowed = [] !== $this->allowedExtensions
+            && null !== $extension
+            && \in_array(strtolower($extension), array_map('strtolower', $this->allowedExtensions), true);
+
+        if (!$mimeAllowed && !$extensionAllowed) {
+            throw new RuntimeException(\sprintf(
+                'The uploaded file is not allowed (detected mime type "%s", extension "%s").',
+                $mimeType ?? 'unknown',
+                $extension ?? 'unknown',
+            ));
         }
     }
 
@@ -196,7 +240,7 @@ class FileProvider extends BaseProvider
 
         $time = time() + $expires;
 
-        $hash = $this->simpleSignatureHasher->computeSignatureHash($identifier, $time);
+        $hash = $this->simpleSignatureHasher->computeSignatureHash($identifier, $time, (string) $id);
         $params = [
             'id' => $id,
             'format' => $format,

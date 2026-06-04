@@ -10,33 +10,36 @@ use Symfony\Component\Security\Core\Signature\Exception\InvalidSignatureExceptio
 interface SignatureHasherInterface
 {
     /**
-     * Verifies the hash using the provided user identifier and expire time.
+     * Verifies the hash using the provided user identifier, expire time and media id.
      *
      * This method must be called before the user object is loaded from a provider.
      *
      * @param int $expires The expiry time as a unix timestamp
+     * @param string $mediaId The id of the media the signature is bound to
      * @param string $hash The plaintext hash provided by the request
      *
      * @throws InvalidSignatureException If the signature does not match the provided parameters
      * @throws ExpiredSignatureException If the signature is no longer valid
      */
-    public function acceptSignatureHash(string $userIdentifier, int $expires, string $hash): void;
+    public function acceptSignatureHash(string $userIdentifier, int $expires, string $mediaId, string $hash): void;
 
     /**
-     * Verifies the hash using the provided user and expire time.
+     * Verifies the hash using the provided user, expire time and media id.
      *
      * @param int $expires The expiry time as a unix timestamp
+     * @param string $mediaId The id of the media the signature is bound to
      * @param string $hash The plaintext hash provided by the request
      *
      * @throws InvalidSignatureException If the signature does not match the provided parameters
      * @throws ExpiredSignatureException If the signature is no longer valid
      */
-    public function verifySignatureHash(string $userIdentifier, int $expires, string $hash): void;
+    public function verifySignatureHash(string $userIdentifier, int $expires, string $mediaId, string $hash): void;
 
     /**
-     * Computes the secure hash for the provided user and expire time.
+     * Computes the secure hash for the provided user, expire time and media id.
      *
      * @param int $expires The expiry time as a unix timestamp
+     * @param string $mediaId The id of the media the signature is bound to
      */
-    public function computeSignatureHash(string $userIdentifier, int $expires): string;
+    public function computeSignatureHash(string $userIdentifier, int $expires, string $mediaId): string;
 }

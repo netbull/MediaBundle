@@ -129,7 +129,9 @@ class MediaExtension extends AbstractExtension
     {
         if (!isset($this->resources[$template])) {
             try {
-                $this->resources[$template] = $environment->load("@$template");
+                // $template is already a namespaced Twig name (e.g. "@NetBullMedia/Provider/view_image.html.twig"),
+                // configured via services.yaml. Do not prepend another "@" or the namespace fails to resolve.
+                $this->resources[$template] = $environment->load($template);
             } catch (LoaderError|RuntimeError|SyntaxError) {
                 return '';
             }
