@@ -373,24 +373,13 @@ class Media implements MediaInterface
         return $this->previousProviderReference;
     }
 
-    /**
-     * @ORM\PrePersist
-     *
-     * @ORM\PreUpdate
-     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function preFlush(): void
     {
-        $timestamp = null;
-
         try {
-            $timestamp = new DateTime('now');
+            $this->setUpdatedAt(new DateTime('now'));
         } catch (Exception) {
-        }
-
-        $this->setUpdatedAt($timestamp);
-
-        if (null === $this->getCreatedAt()) {
-            $this->setCreatedAt($timestamp);
         }
     }
 

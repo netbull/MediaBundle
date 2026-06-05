@@ -1,0 +1,103 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Variable \$parts in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Cdn/LocalServer.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Console\\Helper\\HelperInterface\:\:ask\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Command/PhotoResizeCommand.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Console\\Helper\\HelperInterface\:\:ask\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Command/PhotoResizeMissingCommand.php
+
+		-
+			message: '#^Parameter \#3 \$value of function curl_setopt expects bool, int given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Command/PhotoResizeMissingCommand.php
+
+		-
+			message: '#^Dead catch \- Exception is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: src/Entity/Media.php
+
+		-
+			message: '#^Property NetBull\\MediaBundle\\Entity\\Media\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Media.php
+
+		-
+			message: '#^Instanceof between NetBull\\MediaBundle\\Entity\\MediaInterface and NetBull\\MediaBundle\\Entity\\MediaInterface will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/EventListener/MediaListener.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: src/Form/DataTransformer/ProviderDataTransformer.php
+
+		-
+			message: '#^Variable \$binaryContent in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Form/DataTransformer/ProviderDataTransformer.php
+
+		-
+			message: '#^Call to an undefined method NetBull\\MediaBundle\\Entity\\MediaInterface\:\:resetBinaryContent\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Provider/BaseVideoProvider.php
+
+		-
+			message: '#^Call to an undefined method NetBull\\MediaBundle\\Entity\\MediaInterface\:\:resetBinaryContent\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Provider/FileProvider.php
+
+		-
+			message: '#^PHPDoc tag @return with type string\|false is not subtype of native type array\|false\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Provider/MediaProviderInterface.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between ''1'' and 1 will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Provider/YouTubeProvider.php
+
+		-
+			message: '#^Trait NetBull\\MediaBundle\\Repository\\ImageTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Repository/ImageTrait.php
+
+		-
+			message: '#^Return type \(array\) of method NetBull\\MediaBundle\\Repository\\MediaRepository\:\:count\(\) should be compatible with return type \(int\) of method Doctrine\\ORM\\EntityRepository\<object\>\:\:count\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Repository/MediaRepository.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Thumbnail/FormatThumbnail.php
+
+		-
+			message: '#^Property NetBull\\MediaBundle\\Twig\\MediaExtension\:\:\$em is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Twig/MediaExtension.php

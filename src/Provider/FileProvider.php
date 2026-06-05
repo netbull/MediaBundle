@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace NetBull\MediaBundle\Provider;
 
+use Gaufrette\Exception\FileNotFound;
 use Gaufrette\File;
 use Gaufrette\Filesystem;
+use Gaufrette\StreamMode;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Filesystem\S3Presigner;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
@@ -18,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -25,6 +29,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 class FileProvider extends BaseProvider
 {
+    protected ?S3Presigner $presigner = null;
+
     public function __construct(
         string $name,
         Filesystem $filesystem,
@@ -37,6 +43,15 @@ class FileProvider extends BaseProvider
         protected ?MetadataBuilderInterface $metadata = null,
     ) {
         parent::__construct($name, $filesystem, $cdn, $thumbnail);
+    }
+
+    /**
+     * Injected by the bundle for S3-backed providers so secured downloads redirect to a pre-signed
+     * URL instead of proxying the bytes through PHP. Null for local storage (which streams).
+     */
+    public function setPresigner(?S3Presigner $presigner): void
+    {
+        $this->presigner = $presigner;
     }
 
     public function getReferenceImage(array|MediaInterface $media): string
@@ -154,6 +169,7 @@ class FileProvider extends BaseProvider
     {
         $this->fixBinaryContent($media);
         $this->fixFilename($media);
+        $this->validateBinaryContent($media);
 
         // this is the name used to store the file
         if (!$media->getProviderReference()) {
@@ -163,6 +179,49 @@ class FileProvider extends BaseProvider
         if ($media->getBinaryContent()) {
             $media->setContentType($media->getBinaryContent()->getMimeType());
             $media->setSize($media->getBinaryContent()->getSize());
+        }
+    }
+
+    /**
+     * Enforce the configured allowed_extensions / allowed_mime_types on the uploaded file.
+     *
+     * The mime type and extension are derived from the file's content (File::getMimeType()
+     * / File::guessExtension() sniff the file, they do NOT trust the client-supplied
+     * Content-Type or filename), so this is a genuine upload restriction. A file is accepted
+     * only when it positively matches at least one configured allow-list; anything that
+     * matches neither (e.g. .php, .svg, .html disguised as an image, executables) is rejected.
+     *
+     * @throws RuntimeException when the file matches none of the configured allow-lists
+     */
+    protected function validateBinaryContent(MediaInterface $media): void
+    {
+        $binaryContent = $media->getBinaryContent();
+        if (!$binaryContent instanceof SymfonyFile) {
+            return;
+        }
+
+        // Nothing configured to enforce.
+        if ([] === $this->allowedMimeTypes && [] === $this->allowedExtensions) {
+            return;
+        }
+
+        $mimeType = $binaryContent->getMimeType();
+        $extension = $binaryContent->guessExtension();
+
+        $mimeAllowed = [] !== $this->allowedMimeTypes
+            && null !== $mimeType
+            && \in_array($mimeType, $this->allowedMimeTypes, true);
+
+        $extensionAllowed = [] !== $this->allowedExtensions
+            && null !== $extension
+            && \in_array(strtolower($extension), array_map('strtolower', $this->allowedExtensions), true);
+
+        if (!$mimeAllowed && !$extensionAllowed) {
+            throw new RuntimeException(\sprintf(
+                'The uploaded file is not allowed (detected mime type "%s", extension "%s").',
+                $mimeType ?? 'unknown',
+                $extension ?? 'unknown',
+            ));
         }
     }
 
@@ -196,7 +255,7 @@ class FileProvider extends BaseProvider
 
         $time = time() + $expires;
 
-        $hash = $this->simpleSignatureHasher->computeSignatureHash($identifier, $time);
+        $hash = $this->simpleSignatureHasher->computeSignatureHash($identifier, $time, (string) $id);
         $params = [
             'id' => $id,
             'format' => $format,
@@ -265,25 +324,17 @@ class FileProvider extends BaseProvider
 
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
+        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'], true)) {
+            throw new RuntimeException('Invalid mode provided');
+        }
+
         // build the default headers
         $headers = array_merge([
             'Content-Type' => $media->getContentType(),
             'Content-Disposition' => \sprintf('attachment; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'], true)) {
-            throw new RuntimeException('Invalid mode provided');
-        }
-
-        if ('reference' === $format) {
-            $file = $this->getReferenceFile($media);
-        } else {
-            $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
-        }
-
-        return new StreamedResponse(static function () use ($file) {
-            echo $file->getContent();
-        }, 200, $headers);
+        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers);
     }
 
     public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
@@ -294,14 +345,71 @@ class FileProvider extends BaseProvider
             'Content-Disposition' => \sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        if ('reference' === $format) {
-            $file = $this->getReferenceFile($media);
-        } else {
-            $file = $this->getFilesystem()->get($this->generatePrivateUrl($media, $format));
+        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers);
+    }
+
+    /**
+     * S3-backed providers redirect to a short-lived pre-signed URL (bytes stream S3 -> client,
+     * never through PHP); local storage streams the file in chunks.
+     */
+    private function buildFileResponse(string $key, array $headers): Response
+    {
+        if (null !== $this->presigner) {
+            $overrides = [];
+            if (isset($headers['Content-Type'])) {
+                $overrides['ResponseContentType'] = $headers['Content-Type'];
+            }
+            if (isset($headers['Content-Disposition'])) {
+                $overrides['ResponseContentDisposition'] = $headers['Content-Disposition'];
+            }
+
+            return new RedirectResponse($this->presigner->createPresignedUrl($key, 300, $overrides), 302);
         }
 
-        return new StreamedResponse(static function () use ($file) {
-            echo $file->getContent();
-        }, 200, $headers);
+        return $this->streamResponse($key, $headers);
+    }
+
+    /**
+     * Resolve the filesystem key for the requested format and ensure it exists, so a missing file
+     * surfaces as a FileNotFound (-> 404) before the streamed response starts and headers are sent.
+     *
+     * @throws FileNotFound
+     */
+    private function resolveStorageKey(MediaInterface $media, string $format): string
+    {
+        $key = 'reference' === $format
+            ? $this->getReferenceImage($media)
+            : $this->generatePrivateUrl($media, $format);
+
+        if (!$this->getFilesystem()->has($key)) {
+            throw new FileNotFound($key);
+        }
+
+        return $key;
+    }
+
+    /**
+     * Stream the file in fixed-size chunks instead of buffering the whole payload into a PHP string,
+     * which would otherwise hold the entire file in memory (and OOM the worker on large files).
+     *
+     * NOTE: the Gaufrette 0.9 AwsS3 adapter does not implement StreamFactory, so for S3-backed
+     * storage Gaufrette still buffers the object in memory. Large private files on S3 are better
+     * served through the CDN or a pre-signed URL than proxied through PHP.
+     */
+    private function streamResponse(string $key, array $headers): StreamedResponse
+    {
+        $filesystem = $this->getFilesystem();
+
+        return new StreamedResponse(static function () use ($filesystem, $key): void {
+            $stream = $filesystem->createStream($key);
+            $stream->open(new StreamMode('rb'));
+
+            while (!$stream->eof()) {
+                echo $stream->read(8192);
+                flush();
+            }
+
+            $stream->close();
+        }, Response::HTTP_OK, $headers);
     }
 }

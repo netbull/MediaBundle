@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NetBull\MediaBundle\DependencyInjection\Compiler;
 
+use NetBull\MediaBundle\Provider\FileProvider;
 use NetBull\MediaBundle\Provider\Pool;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -56,6 +57,16 @@ class AddProviderCompilerPass implements CompilerPassInterface
 
                     if ($config['resizer']) {
                         $definition->addMethodCall('setResizer', [new Reference($config['resizer'])]);
+                    }
+
+                    // S3-backed file providers redirect secured downloads to a pre-signed URL
+                    // instead of streaming bytes through PHP.
+                    if (
+                        'netbull_media.filesystem.s3' === $filesystem
+                        && $container->hasDefinition('netbull_media.s3.presigner')
+                        && is_a((string) $definition->getClass(), FileProvider::class, true)
+                    ) {
+                        $definition->addMethodCall('setPresigner', [new Reference('netbull_media.s3.presigner')]);
                     }
                 }
             }

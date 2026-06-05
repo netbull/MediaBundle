@@ -6,13 +6,45 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
-  release:
+  # Gate: do not publish a release unless the code passes validation, CS, static analysis and tests.
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, exif, gd, fileinfo, intl, mbstring
+          coverage: none
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer update --no-progress --prefer-dist
+      - name: Validate composer.json
+        run: composer validate --strict
+      - name: Coding standards
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+      - name: Static analysis
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+      - name: Tests
+        run: vendor/bin/phpunit
+
+  release:
+    name: Release
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
       - name: Install dependencies

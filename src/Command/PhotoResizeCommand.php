@@ -35,7 +35,6 @@ class PhotoResizeCommand extends BaseCommand
             $context = $helper->ask($input, $output, $question);
         }
 
-        $this->debug = $input->getOption('quiet');
         $this->io = new SymfonyStyle($input, $output);
 
         $qb = $this->em->createQueryBuilder();

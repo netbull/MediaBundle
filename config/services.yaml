@@ -13,7 +13,11 @@ services:
         alias: NetBull\MediaBundle\Provider\Pool
 
     # Thumbnail
-    NetBull\MediaBundle\Thumbnail\FormatThumbnail: ~
+    # $messageBus is optional: it resolves to null when symfony/messenger is not installed,
+    # which keeps in-process (sync) thumbnail generation working without the component.
+    NetBull\MediaBundle\Thumbnail\FormatThumbnail:
+        arguments:
+            $messageBus: '@?Symfony\Component\Messenger\MessageBusInterface'
 
     # Signature
     NetBull\MediaBundle\Signature\SimpleSignatureHasher:
@@ -75,6 +79,8 @@ services:
             - true  # html5
         calls:
             - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_youtube.html.twig' }]
+            - setLogger: ['@?logger']
+            - setHttpClient: ['@?Symfony\Contracts\HttpClient\HttpClientInterface']
 
     netbull_media.provider.vimeo:
         class: NetBull\MediaBundle\Provider\VimeoProvider
@@ -89,6 +95,8 @@ services:
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
             - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_vimeo.html.twig' }]
+            - setLogger: ['@?logger']
+            - setHttpClient: ['@?Symfony\Contracts\HttpClient\HttpClientInterface']
 
     netbull_media.provider.youku:
         class: NetBull\MediaBundle\Provider\YoukuProvider
@@ -103,6 +111,8 @@ services:
             - '@NetBull\MediaBundle\Metadata\AmazonMetadataBuilder'
         calls:
             - setTemplates: [{ helper_thumbnail: '@@NetBullMedia/Provider/thumbnail.html.twig', helper_view: '@@NetBullMedia/Provider/view_youku.html.twig' }]
+            - setLogger: ['@?logger']
+            - setHttpClient: ['@?Symfony\Contracts\HttpClient\HttpClientInterface']
 
     # Event Listener
     NetBull\MediaBundle\EventListener\MediaListener: ~

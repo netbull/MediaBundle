@@ -6,7 +6,9 @@ namespace NetBull\MediaBundle;
 
 use Exception;
 use Imagine\Image\ManipulatorInterface;
+use LogicException;
 use NetBull\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
+use NetBull\MediaBundle\Filesystem\S3Presigner;
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Thumbnail\FormatThumbnail;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -14,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class NetBullMediaBundle extends AbstractBundle
 {
@@ -43,6 +46,13 @@ class NetBullMediaBundle extends AbstractBundle
     {
         $container->import('../config/services.yaml');
 
+        // symfony/messenger is an optional dependency: the async thumbnail-generation feature
+        // (message handler + bus dispatch) is only wired when the component is installed.
+        $messengerAvailable = interface_exists(MessageBusInterface::class);
+        if ($messengerAvailable) {
+            $container->import('../config/services_messenger.yaml');
+        }
+
         // Store processed config for compiler pass
         $builder->setParameter('netbull_media.config', $config);
 
@@ -62,9 +72,14 @@ class NetBullMediaBundle extends AbstractBundle
             }
         }
 
-        // Thumbnail generation strategy: fork a subprocess per format (default, memory-isolated)
-        // or resize in-process (faster for bulk/CLI work that already isolates memory per item).
-        $builder->getDefinition(FormatThumbnail::class)->setArgument('$fork', $config['thumbnail']['fork']);
+        // Thumbnail generation strategy: dispatch a GenerateThumbnailMessage per format to the
+        // message bus (async, when a transport is configured) or resize in-process (default).
+        // Async requires symfony/messenger; fail fast with a clear message if it is missing.
+        $async = $config['thumbnail']['async'];
+        if ($async && !$messengerAvailable) {
+            throw new LogicException('netbull_media.thumbnail.async is enabled but symfony/messenger is not installed. Run "composer require symfony/messenger" or set netbull_media.thumbnail.async to false.');
+        }
+        $builder->getDefinition(FormatThumbnail::class)->setArgument('$async', $async);
 
         $downloadStrategies = $viewStrategies = [];
         foreach ($config['contexts'] as $name => $settings) {
@@ -218,7 +233,10 @@ class NetBullMediaBundle extends AbstractBundle
                                         ->end()
                                         ->scalarNode('cache_control')->defaultValue('604800')->end()
                                         ->scalarNode('acl')
-                                            ->defaultValue('public')
+                                            // private by default so the bundle's own download/view
+                                            // security strategies stay authoritative ('public' was
+                                            // also not a valid value, breaking container compilation).
+                                            ->defaultValue('private')
                                             ->validate()
                                                 ->ifNotInArray(['private', 'public-read', 'open', 'auth_read', 'owner_read', 'owner_full_control'])
                                                 ->thenInvalid('Invalid acl permission - "%s"')
@@ -357,9 +375,10 @@ class NetBullMediaBundle extends AbstractBundle
                 ->arrayNode('thumbnail')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        // true (default): fork a `netbull:media:create-thumbnail` subprocess per
-                        // format (memory isolation). false: resize in-process (faster bulk/CLI).
-                        ->booleanNode('fork')->defaultTrue()->end()
+                        // false (default): resize in-process during the request/command.
+                        // true: dispatch a GenerateThumbnailMessage per format to the message bus
+                        // (offloaded to a worker when routed to an async transport).
+                        ->booleanNode('async')->defaultFalse()->end()
                     ->end()
                 ->end()
             ->end();
@@ -435,6 +454,15 @@ class NetBullMediaBundle extends AbstractBundle
                     'encryption' => $config['filesystem']['s3']['options']['encryption'],
                     'meta' => $config['filesystem']['s3']['options']['meta'],
                     'cache_control' => $config['filesystem']['s3']['options']['cache_control'],
+                ]);
+
+            // Presigner for secured downloads — lets S3-backed providers redirect to a short-lived
+            // pre-signed URL instead of proxying bytes through PHP.
+            $container->register('netbull_media.s3.presigner', S3Presigner::class)
+                ->setArguments([
+                    new Reference('netbull_media.wrapper.s3'),
+                    $config['filesystem']['s3']['options']['bucket'],
+                    $config['filesystem']['s3']['options']['directory'],
                 ]);
 
             // Create local.server service only when both local and S3 with credentials are configured

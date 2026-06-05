@@ -1,0 +1,15 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    excludePaths:
+        # Standalone runtime probe for the messenger-absent install; analysis runs with the
+        # dev dependency set (messenger present), so its assertions read as always true/false.
+        - tests/smoke/*
+    # The baseline is generated against the highest dependency set; tolerate it not matching
+    # exactly when CI resolves a different (e.g. --prefer-lowest) Symfony/Doctrine line.
+    reportUnmatchedIgnoredErrors: false

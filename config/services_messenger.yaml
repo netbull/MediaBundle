@@ -1,0 +1,11 @@
+# Imported by NetBullMediaBundle only when symfony/messenger is installed
+# (see NetBullMediaBundle::loadExtension). This keeps the asynchronous
+# thumbnail-generation feature available only if the host application has the
+# Messenger component, so the bundle stays usable without it.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Handles GenerateThumbnailMessage when netbull_media.thumbnail.async is true.
+    NetBull\MediaBundle\MessageHandler\GenerateThumbnailMessageHandler: ~

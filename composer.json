@@ -11,32 +11,69 @@
   "keywords": [
     "netbull media symfony bundle"
   ],
-  "license": "AGPL-3.0-or-later",
+  "license": "MIT",
   "require": {
     "php": ">=8.3",
     "ext-curl": "*",
+    "ext-exif": "*",
+    "ext-gd": "*",
     "aws/aws-sdk-php": "3.*",
+    "doctrine/collections": "^2.1",
+    "doctrine/dbal": "^3.7|^4.0",
+    "doctrine/doctrine-bundle": "^2.12|^3.0",
+    "doctrine/orm": "^2.20|^3.0",
+    "doctrine/persistence": "^3.1|^4.0",
     "imagine/imagine": "1.*",
     "knplabs/gaufrette": "0.9.*",
-    "symfony/http-kernel": "7.2.*|7.3.*|7.4.*",
-    "symfony/http-client": "7.2.*|7.3.*|7.4.*",
-    "symfony/form": "7.2.*|7.3.*|7.4.*",
-    "symfony/process": "7.2.*|7.3.*|7.4.*",
-    "symfony/mime": "7.2.*|7.3.*|7.4.*",
-    "symfony/config": "7.2.*|7.3.*|7.4.*",
-    "netbull/doctrine-behaviors": "^7.0"
+    "psr/log": "^3.0",
+    "symfony/config": "7.4.*",
+    "symfony/console": "7.4.*",
+    "symfony/dependency-injection": "7.4.*",
+    "symfony/event-dispatcher": "7.4.*",
+    "symfony/form": "7.4.*",
+    "symfony/framework-bundle": "7.4.*",
+    "symfony/http-client": "7.4.*",
+    "symfony/http-foundation": "7.4.*",
+    "symfony/http-kernel": "7.4.*",
+    "symfony/mime": "7.4.*",
+    "symfony/options-resolver": "7.4.*",
+    "symfony/process": "7.4.*",
+    "symfony/routing": "7.4.*",
+    "symfony/security-bundle": "7.4.*",
+    "symfony/security-core": "7.4.*",
+    "symfony/twig-bundle": "7.4.*",
+    "symfony/yaml": "7.4.*",
+    "twig/twig": "^3.0"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.64"
+    "friendsofphp/php-cs-fixer": "^3.64",
+    "phpstan/phpstan": "^2.0",
+    "phpunit/phpunit": "^11.0",
+    "symfony/messenger": "7.4.*"
+  },
+  "suggest": {
+    "symfony/messenger": "Enables asynchronous thumbnail generation (netbull_media.thumbnail.async)"
   },
   "autoload": {
     "psr-4": {
       "NetBull\\MediaBundle\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "NetBull\\MediaBundle\\Tests\\": "tests/"
+    }
+  },
   "scripts": {
     "cs-fix": "vendor/bin/php-cs-fixer fix",
-    "cs-check": "vendor/bin/php-cs-fixer fix --dry-run --diff"
+    "cs-check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
+    "phpstan": "phpstan analyse --memory-limit=1G",
+    "test": "vendor/bin/phpunit",
+    "check": [
+      "@cs-check",
+      "@phpstan",
+      "@test"
+    ]
   },
   "config": {
     "sort-packages": true,

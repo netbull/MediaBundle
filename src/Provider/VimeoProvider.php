@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NetBull\MediaBundle\Provider;
 
 use NetBull\MediaBundle\Entity\MediaInterface;
+use NetBull\MediaBundle\Exception\VideoMetadataException;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -126,7 +127,12 @@ class VimeoProvider extends BaseVideoProvider
 
         try {
             $metadata = $this->getMetadata($url);
-        } catch (RuntimeException) {
+        } catch (VideoMetadataException $e) {
+            $this->logger->warning('[netbull_media] Disabling media {id}: unable to fetch {provider} metadata: {error}', [
+                'id' => $media->getId(),
+                'provider' => $this->name,
+                'error' => $e->getMessage(),
+            ]);
             $media->setEnabled(false);
 
             return;
@@ -142,7 +148,7 @@ class VimeoProvider extends BaseVideoProvider
 
         $media->setHeight($metadata['height']);
         $media->setWidth($metadata['width']);
-        $media->setLength($metadata['duration']);
+        $media->setLength((string) $metadata['duration']);
         $media->setContentType('video/x-flv');
     }
 
