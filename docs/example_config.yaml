@@ -103,6 +103,8 @@ netbull_media:
         # true: dispatch a GenerateThumbnailMessage per format to the Messenger bus — route
         #       NetBull\MediaBundle\Message\GenerateThumbnailMessage to an async transport to
         #       offload resizing to a worker.
+        #       Requires the optional symfony/messenger component ("composer require symfony/messenger");
+        #       enabling async without it raises a clear error at container compile time.
         async: false
 
     # Context definitions

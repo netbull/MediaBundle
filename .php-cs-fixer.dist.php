@@ -4,6 +4,8 @@ $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
     ->exclude('var')
     ->exclude('vendor')
+    // Standalone runtime probe script, not part of the analysed/styled test suite.
+    ->notPath('tests/smoke/without-messenger.php')
 ;
 
 return (new PhpCsFixer\Config())

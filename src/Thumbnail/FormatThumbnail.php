@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NetBull\MediaBundle\Thumbnail;
 
+use LogicException;
 use NetBull\MediaBundle\Entity\MediaInterface;
 use NetBull\MediaBundle\Message\GenerateThumbnailMessage;
 use NetBull\MediaBundle\Provider\MediaProviderInterface;
@@ -13,6 +14,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class FormatThumbnail implements ThumbnailInterface
 {
     /**
+     * @param MessageBusInterface|null $messageBus the bus used for async generation; null when
+     *                                             symfony/messenger is not installed (async is then unavailable)
      * @param bool $async when true, each format is dispatched as a GenerateThumbnailMessage to the
      *                    message bus instead of being resized in-process. Route that message to an async transport
      *                    to offload resizing to a worker (memory is isolated per worker run); with no transport
@@ -20,7 +23,7 @@ class FormatThumbnail implements ThumbnailInterface
      */
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly MessageBusInterface $messageBus,
+        private readonly ?MessageBusInterface $messageBus = null,
         private readonly bool $async = false,
     ) {
     }
@@ -49,6 +52,10 @@ class FormatThumbnail implements ThumbnailInterface
         }
 
         if ($this->async) {
+            if (null === $this->messageBus) {
+                throw new LogicException('Asynchronous thumbnail generation requires symfony/messenger. Install it with "composer require symfony/messenger" or set netbull_media.thumbnail.async to false.');
+            }
+
             foreach ($provider->getFormats() as $format => $settings) {
                 if (!str_starts_with($format, $media->getContext())) {
                     continue;

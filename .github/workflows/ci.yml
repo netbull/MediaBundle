@@ -71,3 +71,25 @@ jobs:
 
       - name: Tests (PHPUnit)
         run: vendor/bin/phpunit
+
+  without-messenger:
+    name: Boots without symfony/messenger (optional dependency)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, exif, gd, fileinfo, intl, mbstring
+          coverage: none
+          tools: composer:v2
+
+      # --no-dev excludes require-dev, so symfony/messenger is NOT installed. This proves the
+      # bundle is usable without the optional Messenger component (the default, sync, code path).
+      - name: Install runtime dependencies only (no dev)
+        run: composer update --no-progress --prefer-dist --no-dev
+
+      - name: Smoke test (bundle loads and runs without Messenger)
+        run: php tests/smoke/without-messenger.php

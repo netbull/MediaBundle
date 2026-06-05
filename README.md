@@ -105,6 +105,18 @@ netbull_media:
         async: true
 ```
 
+> **Optional dependency** — async mode needs the [Messenger](https://symfony.com/doc/current/messenger.html)
+> component, which the bundle treats as an optional (suggested) dependency. Install it before enabling
+> async:
+>
+> ```console
+> composer require symfony/messenger
+> ```
+>
+> The message handler is only registered when `symfony/messenger` is installed, and enabling
+> `thumbnail.async: true` without it fails fast with a clear error at container compile time. In
+> the default sync mode the bundle works without Messenger.
+
 When `async: true`, the bundle dispatches a
 `NetBull\MediaBundle\Message\GenerateThumbnailMessage` per format to the Messenger bus. Route it to
 an async transport so a worker does the resizing (worker recycling provides the memory isolation

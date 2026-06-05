@@ -6,6 +6,7 @@ namespace NetBull\MediaBundle;
 
 use Exception;
 use Imagine\Image\ManipulatorInterface;
+use LogicException;
 use NetBull\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
 use NetBull\MediaBundle\Filesystem\S3Presigner;
 use NetBull\MediaBundle\Provider\Pool;
@@ -15,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class NetBullMediaBundle extends AbstractBundle
 {
@@ -44,6 +46,13 @@ class NetBullMediaBundle extends AbstractBundle
     {
         $container->import('../config/services.yaml');
 
+        // symfony/messenger is an optional dependency: the async thumbnail-generation feature
+        // (message handler + bus dispatch) is only wired when the component is installed.
+        $messengerAvailable = interface_exists(MessageBusInterface::class);
+        if ($messengerAvailable) {
+            $container->import('../config/services_messenger.yaml');
+        }
+
         // Store processed config for compiler pass
         $builder->setParameter('netbull_media.config', $config);
 
@@ -65,7 +74,12 @@ class NetBullMediaBundle extends AbstractBundle
 
         // Thumbnail generation strategy: dispatch a GenerateThumbnailMessage per format to the
         // message bus (async, when a transport is configured) or resize in-process (default).
-        $builder->getDefinition(FormatThumbnail::class)->setArgument('$async', $config['thumbnail']['async']);
+        // Async requires symfony/messenger; fail fast with a clear message if it is missing.
+        $async = $config['thumbnail']['async'];
+        if ($async && !$messengerAvailable) {
+            throw new LogicException('netbull_media.thumbnail.async is enabled but symfony/messenger is not installed. Run "composer require symfony/messenger" or set netbull_media.thumbnail.async to false.');
+        }
+        $builder->getDefinition(FormatThumbnail::class)->setArgument('$async', $async);
 
         $downloadStrategies = $viewStrategies = [];
         foreach ($config['contexts'] as $name => $settings) {

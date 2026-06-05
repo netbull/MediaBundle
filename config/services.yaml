@@ -13,7 +13,11 @@ services:
         alias: NetBull\MediaBundle\Provider\Pool
 
     # Thumbnail
-    NetBull\MediaBundle\Thumbnail\FormatThumbnail: ~
+    # $messageBus is optional: it resolves to null when symfony/messenger is not installed,
+    # which keeps in-process (sync) thumbnail generation working without the component.
+    NetBull\MediaBundle\Thumbnail\FormatThumbnail:
+        arguments:
+            $messageBus: '@?Symfony\Component\Messenger\MessageBusInterface'
 
     # Signature
     NetBull\MediaBundle\Signature\SimpleSignatureHasher:
@@ -112,9 +116,6 @@ services:
 
     # Event Listener
     NetBull\MediaBundle\EventListener\MediaListener: ~
-
-    # Message Handlers (async thumbnail generation when netbull_media.thumbnail.async is true)
-    NetBull\MediaBundle\MessageHandler\GenerateThumbnailMessageHandler: ~
 
     # Image Adapters
     netbull_media.adapter.image.imagick:
