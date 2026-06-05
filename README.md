@@ -222,4 +222,4 @@ composer check       # all of the above
 
 ## License
 
-[AGPL-3.0-or-later](LICENSE)
+[MIT](LICENSE)
