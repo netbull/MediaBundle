@@ -1,3 +1,17 @@
+## [7.2.9](https://github.com/netbull/MediaBundle/compare/v7.2.8...v7.2.9) (2026-06-05)
+
+
+### Bug Fixes
+
+* adjustments ([9726346](https://github.com/netbull/MediaBundle/commit/972634605297a4b8a398e61cea74abb148273de0))
+* change the license and prepared for recipes contrib submission ([3b220ee](https://github.com/netbull/MediaBundle/commit/3b220eefd33937e65b4a7aa0feecb64804db5212))
+* drop symfony 7.2 and 7.3 support due to EOL / security advisory block ([0ca12c3](https://github.com/netbull/MediaBundle/commit/0ca12c389aa7adcde7b165a17e0eb6b063c7574d))
+* improved async processing and small tweaks ([bbfd130](https://github.com/netbull/MediaBundle/commit/bbfd130f5599adc4ea4bebe7c94a40f944a7e0bd))
+* improved bundle ([46006ad](https://github.com/netbull/MediaBundle/commit/46006ad81b2504e985a06ef4f24438e4b24e718e))
+* improved bundle compability ([aa8e76b](https://github.com/netbull/MediaBundle/commit/aa8e76bbf3b022098ff576233e25491e513ded34))
+* made the messenger optional ([4f801cd](https://github.com/netbull/MediaBundle/commit/4f801cd3a638ccfa7428d3aa52d53bd6b8cb5f14))
+* restored smoke test ([139a44a](https://github.com/netbull/MediaBundle/commit/139a44a1cbf7a6efd2835c56bf6ed958f998e30b))
+
 ## [7.2.8](https://github.com/netbull/MediaBundle/compare/v7.2.7...v7.2.8) (2026-06-04)
 
 
