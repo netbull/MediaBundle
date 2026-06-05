@@ -6,7 +6,7 @@ access-control strategies for downloads/views. Originally a trimmed fork of
 [SonataMediaBundle](https://github.com/sonata-project/SonataMediaBundle).
 
 - **PHP:** >= 8.3
-- **Symfony:** 7.2 / 7.3 / 7.4
+- **Symfony:** 7.4 (LTS)
 
 ## Installation
 

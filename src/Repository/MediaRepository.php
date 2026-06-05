@@ -12,7 +12,15 @@ class MediaRepository extends EntityRepository
 {
     public const string MEDIA_FIELDS = 'id,enabled,context,providerReference,providerName,name,width,height,main,position,createdAt,updatedAt,caption,contentType';
 
-    public function count(array $criteria): array
+    /**
+     * Number of media per context (excluding the "avatar" context).
+     *
+     * Named distinctly from Doctrine's EntityRepository::count() — it returns grouped rows
+     * ([['medias' => int, 'context' => string], ...]), not an int, so it must not override it.
+     *
+     * @return array<int, array{medias: int, context: string}>
+     */
+    public function countByContext(): array
     {
         $qb = $this->createQueryBuilder('m');
         $qb->select('COUNT(m.id) as medias', 'm.context')
