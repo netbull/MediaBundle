@@ -1,3 +1,10 @@
+## [7.2.10](https://github.com/netbull/MediaBundle/compare/v7.2.9...v7.2.10) (2026-06-12)
+
+
+### Bug Fixes
+
+* added index ([5bb86aa](https://github.com/netbull/MediaBundle/commit/5bb86aadc9266d0568fcd5fb1642ab62525f7fa3))
+
 ## [7.2.9](https://github.com/netbull/MediaBundle/compare/v7.2.8...v7.2.9) (2026-06-05)
 
 
