@@ -15,7 +15,6 @@
   "require": {
     "php": ">=8.3",
     "ext-curl": "*",
-    "ext-exif": "*",
     "ext-gd": "*",
     "aws/aws-sdk-php": "3.*",
     "doctrine/collections": "^2.1",
@@ -52,6 +51,7 @@
     "symfony/messenger": "7.4.*"
   },
   "suggest": {
+    "ext-exif": "Auto-rotates uploaded JPEGs based on their EXIF orientation (skipped when missing)",
     "symfony/messenger": "Enables asynchronous thumbnail generation (netbull_media.thumbnail.async)"
   },
   "autoload": {
