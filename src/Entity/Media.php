@@ -12,6 +12,7 @@ use Imagine\Image\Box;
 use NetBull\MediaBundle\Repository\MediaRepository;
 
 #[ORM\Table(name: 'media')]
+#[ORM\Index(name: 'idx_media_context_name', columns: ['context', 'name'])]
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Media implements MediaInterface
