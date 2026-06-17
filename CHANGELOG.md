@@ -1,3 +1,10 @@
+## [7.2.11](https://github.com/netbull/MediaBundle/compare/v7.2.10...v7.2.11) (2026-06-12)
+
+
+### Bug Fixes
+
+* removed hard ext-exif dependency ([e00f1ea](https://github.com/netbull/MediaBundle/commit/e00f1ea873287eae31a0138950d8bcb6442956b4))
+
 ## [7.2.10](https://github.com/netbull/MediaBundle/compare/v7.2.9...v7.2.10) (2026-06-12)
 
 
