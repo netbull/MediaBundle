@@ -7,12 +7,13 @@ namespace NetBull\MediaBundle\Tests\Provider;
 use Gaufrette\Filesystem;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\Media;
-use NetBull\MediaBundle\Filesystem\S3Presigner;
+use NetBull\MediaBundle\Filesystem\S3Gateway;
 use NetBull\MediaBundle\Provider\FileProvider;
 use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\RouterInterface;
@@ -20,23 +21,39 @@ use Symfony\Component\Routing\RouterInterface;
 #[CoversClass(FileProvider::class)]
 class FileProviderTest extends TestCase
 {
-    public function testSecuredDownloadRedirectsToPresignedUrlWhenS3Backed(): void
+    public function testSecuredDownloadRedirectsToPresignedUrlInRedirectMode(): void
     {
-        $presigner = $this->createMock(S3Presigner::class);
-        $presigner->method('createPresignedUrl')->willReturn('https://s3.example/signed');
+        $gateway = $this->createMock(S3Gateway::class);
+        $gateway->method('createPresignedUrl')->willReturn('https://s3.example/signed');
 
         $provider = $this->provider();
-        $provider->setPresigner($presigner);
+        $provider->setGateway($gateway);
 
-        $response = $provider->getDownloadResponse($this->media(), 'reference', 'http');
+        $response = $provider->getDownloadResponse($this->media(), 'reference', 'redirect');
 
         self::assertInstanceOf(RedirectResponse::class, $response);
         self::assertSame('https://s3.example/signed', $response->getTargetUrl());
     }
 
-    public function testSecuredDownloadStreamsWhenNoPresigner(): void
+    public function testSecuredDownloadStreamsThroughGatewayByDefaultWhenS3Backed(): void
     {
-        $response = $this->provider()->getDownloadResponse($this->media(), 'reference', 'http');
+        $gateway = $this->createMock(S3Gateway::class);
+        $gateway->method('openObjectStream')->willReturn([
+            'stream' => $this->createMock(StreamInterface::class),
+            'length' => 10,
+        ]);
+
+        $provider = $this->provider();
+        $provider->setGateway($gateway);
+
+        $response = $provider->getDownloadResponse($this->media(), 'reference', 'stream');
+
+        self::assertInstanceOf(StreamedResponse::class, $response);
+    }
+
+    public function testSecuredDownloadStreamsWhenNoGateway(): void
+    {
+        $response = $this->provider()->getDownloadResponse($this->media(), 'reference', 'stream');
 
         self::assertInstanceOf(StreamedResponse::class, $response);
     }

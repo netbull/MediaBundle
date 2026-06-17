@@ -6,14 +6,14 @@ namespace NetBull\MediaBundle\Tests\Filesystem;
 
 use Aws\CommandInterface;
 use Aws\S3\S3ClientInterface;
-use NetBull\MediaBundle\Filesystem\S3Presigner;
+use NetBull\MediaBundle\Filesystem\S3Gateway;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
-#[CoversClass(S3Presigner::class)]
-class S3PresignerTest extends TestCase
+#[CoversClass(S3Gateway::class)]
+class S3GatewayTest extends TestCase
 {
     public function testBuildsPresignedUrlWithDirectoryPrefixAndOverrides(): void
     {
@@ -33,9 +33,9 @@ class S3PresignerTest extends TestCase
             ->with($command, '+300 seconds')
             ->willReturn($this->request('https://s3.example/signed?sig=1'));
 
-        $presigner = new S3Presigner($client, 'my-bucket', 'media');
+        $gateway = new S3Gateway($client, 'my-bucket', 'media');
 
-        $url = $presigner->createPresignedUrl('default/0001/01/file.jpg', 300, [
+        $url = $gateway->createPresignedUrl('default/0001/01/file.jpg', 300, [
             'ResponseContentDisposition' => 'attachment; filename="file.jpg"',
         ]);
 
@@ -51,9 +51,9 @@ class S3PresignerTest extends TestCase
             ->willReturn($this->createMock(CommandInterface::class));
         $client->method('createPresignedRequest')->willReturn($this->request('https://x/y'));
 
-        $presigner = new S3Presigner($client, 'b');
+        $gateway = new S3Gateway($client, 'b');
 
-        self::assertSame('https://x/y', $presigner->createPresignedUrl('a/b.png'));
+        self::assertSame('https://x/y', $gateway->createPresignedUrl('a/b.png'));
     }
 
     private function request(string $uri): RequestInterface
