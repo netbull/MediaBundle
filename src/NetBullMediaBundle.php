@@ -8,7 +8,7 @@ use Exception;
 use Imagine\Image\ManipulatorInterface;
 use LogicException;
 use NetBull\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
-use NetBull\MediaBundle\Filesystem\S3Presigner;
+use NetBull\MediaBundle\Filesystem\S3Gateway;
 use NetBull\MediaBundle\Provider\Pool;
 use NetBull\MediaBundle\Thumbnail\FormatThumbnail;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -127,14 +127,14 @@ class NetBullMediaBundle extends AbstractBundle
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('strategy')->defaultValue('netbull_media.security.superadmin_strategy')->end()
-                                    ->scalarNode('mode')->defaultValue('http')->end()
+                                    ->scalarNode('mode')->defaultValue('stream')->end()
                                 ->end()
                             ->end()
                             ->arrayNode('view')
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('strategy')->defaultValue('netbull_media.security.superadmin_strategy')->end()
-                                    ->scalarNode('mode')->defaultValue('http')->end()
+                                    ->scalarNode('mode')->defaultValue('stream')->end()
                                 ->end()
                             ->end()
                             ->arrayNode('providers')
@@ -456,9 +456,9 @@ class NetBullMediaBundle extends AbstractBundle
                     'cache_control' => $config['filesystem']['s3']['options']['cache_control'],
                 ]);
 
-            // Presigner for secured downloads — lets S3-backed providers redirect to a short-lived
-            // pre-signed URL instead of proxying bytes through PHP.
-            $container->register('netbull_media.s3.presigner', S3Presigner::class)
+            // Gateway for secured downloads — lets S3-backed providers proxy-stream bytes through PHP
+            // (default) or redirect to a short-lived pre-signed URL ("redirect" mode).
+            $container->register('netbull_media.s3.gateway', S3Gateway::class)
                 ->setArguments([
                     new Reference('netbull_media.wrapper.s3'),
                     $config['filesystem']['s3']['options']['bucket'],

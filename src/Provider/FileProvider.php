@@ -10,7 +10,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\StreamMode;
 use NetBull\MediaBundle\Cdn\CdnInterface;
 use NetBull\MediaBundle\Entity\MediaInterface;
-use NetBull\MediaBundle\Filesystem\S3Presigner;
+use NetBull\MediaBundle\Filesystem\S3Gateway;
 use NetBull\MediaBundle\Metadata\MetadataBuilderInterface;
 use NetBull\MediaBundle\Signature\SimpleSignatureHasher;
 use NetBull\MediaBundle\Thumbnail\ThumbnailInterface;
@@ -29,7 +29,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 class FileProvider extends BaseProvider
 {
-    protected ?S3Presigner $presigner = null;
+    protected ?S3Gateway $gateway = null;
 
     public function __construct(
         string $name,
@@ -46,12 +46,13 @@ class FileProvider extends BaseProvider
     }
 
     /**
-     * Injected by the bundle for S3-backed providers so secured downloads redirect to a pre-signed
-     * URL instead of proxying the bytes through PHP. Null for local storage (which streams).
+     * Injected by the bundle for S3-backed providers. Secured downloads are then proxy-streamed
+     * through PHP (default) or, when the context's download/view mode is "redirect", served by
+     * redirecting to a short-lived pre-signed URL. Null for local storage (which streams via Gaufrette).
      */
-    public function setPresigner(?S3Presigner $presigner): void
+    public function setGateway(?S3Gateway $gateway): void
     {
-        $this->presigner = $presigner;
+        $this->gateway = $gateway;
     }
 
     public function getReferenceImage(array|MediaInterface $media): string
@@ -324,7 +325,7 @@ class FileProvider extends BaseProvider
 
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response
     {
-        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect'], true)) {
+        if (!\in_array($mode, ['http', 'X-Sendfile', 'X-Accel-Redirect', 'stream', 'redirect'], true)) {
             throw new RuntimeException('Invalid mode provided');
         }
 
@@ -334,10 +335,10 @@ class FileProvider extends BaseProvider
             'Content-Disposition' => \sprintf('attachment; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers);
+        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers, $mode);
     }
 
-    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
+    public function getViewResponse(MediaInterface $media, string $format, string $mode = 'stream', array $headers = []): Response
     {
         // build the default headers
         $headers = array_merge([
@@ -345,28 +346,58 @@ class FileProvider extends BaseProvider
             'Content-Disposition' => \sprintf('inline; filename="%s"', $media->getMetadataValue('filename')),
         ], $headers);
 
-        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers);
+        return $this->buildFileResponse($this->resolveStorageKey($media, $format), $headers, $mode);
     }
 
     /**
-     * S3-backed providers redirect to a short-lived pre-signed URL (bytes stream S3 -> client,
-     * never through PHP); local storage streams the file in chunks.
+     * S3-backed providers proxy-stream the file through PHP by default (a same-origin 200 an SPA can
+     * fetch over XHR); with mode "redirect" they 302 to a short-lived pre-signed URL instead (bytes
+     * stream S3 -> client, never through PHP — best for large files). Local storage always streams
+     * in chunks.
      */
-    private function buildFileResponse(string $key, array $headers): Response
+    private function buildFileResponse(string $key, array $headers, string $mode = 'stream'): Response
     {
-        if (null !== $this->presigner) {
-            $overrides = [];
-            if (isset($headers['Content-Type'])) {
-                $overrides['ResponseContentType'] = $headers['Content-Type'];
-            }
-            if (isset($headers['Content-Disposition'])) {
-                $overrides['ResponseContentDisposition'] = $headers['Content-Disposition'];
+        if (null !== $this->gateway) {
+            if ('redirect' === $mode) {
+                $overrides = [];
+                if (isset($headers['Content-Type'])) {
+                    $overrides['ResponseContentType'] = $headers['Content-Type'];
+                }
+                if (isset($headers['Content-Disposition'])) {
+                    $overrides['ResponseContentDisposition'] = $headers['Content-Disposition'];
+                }
+
+                return new RedirectResponse($this->gateway->createPresignedUrl($key, 300, $overrides), 302);
             }
 
-            return new RedirectResponse($this->presigner->createPresignedUrl($key, 300, $overrides), 302);
+            return $this->streamS3Response($key, $headers);
         }
 
         return $this->streamResponse($key, $headers);
+    }
+
+    /**
+     * Proxy-stream an S3 object through PHP in fixed-size chunks pulled lazily from the live S3
+     * response (constant memory), so the endpoint returns a same-origin 200 the SPA can consume over
+     * XHR — without the Gaufrette AwsS3 adapter buffering the whole object into memory.
+     */
+    private function streamS3Response(string $key, array $headers): StreamedResponse
+    {
+        $object = $this->gateway->openObjectStream($key);
+        $stream = $object['stream'];
+
+        if (null !== $object['length'] && !isset($headers['Content-Length'])) {
+            $headers['Content-Length'] = (string) $object['length'];
+        }
+
+        return new StreamedResponse(static function () use ($stream): void {
+            while (!$stream->eof()) {
+                echo $stream->read(8192);
+                flush();
+            }
+
+            $stream->close();
+        }, Response::HTTP_OK, $headers);
     }
 
     /**

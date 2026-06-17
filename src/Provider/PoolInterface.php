@@ -46,5 +46,7 @@ interface PoolInterface
 
     public function getDownloadMode(MediaInterface $media): string;
 
+    public function getViewMode(MediaInterface $media): string;
+
     public function getDefaultContext(): string;
 }

@@ -153,7 +153,7 @@ class YoukuProvider extends BaseVideoProvider
         return new RedirectResponse(\sprintf('http://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
     }
 
-    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
+    public function getViewResponse(MediaInterface $media, string $format, string $mode = 'stream', array $headers = []): Response
     {
         return new RedirectResponse(\sprintf('https://youku.com/v_show/id_%s', $media->getProviderReference()), 302, $headers);
     }

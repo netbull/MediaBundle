@@ -59,14 +59,14 @@ class AddProviderCompilerPass implements CompilerPassInterface
                         $definition->addMethodCall('setResizer', [new Reference($config['resizer'])]);
                     }
 
-                    // S3-backed file providers redirect secured downloads to a pre-signed URL
-                    // instead of streaming bytes through PHP.
+                    // S3-backed file providers get the gateway so secured downloads can be
+                    // proxy-streamed through PHP (default) or redirected to a pre-signed URL.
                     if (
                         'netbull_media.filesystem.s3' === $filesystem
-                        && $container->hasDefinition('netbull_media.s3.presigner')
+                        && $container->hasDefinition('netbull_media.s3.gateway')
                         && is_a((string) $definition->getClass(), FileProvider::class, true)
                     ) {
-                        $definition->addMethodCall('setPresigner', [new Reference('netbull_media.s3.presigner')]);
+                        $definition->addMethodCall('setGateway', [new Reference('netbull_media.s3.gateway')]);
                     }
                 }
             }

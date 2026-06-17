@@ -255,7 +255,7 @@ class YouTubeProvider extends BaseVideoProvider
         return new RedirectResponse(\sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }
 
-    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response
+    public function getViewResponse(MediaInterface $media, string $format, string $mode = 'stream', array $headers = []): Response
     {
         return new RedirectResponse(\sprintf('https://www.youtube.com/watch?v=%s', $media->getProviderReference()), 302, $headers);
     }

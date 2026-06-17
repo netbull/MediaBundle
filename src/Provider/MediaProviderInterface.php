@@ -101,7 +101,7 @@ interface MediaProviderInterface
      */
     public function getDownloadResponse(MediaInterface $media, string $format, string $mode, array $headers = []): Response;
 
-    public function getViewResponse(MediaInterface $media, string $format, array $headers = []): Response;
+    public function getViewResponse(MediaInterface $media, string $format, string $mode = 'stream', array $headers = []): Response;
 
     public function getResizer(): ?ResizerInterface;
 

@@ -190,6 +190,13 @@ class Pool implements PoolInterface
         return $context['download']['mode'];
     }
 
+    public function getViewMode(MediaInterface $media): string
+    {
+        $context = $this->getContext($media->getContext());
+
+        return $context['view']['mode'];
+    }
+
     public function getDefaultContext(): string
     {
         return $this->defaultContext;

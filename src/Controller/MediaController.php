@@ -90,7 +90,7 @@ class MediaController extends AbstractController
         $provider = $this->getProvider($media);
 
         try {
-            $response = $provider->getViewResponse($media, $provider->getFormatName($media, $format));
+            $response = $provider->getViewResponse($media, $provider->getFormatName($media, $format), $this->pool->getViewMode($media));
         } catch (FileNotFound) {
             throw $this->createNotFoundException();
         }

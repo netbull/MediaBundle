@@ -84,9 +84,15 @@ for a full, annotated example (multiple contexts, S3, signed URLs, custom strate
 > ACL makes objects world-readable and bypasses the bundle's download/view security strategies.
 
 > **Secured downloads** — for contexts behind a download/view security strategy, S3-backed media is
-> served by redirecting to a short-lived (300s) **pre-signed S3 URL**, so the file streams S3 →
-> client and never passes through PHP. Local storage streams the file in chunks. Either way the
-> access-control check runs in the controller before the response is issued.
+> served according to the context's `download.mode` / `view.mode`:
+> - `stream` (default) — the bytes are proxy-streamed through PHP in **constant memory** (lazy S3
+>   `GetObject`, not the buffering Gaufrette adapter), returning a **same-origin 200** so SPA clients
+>   can fetch it over XHR (no cross-origin redirect → no CORS).
+> - `redirect` — the client is sent a short-lived (300s) **pre-signed S3 URL**, so the file streams
+>   S3 → client and never passes through PHP (best for large files).
+>
+> Local storage always streams the file in chunks. Either way the access-control check runs in the
+> controller before the response is issued.
 
 > **Video providers (SSRF)** — video providers fetch oEmbed metadata and remote thumbnails over
 > HTTP. Thumbnail URLs are validated before fetching (http/https to public hosts only; private,
