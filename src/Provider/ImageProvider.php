@@ -132,7 +132,7 @@ class ImageProvider extends FileProvider
             $filename = $binaryContent->getRealPath();
 
             try {
-                $exif = exif_read_data($filename);
+                $exif = @exif_read_data($filename);
             } catch (Exception) {
                 return;
             }
