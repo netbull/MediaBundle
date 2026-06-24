@@ -1,3 +1,11 @@
+## [7.2.12](https://github.com/netbull/MediaBundle/compare/v7.2.11...v7.2.12) (2026-06-17)
+
+
+### Bug Fixes
+
+* moved the mode to stream/redirect by making stream the default one ([621a24a](https://github.com/netbull/MediaBundle/commit/621a24aa6ec500ea960d9dae8ce97fc7922d1e5e))
+* moved the mode to stream/redirect by making stream the default one ([4515de7](https://github.com/netbull/MediaBundle/commit/4515de749ce393dab8b8a31631bf5da908cf4b1d))
+
 ## [7.2.11](https://github.com/netbull/MediaBundle/compare/v7.2.10...v7.2.11) (2026-06-12)
 
 
