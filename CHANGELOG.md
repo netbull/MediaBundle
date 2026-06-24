@@ -1,3 +1,10 @@
+## [7.2.13](https://github.com/netbull/MediaBundle/compare/v7.2.12...v7.2.13) (2026-06-24)
+
+
+### Bug Fixes
+
+* suppress the exif bad data reading ([a7516f6](https://github.com/netbull/MediaBundle/commit/a7516f605055e5a4c408e0e8938753e938cdf8ca))
+
 ## [7.2.12](https://github.com/netbull/MediaBundle/compare/v7.2.11...v7.2.12) (2026-06-17)
 
 
