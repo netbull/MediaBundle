@@ -228,6 +228,24 @@ abstract class BaseVideoProvider extends BaseProvider
         $media->resetBinaryContent();
     }
 
+    /**
+     * Video providers store the downloaded provider thumbnail at the PRIVATE reference path
+     * (see getReferenceFile()), while getReferenceImage() returns the REMOTE provider URL —
+     * so the base implementation's `has(getReferenceImage())` check can never find (and
+     * delete) the local copy. Delete it by its storage key instead, then the format thumbs.
+     */
+    public function preRemove(MediaInterface $media): void
+    {
+        $key = $this->generatePrivateUrl($media, 'reference');
+        if ($this->getFilesystem()->has($key)) {
+            $this->getFilesystem()->delete($key);
+        }
+
+        if ($this->requireThumbnails()) {
+            $this->thumbnail->delete($this, $media);
+        }
+    }
+
     public function postRemove(MediaInterface $media): void
     {
     }

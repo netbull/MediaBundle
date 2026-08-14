@@ -94,6 +94,10 @@ class MediaListener
         }
 
         $provider->postRemove($this->getMedia($args));
+
+        // The media row is gone — deregister it (preRemove/getMedia() re-added it) so
+        // postFlush() does not regenerate thumbnails for a deleted media.
+        $this->medias->removeElement($args->getObject());
     }
 
     public function postFlush(): void
