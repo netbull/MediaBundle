@@ -1,3 +1,10 @@
+## [7.2.14](https://github.com/netbull/MediaBundle/compare/v7.2.13...v7.2.14) (2026-08-14)
+
+
+### Bug Fixes
+
+* orphan thumbnails on video delete ([77ff7d3](https://github.com/netbull/MediaBundle/commit/77ff7d39329db6e53742b9e26cd71b513fa52248))
+
 ## [7.2.13](https://github.com/netbull/MediaBundle/compare/v7.2.12...v7.2.13) (2026-06-24)
 
 
