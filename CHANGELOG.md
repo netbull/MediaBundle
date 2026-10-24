@@ -1,3 +1,10 @@
+## [7.2.15](https://github.com/netbull/MediaBundle/compare/v7.2.14...v7.2.15) (2026-10-24)
+
+
+### Bug Fixes
+
+* **provider:** delete the previous original from the media's own directory on re-upload ([39a9680](https://github.com/netbull/MediaBundle/commit/39a9680a212836e6e39ff11055212783f5725aec))
+
 ## [7.2.14](https://github.com/netbull/MediaBundle/compare/v7.2.13...v7.2.14) (2026-08-14)
 
 
