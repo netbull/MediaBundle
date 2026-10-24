@@ -103,14 +103,15 @@ class FileProvider extends BaseProvider
             return;
         }
 
-        // Delete the current file from the FS
-        $oldMedia = clone $media;
-
-        // if no previous reference is provided, it prevents
-        // Filesystem from trying to remove a directory
-        if (null !== $media->getPreviousProviderReference()) {
-            $oldMedia->setProviderReference($media->getPreviousProviderReference());
-            $path = $this->getReferenceImage($oldMedia);
+        // Delete the previous original from the FS. Its key is built from THIS media's path (same
+        // id, same directory) plus the previous reference — never from a clone: Media::__clone()
+        // drops the id, so a cloned media resolves to the directory of id 0 and the previous
+        // original would be looked up (and never found) in the wrong place, leaking one stale
+        // object per re-upload. If no previous reference is provided, skip — it would otherwise
+        // make the Filesystem try to remove a directory.
+        $previousReference = $media->getPreviousProviderReference();
+        if (null !== $previousReference && '' !== $previousReference) {
+            $path = \sprintf('%s/%s', $this->generatePath($media), $previousReference);
             if ($this->getFilesystem()->has($path)) {
                 $this->getFilesystem()->delete($path);
             }
