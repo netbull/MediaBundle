@@ -1,3 +1,10 @@
+## [7.2.16](https://github.com/netbull/MediaBundle/compare/v7.2.15...v7.2.16) (2026-10-30)
+
+
+### Bug Fixes
+
+* **twig:** render an empty string for a missing media instead of a TypeError ([d2675bf](https://github.com/netbull/MediaBundle/commit/d2675bf2d2c2a77370154f3373e5a767a74a4864))
+
 ## [7.2.15](https://github.com/netbull/MediaBundle/compare/v7.2.14...v7.2.15) (2026-10-24)
 
 
