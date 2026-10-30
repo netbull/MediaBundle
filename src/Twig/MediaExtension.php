@@ -38,7 +38,13 @@ class MediaExtension extends AbstractExtension
         ];
     }
 
-    public function generatePublicPath(array|MediaInterface $media, string $format = 'normal'): string
+    /**
+     * A missing media (`gallery.0|path` on an empty gallery, `item.photos.main|path` when there is
+     * none, ...) reaches the filters as null whenever Twig runs without strict_variables. Every
+     * filter renders an empty string for it, as the untyped 5.x signatures did, instead of
+     * failing the whole page with a TypeError.
+     */
+    public function generatePublicPath(array|MediaInterface|null $media, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -55,7 +61,7 @@ class MediaExtension extends AbstractExtension
         return $provider->generatePublicUrl($media, $provider->getFormatName($media, $format));
     }
 
-    public function generateSecurePath(array|MediaInterface $media, string $identifier, string $format = 'normal'): string
+    public function generateSecurePath(array|MediaInterface|null $media, string $identifier, string $format = 'normal'): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
@@ -72,17 +78,17 @@ class MediaExtension extends AbstractExtension
         return $provider->generateSecuredUrl($media, $provider->getFormatName($media, $format), $identifier);
     }
 
-    public function generateThumbnail(Environment $environment, array|MediaInterface $media, string $format, array $options = []): string
+    public function generateThumbnail(Environment $environment, array|MediaInterface|null $media, string $format, array $options = []): string
     {
         return $this->generateTemplate($environment, $media, $format, 'thumbnail', $options);
     }
 
-    public function generateView(Environment $environment, array|MediaInterface $media, string $format, array $options = []): string
+    public function generateView(Environment $environment, array|MediaInterface|null $media, string $format, array $options = []): string
     {
         return $this->generateTemplate($environment, $media, $format, 'view', $options);
     }
 
-    private function generateTemplate(Environment $environment, array|MediaInterface $media, string $format, string $template, array $options = []): string
+    private function generateTemplate(Environment $environment, array|MediaInterface|null $media, string $format, string $template, array $options = []): string
     {
         if ($media instanceof MediaInterface) {
             $providerName = $media->getProviderName();
